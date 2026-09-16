@@ -235,7 +235,7 @@ sola vez:
 
 Basta un solo enlace para los estudiantes, porque el repositorio trae portada:
 
-- **Portada:** `https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision-repositorio/`
+- **Portada:** `https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision/`
 - **Una herramienta suelta:** `…/interactivos/<nombre_del_archivo>.html`
 
 > - El repositorio debe ser **público** para usar Pages con una cuenta gratuita.
