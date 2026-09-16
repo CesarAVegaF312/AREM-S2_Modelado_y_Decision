@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wardley Map Interactivo — Arquitectura Empresarial</title>
+<style>
+:root{
+  --azul:#002060;--medio:#00387D;--claro:#EEF3FA;--pale:#D9E1EF;--slate:#93AAC9;
+  --build:#1565C0;--buy:#2E7D32;--rent:#6A1B9A;--explore:#B45309;
+  --genesis:#FFF3E0;--custom:#E3F0FF;--product:#E8F5E9;--commodity:#F3E5F5;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;}
+
+.header{background:var(--azul);color:white;padding:13px 28px;}
+.header h1{font-size:15px;font-weight:700;}
+.header p{font-size:11px;color:var(--slate);margin-top:2px;}
+
+/* ── LEGEND BAR ── */
+.topbar{background:white;border-bottom:2px solid var(--pale);padding:9px 24px;display:flex;gap:24px;align-items:center;flex-wrap:wrap;}
+.strat{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;}
+.strat-dot{width:14px;height:14px;border-radius:50%;}
+.sep-v{width:1px;height:20px;background:var(--pale);margin:0 4px;}
+.hint{font-size:11px;color:var(--slate);margin-left:auto;font-style:italic;}
+
+/* ── LAYOUT ── */
+.main{display:grid;grid-template-columns:1fr 360px;gap:16px;padding:16px 20px;align-items:start;}
+
+/* ── MAP ── */
+.map-wrap{background:white;border-radius:14px;box-shadow:0 2px 16px rgba(0,32,96,.07);padding:16px;overflow:auto;}
+#wardley{width:100%;min-width:560px;cursor:default;}
+
+/* Evolution band labels */
+.band-label{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;}
+
+/* Nodes */
+.wnode{cursor:pointer;transition:filter .15s;}
+.wnode:hover .node-circle{filter:brightness(1.15);}
+.wnode.active .node-circle{stroke:#FF6F00;stroke-width:3;}
+.node-circle{transition:stroke .15s;}
+.node-label{font-size:9px;font-weight:700;fill:#1a1a2e;pointer-events:none;}
+.node-sublabel{font-size:7.5px;fill:#555;pointer-events:none;}
+
+/* Evolution annotation arrow */
+.evo-arrow{stroke:#ccc;stroke-width:1.5;stroke-dasharray:4,3;marker-end:url(#arrowGrey);}
+
+/* ── DETAIL PANEL ── */
+.panel{background:white;border-radius:14px;box-shadow:0 2px 16px rgba(0,32,96,.07);overflow:hidden;position:sticky;top:16px;}
+.panel-empty{padding:32px 20px;text-align:center;color:var(--slate);}
+.panel-empty .pe-icon{font-size:36px;margin-bottom:10px;}
+.panel-empty p{font-size:11px;line-height:1.8;}
+
+.panel-content{display:none;}
+.panel-content.visible{display:block;}
+
+.ph{padding:15px 18px 12px;border-bottom:2px solid var(--pale);}
+.ph .ph-badge{display:inline-block;font-size:9px;font-weight:800;color:white;border-radius:10px;padding:2px 9px;margin-bottom:6px;}
+.ph .ph-name{font-size:16px;font-weight:800;color:var(--azul);}
+.ph .ph-evo{font-size:10px;color:#666;margin-top:3px;}
+
+.psec{padding:11px 18px;border-bottom:1px solid var(--pale);}
+.psec h4{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--slate);font-weight:700;margin-bottom:6px;}
+.psec p{font-size:11px;color:#333;line-height:1.7;}
+
+.psec .evo-bar{display:flex;gap:0;margin-bottom:8px;border-radius:6px;overflow:hidden;height:8px;}
+.evo-seg{flex:1;transition:opacity .2s;}
+.evo-seg.on{opacity:1;}
+.evo-seg.off{opacity:.2;}
+
+.decision-box{border-radius:8px;padding:10px 12px;font-size:11px;line-height:1.7;}
+.decision-build{background:#E3F0FF;border-left:4px solid var(--build);color:#001a4d;}
+.decision-buy{background:#E8F5E9;border-left:4px solid var(--buy);color:#1B5E20;}
+.decision-rent{background:#F3E8FD;border-left:4px solid var(--rent);color:#2a0a3a;}
+.decision-explore{background:#FFF3E0;border-left:4px solid var(--explore);color:#3a1a00;}
+
+.movement-box{background:var(--claro);border-radius:8px;padding:10px 12px;font-size:11px;color:#333;line-height:1.6;}
+.movement-box strong{color:var(--azul);}
+
+@media(max-width:860px){
+  .main{grid-template-columns:1fr;}
+  .panel{position:relative;top:0;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Wardley Map — Posicionamiento Estratégico de Componentes de Arquitectura</h1>
+  <p>Maestría en Arquitectura Empresarial · Universidad de La Sabana · Haz clic en cualquier componente del mapa para ver su análisis estratégico</p>
+</div>
+
+<div class="topbar">
+  <div class="strat"><div class="strat-dot" style="background:var(--build)"></div>CONSTRUIR — Diferenciación competitiva</div>
+  <div class="strat"><div class="strat-dot" style="background:var(--buy)"></div>COMPRAR — Capacidad estándar, buen producto</div>
+  <div class="strat"><div class="strat-dot" style="background:var(--rent)"></div>ARRENDAR — Commodity, usar managed service</div>
+  <div class="strat"><div class="strat-dot" style="background:var(--explore)"></div>EXPLORAR — Emergente, Genesis</div>
+  <div class="sep-v"></div>
+  <span class="hint">👆 Clic en cualquier componente</span>
+</div>
+
+<div class="main">
+
+<!-- ═══ MAP ═══ -->
+<div class="map-wrap">
+<svg id="wardley" viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowGrey" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#ccc"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#93AAC9"/>
+    </marker>
+  </defs>
+
+  <!-- ── BACKGROUND BANDS ── -->
+  <rect x="60" y="30" width="155" height="450" fill="#FFF3E0" rx="0"/>
+  <rect x="215" y="30" width="155" height="450" fill="#E3F0FF" rx="0"/>
+  <rect x="370" y="30" width="155" height="450" fill="#E8F5E9" rx="0"/>
+  <rect x="525" y="30" width="135" height="450" fill="#F3E5F5" rx="0"/>
+
+  <!-- ── AXIS LABELS ── -->
+  <!-- Y axis -->
+  <text x="14" y="55" font-size="8" font-weight="800" fill="#002060" transform="rotate(-90,14,55)" text-anchor="middle" letter-spacing="1">VISIBILIDAD PARA EL USUARIO</text>
+  <line x1="58" y1="30" x2="58" y2="480" stroke="#D9E1EF" stroke-width="1.5"/>
+  <text x="42" y="60" font-size="7.5" fill="#93AAC9" text-anchor="end">Alta</text>
+  <text x="42" y="470" font-size="7.5" fill="#93AAC9" text-anchor="end">Baja</text>
+
+  <!-- X axis -->
+  <line x1="60" y1="482" x2="660" y2="482" stroke="#D9E1EF" stroke-width="1.5"/>
+  <text x="137" y="498" font-size="8.5" font-weight="800" fill="#B45309" text-anchor="middle" class="band-label">GENESIS</text>
+  <text x="292" y="498" font-size="8.5" font-weight="800" fill="#1565C0" text-anchor="middle" class="band-label">CUSTOM BUILT</text>
+  <text x="447" y="498" font-size="8.5" font-weight="800" fill="#2E7D32" text-anchor="middle" class="band-label">PRODUCTO</text>
+  <text x="592" y="498" font-size="8.5" font-weight="800" fill="#6A1B9A" text-anchor="middle" class="band-label">COMMODITY</text>
+
+  <!-- Band separators -->
+  <line x1="215" y1="30" x2="215" y2="482" stroke="#D0DDEF" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="370" y1="30" x2="370" y2="482" stroke="#D0DDEF" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="525" y1="30" x2="525" y2="482" stroke="#D0DDEF" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- ── TITLE ── -->
+  <text x="360" y="20" font-size="9.5" font-weight="700" fill="#93AAC9" text-anchor="middle">NECESIDAD DEL USUARIO: "Pago digital seguro, rápido y confiable"</text>
+
+  <!-- ── DEPENDENCY LINES (drawn before nodes so nodes appear on top) ── -->
+  <!-- User Need → App Móvil -->
+  <line x1="300" y1="55" x2="270" y2="100" stroke="#93AAC9" stroke-width="1.2" marker-end="url(#arrowBlue)"/>
+  <!-- User Need → UX/Experiencia -->
+  <line x1="300" y1="55" x2="200" y2="130" stroke="#93AAC9" stroke-width="1.2" marker-end="url(#arrowBlue)"/>
+  <!-- App Móvil → API Gateway -->
+  <line x1="270" y1="115" x2="420" y2="200" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>
+  <!-- App Móvil → Autenticación -->
+  <line x1="270" y1="115" x2="430" y2="165" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>
+  <!-- API Gateway → Microservicio Pagos -->
+  <line x1="420" y1="210" x2="300" y2="250" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>
+  <!-- API Gateway → Microservicio Crédito -->
+  <line x1="420" y1="210" x2="270" y2="295" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>
+  <!-- Microservicio Pagos → Core Bancario -->
+  <line x1="300" y1="265" x2="245" y2="320" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>
+  <!-- Microservicio Pagos → Kafka -->
+  <line x1="315" y1="265" x2="435" y2="310" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>
+  <!-- Microservicio Pagos → PostgreSQL -->
+  <line x1="305" y1="270" x2="555" y2="310" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>
+  <!-- Motor Antifraude → Kafka -->
+  <line x1="290" y1="355" x2="430" y2="320" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>
+  <!-- Kafka → Kubernetes -->
+  <line x1="445" y1="330" x2="570" y2="385" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>
+  <!-- PostgreSQL → Kubernetes -->
+  <line x1="560" y1="325" x2="572" y2="385" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>
+  <!-- Core Bancario → Kubernetes -->
+  <line x1="248" y1="335" x2="555" y2="390" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>
+  <!-- Kubernetes → Cloud -->
+  <line x1="575" y1="410" x2="600" y2="440" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>
+  <!-- IA Agentica → Antifraude (dashed - future) -->
+  <line x1="130" y1="175" x2="265" y2="340" stroke="#B45309" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowBlue)" opacity=".6"/>
+
+  <!-- ── EVOLUTION ARROWS (showing movement over time) ── -->
+  <!-- App Móvil moving right -->
+  <line x1="260" y1="108" x2="340" y2="108" class="evo-arrow" marker-end="url(#arrowGrey)"/>
+  <!-- Antifraude ML moving right -->
+  <line x1="285" y1="353" x2="370" y2="353" class="evo-arrow" marker-end="url(#arrowGrey)"/>
+  <!-- Core Bancario moving right (slowly) -->
+  <line x1="242" y1="333" x2="310" y2="333" class="evo-arrow" marker-end="url(#arrowGrey)"/>
+
+  <!-- ── NODES ── -->
+
+  <!-- USER NEED (anchor) -->
+  <g class="wnode" onclick="show('userneed')" id="n-userneed">
+    <rect x="220" y="38" width="160" height="28" rx="8" fill="#002060" class="node-circle"/>
+    <text x="300" y="55" text-anchor="middle" font-size="9.5" font-weight="800" fill="white" class="node-label">🎯 Pago Digital Seguro</text>
+  </g>
+
+  <!-- App Móvil — Custom Built (moving to Product) -->
+  <g class="wnode" onclick="show('appmovil')" id="n-appmovil">
+    <circle cx="270" cy="110" r="20" fill="#1565C0" class="node-circle" stroke="white" stroke-width="2"/>
+    <text x="270" y="113" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">📱</text>
+    <text x="270" y="140" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1565C0" class="node-label">App Móvil</text>
+    <text x="270" y="151" text-anchor="middle" font-size="7" fill="#555" class="node-sublabel">React Native</text>
+  </g>
+
+  <!-- Experiencia UX — Custom Built -->
+  <g class="wnode" onclick="show('ux')" id="n-ux">
+    <circle cx="190" cy="135" r="16" fill="#1565C0" class="node-circle" stroke="white" stroke-width="2"/>
+    <text x="190" y="138" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">✨</text>
+    <text x="190" y="162" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1565C0" class="node-label">Experiencia UX</text>
+    <text x="190" y="173" text-anchor="middle" font-size="7" fill="#555" class="node-sublabel">Diseño propio</text>
+  </g>
+
+  <!-- IA Agentica — Genesis (emerging) -->
+  <g class="wnode" onclick="show('ia')" id="n-ia">
+    <circle cx="125" cy="170" r="16" fill="#B45309" class="node-circle" stroke="white" stroke-width="2" stroke-dasharray="4,2"/>
+    <text x="125" y="173" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">🤖</text>
+    <text x="125" y="197" text-anchor="middle" font-size="8.5" font-weight="700" fill="#B45309" class="node-label">IA Agéntica</text>
+    <text x="125" y="208" text-anchor="middle" font-size="7" fill="#555" class="node-sublabel">Emergente</text>
+  </g>
+
+  <!-- Autenticacion — Product -->
+  <g class="wnode" onclick="show('auth')" id="n-auth">
+    <circle cx="435" cy="160" r="18" fill="#2E7D32" class="node-circle" stroke="white" stroke-width="2"/>
+    <text x="435" y="163" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">🔐</text>
+    <text x="435" y="187" text-anchor="middle" font-size="8.5" font-weight="700" fill="#2E7D32" class="node-label">Auth / IAM</text>
+    <text x="435" y="198" text-anchor="middle" font-size="7" fill="#555" class="node-sublabel">Keycloak / OAuth2</text>
+  </g>
+
+  <!-- API Gateway — Product -->
+  <g class="wnode" onclick="show('gateway')" id="n-gateway">
+    <circle cx="425" cy="205" r="18" fill="#2E7D32" class="node-circle" stroke="white" stroke-width="2"/>
+    <text x="425" y="208" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">🔀</text>
+    <text x="425" y="232" text-anchor="middle" font-size="8.5" font-weight="700" fill="#2E7D32" class="node-label">API Gateway</text>
+    <text x="425" y="243" text-anchor="middle" font-size="7" fill="#555" class="node-sublabel">Kong</text>
+  </g>
+
+  <!-- Microservicio Pagos — Custom Built -->
+  <g class="wnode" onclick="show('pagos')" id="n-pagos">
+    <circle cx="305" cy="258" r="20" fill="#1565C0" class="node-circle" stroke="white" stroke-width="2"/>
+    <text x="305" y="261" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">💳</text>
+    <text x="305" y="287" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1565C0" class="node-label">Svc. Pagos</text>
+    <text x="305" y="298" text-anchor="middle" font-size="7" fill="#555" class="node-sublabel">Spring Boot · Saga</text>
+  </g>
+
+  <!-- Microservicio Credito — Custom Built -->
+  <g class="wnode" onclick="show('credito')" id="n-credito">
+    <circle cx="268" cy="298" r="18" fill="#1565C0" class="node-circle" stroke="white" stroke-width="2"/>
+    <text x="268" y="301" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">💰</text>
+    <text x="268" y="325" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1565C0" class="node-label">Svc. Crédito</text>
+    <text x="268" y="336" text-anchor="middle" font-size="7" fill="#555" class="node-sublabel">Drools · Camunda</text>
+  </g>
+
+  <!-- Core Bancario — Custom Built (legado) -->
+  <g class="wnode" onclick="show('core')" id="n-core">
+    <circle cx="243" cy="328" r="18" fill="#1565C0" class="node-circle" stroke="#FF6F00" stroke-width="2.5" stroke-dasharray="5,2"/>
+    <text x="243" y="331" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">🏦</text>
+    <text x="243" y="357" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1565C0" class="node-label">Core Bancario</text>
+    <text x="243" y="368" text-anchor="middle" font-size="7" fill="#B45309" class="node-sublabel">⚠️ T24 · Legado</text>
+  </g>
+
+  <!-- Motor Antifraude ML — Custom Built (moving to Product) -->
+  <g class="wnode" onclick="show('fraude')" id="n-fraude">
+    <circle cx="278" cy="350" r="18" fill="#1565C0" class="node-circle" stroke="white" stroke-width="2"/>
+    <text x="278" y="353" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">🛡</text>
+    <text x="278" y="378" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1565C0" class="node-label">Antifraude ML</text>
+    <text x="278" y="389" text-anchor="middle" font-size="7" fill="#555" class="node-sublabel">Python · Drools</text>
+  </g>
+
+  <!-- Kafka — Product -->
+  <g class="wnode" onclick="show('kafka')" id="n-kafka">
+    <circle cx="440" cy="318" r="18" fill="#2E7D32" class="node-circle" stroke="white" stroke-width="2"/>
+    <text x="440" y="321" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">📨</text>
+    <text x="440" y="345" text-anchor="middle" font-size="8.5" font-weight="700" fill="#2E7D32" class="node-label">Kafka</text>
+    <text x="440" y="356" text-anchor="middle" font-size="7" fill="#555" class="node-sublabel">Confluent managed</text>
+  </g>
+
+  <!-- PostgreSQL — Commodity -->
+  <g class="wnode" onclick="show('postgres')" id="n-postgres">
+    <circle cx="560" cy="318" r="18" fill="#6A1B9A" class="node-circle" stroke="white" stroke-width="2"/>
+    <text x="560" y="321" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">🗄</text>
+    <text x="560" y="345" text-anchor="middle" font-size="8.5" font-weight="700" fill="#6A1B9A" class="node-label">PostgreSQL</text>
+    <text x="560" y="356" text-anchor="middle" font-size="7" fill="#555" class="node-sublabel">Azure managed</text>
+  </g>
+
+  <!-- Kubernetes — Commodity -->
+  <g class="wnode" onclick="show('k8s')" id="n-k8s">
+    <circle cx="573" cy="395" r="18" fill="#6A1B9A" class="node-circle" stroke="white" stroke-width="2"/>
+    <text x="573" y="398" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">☸️</text>
+    <text x="573" y="422" text-anchor="middle" font-size="8.5" font-weight="700" fill="#6A1B9A" class="node-label">Kubernetes</text>
+    <text x="573" y="433" text-anchor="middle" font-size="7" fill="#555" class="node-sublabel">AKS managed</text>
+  </g>
+
+  <!-- Cloud (Azure) — Commodity/Utility -->
+  <g class="wnode" onclick="show('cloud')" id="n-cloud">
+    <circle cx="605" cy="452" r="17" fill="#6A1B9A" class="node-circle" stroke="white" stroke-width="2"/>
+    <text x="605" y="455" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">☁️</text>
+    <text x="605" y="478" text-anchor="middle" font-size="8.5" font-weight="700" fill="#6A1B9A" class="node-label">Cloud Azure</text>
+    <text x="605" y="489" text-anchor="middle" font-size="7" fill="#555" class="node-sublabel">Utility</text>
+  </g>
+
+  <!-- ── ANNOTATIONS ── -->
+  <rect x="62" y="32" width="70" height="16" rx="6" fill="#FFF3E0" stroke="#B45309" stroke-width="1"/>
+  <text x="97" y="43" text-anchor="middle" font-size="7.5" font-weight="700" fill="#B45309">🔬 Explorar</text>
+
+  <rect x="217" y="32" width="70" height="16" rx="6" fill="#E3F0FF" stroke="#1565C0" stroke-width="1"/>
+  <text x="252" y="43" text-anchor="middle" font-size="7.5" font-weight="700" fill="#1565C0">🔨 Construir</text>
+
+  <rect x="372" y="32" width="70" height="16" rx="6" fill="#E8F5E9" stroke="#2E7D32" stroke-width="1"/>
+  <text x="407" y="43" text-anchor="middle" font-size="7.5" font-weight="700" fill="#2E7D32">🛒 Comprar</text>
+
+  <rect x="527" y="32" width="70" height="16" rx="6" fill="#F3E5F5" stroke="#6A1B9A" stroke-width="1"/>
+  <text x="562" y="43" text-anchor="middle" font-size="7.5" font-weight="700" fill="#6A1B9A">📡 Arrendar</text>
+
+  <!-- Evolution label -->
+  <text x="360" y="512" text-anchor="middle" font-size="8" fill="#93AAC9" font-weight="600">← Menos predecible · EVOLUCIÓN DEL COMPONENTE → Más predecible →</text>
+
+  <!-- Legend: dashed circle = legacy warning -->
+  <circle cx="80" cy="465" r="7" fill="none" stroke="#FF6F00" stroke-width="2" stroke-dasharray="4,2"/>
+  <text x="92" y="469" font-size="7.5" fill="#B45309" font-weight="700">= Legado / deuda técnica</text>
+
+  <!-- Legend: dashed line = future dependency -->
+  <line x1="70" y1="455" x2="100" y2="455" stroke="#B45309" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="105" y="458" font-size="7.5" fill="#B45309" font-weight="700">= Dependencia futura</text>
+
+</svg>
+</div>
+
+<!-- ═══ PANEL ═══ -->
+<div class="panel">
+  <div class="panel-empty" id="emptyState">
+    <div class="pe-icon">🗺</div>
+    <p><strong>Wardley Maps</strong> — creados por Simon Wardley — muestran dónde se ubican los componentes de tu arquitectura en su ciclo de evolución y qué tan visibles son para el usuario.</p>
+    <br/>
+    <p style="font-size:10px;"><strong>Eje Y:</strong> Visibilidad (el usuario ve arriba; la infraestructura está abajo).<br/><strong>Eje X:</strong> Evolución (Genesis → Custom → Producto → Commodity).<br/><br/>La posición determina la decisión estratégica: <em>construir</em> lo diferenciador, <em>comprar</em> lo estándar, <em>arrendar</em> los commodities.</p>
+  </div>
+  <div class="panel-content" id="panelContent">
+    <div class="ph">
+      <div class="ph-badge" id="pBadge"></div>
+      <div class="ph-name" id="pName"></div>
+      <div class="ph-evo" id="pEvo"></div>
+    </div>
+    <div class="psec">
+      <h4>Posición en la curva de evolución</h4>
+      <div class="evo-bar">
+        <div class="evo-seg" id="seg-genesis" style="background:#B45309"></div>
+        <div class="evo-seg" id="seg-custom" style="background:#1565C0"></div>
+        <div class="evo-seg" id="seg-product" style="background:#2E7D32"></div>
+        <div class="evo-seg" id="seg-commodity" style="background:#6A1B9A"></div>
+      </div>
+      <p id="pEvoDesc"></p>
+    </div>
+    <div class="psec">
+      <h4>¿Qué hace este componente?</h4>
+      <p id="pWhat"></p>
+    </div>
+    <div class="psec">
+      <h4>🎯 Decisión estratégica</h4>
+      <div class="decision-box" id="pDecision"></div>
+    </div>
+    <div class="psec">
+      <h4>📈 Movimiento esperado</h4>
+      <div class="movement-box" id="pMovement"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+const nodes = {
+  userneed:{
+    name:'Pago Digital Seguro', badge:'NECESIDAD DEL USUARIO', badgeColor:'#002060',
+    evo:'Siempre visible — Es el anchor del mapa', evoStage:[1,0,0,0],
+    evoDesc:'La necesidad del usuario es el punto de partida de todo Wardley Map. Siempre está en la parte superior del eje de visibilidad. No evoluciona — lo que evoluciona son los componentes que la satisfacen.',
+    what:'El usuario necesita poder pagar de forma digital, segura y rápida desde cualquier canal. Esta necesidad es constante — lo que cambia es cómo el banco la satisface: hace 20 años era por ventanilla, hoy por app móvil, mañana por interfaces de voz o IA agéntica.',
+    decision:'decision-build',
+    decisionText:'Esta necesidad <strong>no se compra ni se arrienda — se satisface</strong>. La pregunta estratégica es: ¿cuál es la mejor cadena de componentes para satisfacerla hoy y en 3 años? El mapa muestra esa cadena completa de dependencias.',
+    movement:'La necesidad en sí no se mueve. Pero los componentes que la satisfacen sí evolucionan: la app móvil de hoy se volverá commodity, y surgirán nuevas formas de satisfacer la necesidad (voz, IA, wearables). El arquitecto estratégico debe anticipar esos movimientos.'
+  },
+  appmovil:{
+    name:'App Móvil Bancaria', badge:'CONSTRUIR', badgeColor:'#1565C0',
+    evo:'Custom Built → moviéndose hacia Producto', evoStage:[0,1,0,0],
+    evoDesc:'La app móvil bancaria comenzó como algo completamente personalizado. Hoy existen frameworks maduros (React Native, Flutter) y plataformas de banca digital (Temenos Infinity, Backbase) que la están convirtiendo en un producto comprable.',
+    what:'Canal principal de interacción del cliente con el banco. Concentra autenticación biométrica, consultas de saldo, pagos, solicitudes de crédito y notificaciones. En el banco colombiano: 62% de los clientes activos usan la app al menos una vez al mes.',
+    decision:'decision-build',
+    decisionText:'<strong>Construir hoy, pero prepararse para comprar mañana.</strong> La UX diferenciadora (onboarding digital, crédito en 4 horas, pagos con QR) justifica construcción propia ahora. Pero la infraestructura de la app (push notifications, biometría, navegación) ya es commodity — usar librerías estándar, no construir desde cero.',
+    movement:'En 3-5 años, las apps bancarias básicas serán plataformas compradas (Backbase, Temenos). Los bancos se diferenciarán por el modelo de datos y la experiencia, no por el framework. <strong>Estrategia</strong>: separar la lógica de negocio diferenciadora (que quedará como Custom) del shell de la app (que pasará a Producto).'
+  },
+  ux:{
+    name:'Experiencia UX Diferenciadora', badge:'CONSTRUIR', badgeColor:'#1565C0',
+    evo:'Custom Built — permanecerá aquí', evoStage:[0,1,0,0],
+    evoDesc:'La experiencia de usuario como ventaja competitiva se mantiene en Custom Built. No es solo el diseño visual — es la forma en que el banco diseña sus flujos, reduce fricciones y crea momentos de delight. Esto no se puede comprar.',
+    what:'El diseño de los flujos de onboarding, el proceso de solicitud de crédito en 4 pasos, el dashboard financiero personalizado, la voz y el tono de las notificaciones. Nubank construyó su ventaja competitiva enteramente sobre UX superior con las mismas APIs bancarias que todos.',
+    decision:'decision-build',
+    decisionText:'<strong>Construir siempre.</strong> La UX es donde el banco compite. Los neobancos (Nubank, Lulo Bank) con menos productos que los bancos tradicionales los están superando en NPS exclusivamente por UX superior. Nunca externalizar el diseño de experiencia de usuario a un proveedor genérico.',
+    movement:'La UX no se mueve a la derecha en el eje de evolución — siempre habrá una frontera de innovación en experiencia. Lo que sí cambia son las herramientas: el diseño con IA generativa (Figma AI, prototipos automáticos) reduce el costo de experimentación UX, pero la visión estratégica permanece como diferenciación.'
+  },
+  ia:{
+    name:'IA Agéntica', badge:'EXPLORAR', badgeColor:'#B45309',
+    evo:'Genesis — emergente, alto riesgo, alto potencial', evoStage:[1,0,0,0],
+    evoDesc:'La IA agéntica aplicada a banca (agentes que ejecutan transacciones autónomamente, negocian créditos, detectan fraudes en tiempo real con LLMs) está en etapa Genesis. Alto potencial, alta incertidumbre, sin estándares establecidos.',
+    what:'Agentes de IA que pueden: responder preguntas complejas de clientes en lenguaje natural y ejecutar la transacción directamente, detectar fraudes con razonamiento multi-paso en lugar de solo reglas, generar análisis de crédito automatizados para PYME sin papelería. El banco que lo haga primero y bien tendrá una ventaja de 3-5 años.',
+    decision:'decision-explore',
+    decisionText:'<strong>Explorar con experimentos controlados.</strong> Reglas para Genesis: equipos pequeños (2-3 personas), presupuesto acotado, métricas de aprendizaje (no de ROI aún), tolerancia a fallos. El error en Genesis es comprometerse demasiado pronto: construir infraestructura masiva para algo que aún no se entiende bien.',
+    movement:'En 2-4 años, la IA agéntica bancaria estará en Custom Built (plataformas como OpenAI Assistants, AWS Bedrock Agents la harán más accesible). El banco que explore ahora tendrá el conocimiento de dominio para usarla mejor que quien empiece en ese momento. <strong>La línea punteada del mapa muestra la dependencia futura con el Motor Antifraude.</strong>'
+  },
+  auth:{
+    name:'Autenticación / IAM', badge:'COMPRAR', badgeColor:'#2E7D32',
+    evo:'Producto — estándar de industria', evoStage:[0,0,1,0],
+    evoDesc:'La autenticación segura con OAuth 2.0, OIDC, MFA y biometría es un producto maduro. Hay soluciones robustas y ampliamente auditadas (Keycloak, Auth0, Azure AD B2C). Construir un IAM propio desde cero en 2025 sería un error estratégico grave.',
+    what:'Gestión de identidades y accesos: login con biometría, OAuth 2.0 para APIs, MFA para operaciones críticas, Single Sign-On para el portal empresarial. En el banco: Keycloak como Identity Provider central, integrado con Active Directory corporativo. Circular SFC 007 exige MFA.',
+    decision:'decision-buy',
+    decisionText:'<strong>Comprar y configurar, nunca construir desde cero.</strong> Keycloak es open source, auditado por miles de organizaciones, y tiene el 95% de las funcionalidades que cualquier banco necesita. Construir un sistema de autenticación propio introduce riesgos de seguridad graves sin ninguna diferenciación competitiva.',
+    movement:'La autenticación se mueve hacia Commodity: en 5 años, FIDO2/passkeys reemplazarán passwords y MFA tradicional. Los bancos que ya tienen una arquitectura de identidad basada en estándares abiertos (Keycloak) migrarán fácil; los que construyeron algo propio tendrán que reescribir todo.'
+  },
+  gateway:{
+    name:'API Gateway', badge:'COMPRAR', badgeColor:'#2E7D32',
+    evo:'Producto — múltiples opciones maduras', evoStage:[0,0,1,0],
+    evoDesc:'El API Gateway como producto (autenticación, rate limiting, routing, logging) está completamente maduro. Kong, Apigee, AWS API Gateway y Azure APIM ofrecen todas las funcionalidades necesarias con soporte enterprise.',
+    what:'Punto de entrada único para todas las APIs del banco: valida tokens JWT, aplica rate limiting por cliente, enruta al microservicio correcto, registra todas las llamadas para auditoría. En el banco: Kong con 12 plugins activos, procesando 8.500 TPS en hora pico.',
+    decision:'decision-buy',
+    decisionText:'<strong>Comprar Kong o equivalente.</strong> El valor diferenciador de un banco no está en cómo implementa el rate limiting — está en los servicios financieros que expone. Kong tiene 10+ años de evolución y cientos de contribuidores. Construir un gateway propio es deuda técnica desde el día 1.',
+    movement:'En 3-5 años, el API Gateway se funde con el Service Mesh (Istio, Linkerd) para manejar también el tráfico interno entre microservicios. Las funcionalidades de seguridad migran a Zero Trust Network Access (ZTNA). El banco debe elegir productos que evolucionen en esa dirección.'
+  },
+  pagos:{
+    name:'Microservicio de Pagos', badge:'CONSTRUIR', badgeColor:'#1565C0',
+    evo:'Custom Built — lógica de negocio diferenciadora', evoStage:[0,1,0,0],
+    evoDesc:'La lógica de orquestación de pagos (Saga, idempotencia, integración con ACH Colombia, cumplimiento SFC) es específica del negocio y del contexto regulatorio colombiano. No hay un producto genérico que la cubra.',
+    what:'Orquesta el ciclo completo de un pago: débito → instrucción ACH → acreditación → notificación. Implementa el patrón Saga para consistencia eventual en una transacción que toca 4 sistemas. Maneja 8.500 TPS en hora pico con latencia P99 < 3s.',
+    decision:'decision-build',
+    decisionText:'<strong>Construir la orquestación de negocio; comprar los bloques de infraestructura.</strong> La lógica de "cómo el banco colombiano procesa un pago PSE cumpliendo con ACH y la SFC" es propia. Pero Kafka (mensajería), PostgreSQL (persistencia) y Spring Boot (framework) son productos comprados sobre los que se construye.',
+    movement:'La lógica de pagos se enriquecerá con Open Finance (Colombia está implementando banca abierta). El Microservicio de Pagos evolucionará de procesar pagos propios a orquestar pagos multi-banco vía APIs de Open Finance. Arquitectura actual del Saga facilita esta extensión.'
+  },
+  credito:{
+    name:'Microservicio de Crédito', badge:'CONSTRUIR', badgeColor:'#1565C0',
+    evo:'Custom Built — política crediticia como ventaja competitiva', evoStage:[0,1,0,0],
+    evoDesc:'El motor de crédito incorpora la política crediticia del banco: scoring, modelos de riesgo, reglas de aprobación. Esto es conocimiento de negocio acumulado durante años y es una fuente real de ventaja competitiva.',
+    what:'Gestiona el ciclo de crédito: solicitud → scoring (interno + DataCrédito) → evaluación Drools → flujo de aprobación (Camunda) → desembolso → seguimiento de cartera. La política de crédito (340 reglas en Drools) es el activo más valioso del servicio.',
+    decision:'decision-build',
+    decisionText:'<strong>Construir el motor; considerar comprar el scoring.</strong> La política crediticia (reglas de negocio, modelos de riesgo) es diferenciadora — se construye. Pero el modelo de ML para scoring puede comprarse como servicio (Amazon SageMaker, Experian, FICO) si el banco no tiene el volumen para entrenar modelos propios.',
+    movement:'El crédito evoluciona hacia scoring alternativo: datos de comportamiento de la app, pagos de servicios públicos, historial digital. El banco que construya el modelo de datos de clientes hoy tendrá ventaja de scoring en 3 años. IA agéntica (Genesis en el mapa) será el siguiente nivel: agentes que negocian créditos en lenguaje natural.'
+  },
+  core:{
+    name:'Core Bancario (T24 — Legado)', badge:'DEUDA TÉCNICA', badgeColor:'#B45309',
+    evo:'Custom Built pero envejeciendo — candidato a Strangler Fig', evoStage:[0,1,0,0],
+    evoDesc:'El core bancario T24 es altamente personalizado pero con 18 años de evolución acumulada. Está atrapado entre ser demasiado específico para comprarse de nuevo y demasiado complejo para reescribirse. El círculo punteado en el mapa indica deuda técnica.',
+    what:'Registro contable central: débitos, créditos, saldos, productos financieros. Tiene 18 años de historial transaccional y cumple todas las normativas SFC. El problema: ciclo de despliegue mensual (vs. diario en microservicios), equipo de COBOL de 3 personas, interfaz propietaria que frena la innovación.',
+    decision:'decision-buy',
+    decisionText:'<strong>Aplicar Strangler Fig — no reescribir, envolver progresivamente.</strong> Reemplazar el core bancario de golpe es el proyecto más riesgoso de la industria financiera. La estrategia correcta: envolver T24 con un adapter API, construir nuevos servicios afuera, y migrar funcionalidades del core hacia microservicios propios o plataformas modernas (Thought Machine, Mambu) incrementalmente.',
+    movement:'El core banking moderno (Thought Machine Vault, 10x Banking, Mambu) es cloud-native y APIs-first. En 5-7 años, los bancos que no hayan iniciado la migración estarán atrapados por deuda técnica creciente. El patrón Strangler Fig del mapa es la estrategia: los microservicios de Pagos y Crédito ya están "envolviendo" T24.'
+  },
+  fraude:{
+    name:'Motor Antifraude ML', badge:'CONSTRUIR', badgeColor:'#1565C0',
+    evo:'Custom Built → moviéndose a Producto', evoStage:[0,1,0,0],
+    evoDesc:'El motor antifraude con ML propio fue diferenciador hace 5 años. Hoy existen plataformas de ML para fraude muy maduras (AWS Fraud Detector, Google reCAPTCHA, Featurespace). El modelo propio sigue siendo valioso si el banco tiene datos únicos.',
+    what:'Detecta transacciones fraudulentas en tiempo real (<500ms): modelo ML (Isolation Forest + Random Forest, 47 features) + 340 reglas Drools de negocio. Consume eventos Kafka, publica alertas. Previno $8.200M COP en fraude el último año.',
+    decision:'decision-build',
+    decisionText:'<strong>Construir el modelo, considerar plataformas de ML para la infraestructura.</strong> Si el banco tiene datos propios de fraude colombiano (patrones locales, tipos de transacción, comportamiento de clientes), esos datos son el activo diferenciador. El modelo se entrena sobre ellos. Pero la infraestructura de ML (entrenamiento, despliegue, monitoreo) puede comprarse (SageMaker, Vertex AI).',
+    movement:'La flecha en el mapa muestra que el Antifraude ML se moverá hacia Producto: plataformas como AWS Fraud Detector o Featurespace ofrecerán detección de fraude como servicio con modelos pre-entrenados. El banco debe decidir: ¿su dato de fraude colombiano es tan único que justifica modelo propio? Si no, en 3 años conviene migrar a plataforma.'
+  },
+  kafka:{
+    name:'Kafka (Bus de Eventos)', badge:'COMPRAR/ARRENDAR', badgeColor:'#2E7D32',
+    evo:'Producto maduro — managed service disponible', evoStage:[0,0,1,0],
+    evoDesc:'Apache Kafka pasó de ser una tecnología de vanguardia en LinkedIn (2011) a ser el estándar de mensajería para sistemas distribuidos. Confluent Cloud, AWS MSK y Azure Event Hubs ofrecen Kafka completamente gestionado.',
+    what:'Bus de mensajería asíncrona del banco: 8 topics, 3M mensajes/día. Desacopla servicios: Pagos publica "TransaccionAprobada", Antifraude y Notificaciones consumen sin que Pagos lo sepa. Garantía de entrega at-least-once, retención 7 días.',
+    decision:'decision-buy',
+    decisionText:'<strong>Usar Confluent Cloud (Kafka managed).</strong> Operar un cluster Kafka propio requiere expertise de infraestructura que el banco no debería tener. Confluent Cloud cobra por throughput, incluye Schema Registry, monitoreo y SLA de 99.95%. El costo de operarlo propio (ingenieros, upgrades, incidentes) supera ampliamente la diferencia de precio.',
+    movement:'Kafka como producto se está moviendo hacia utility: en 5 años, la mensajería asíncrona será tan estándar como el correo. Los bancos que hoy diseñan bien sus topics y schemas (con Schema Registry) estarán listos para esa commoditización. Los que no hayan estructurado sus eventos tendrán deuda de datos.'
+  },
+  postgres:{
+    name:'PostgreSQL (Base de Datos)', badge:'ARRENDAR', badgeColor:'#6A1B9A',
+    evo:'Commodity — managed database service', evoStage:[0,0,0,1],
+    evoDesc:'PostgreSQL es open source desde 1996 y está completamente maduro. Azure Database for PostgreSQL Flexible, AWS RDS, y Google Cloud SQL ofrecen PostgreSQL gestionado con backups automáticos, alta disponibilidad y parches de seguridad sin intervención.',
+    what:'Base de datos transaccional para los microservicios: Pagos, Crédito y Core Adapter tienen sus propias instancias (database-per-service). 12TB de datos transaccionales. Particionamiento mensual en la tabla de transacciones (340M filas/año). Cifrado AES-256.',
+    decision:'decision-rent',
+    decisionText:'<strong>Usar Azure Database for PostgreSQL Flexible — siempre managed.</strong> El banco no debe operar sus propios servidores de base de datos. Azure gestiona parches, backups (RPO 5min), replicación y failover automático. El DBA del banco se enfoca en schema design, índices y performance — no en administración de servidores.',
+    movement:'Las bases de datos evolucionan hacia servicios serverless (Aurora Serverless, Azure SQL Hyperscale) donde el banco paga por query ejecutada, no por instancia. Para el banco colombiano, la regulación SFC de residencia de datos en Colombia puede limitar opciones — evaluar opciones de Azure en región Colombia cuando esté disponible.'
+  },
+  k8s:{
+    name:'Kubernetes (AKS)', badge:'ARRENDAR', badgeColor:'#6A1B9A',
+    evo:'Commodity — infraestructura de ejecución estándar', evoStage:[0,0,0,1],
+    evoDesc:'Kubernetes pasó de proyecto experimental de Google (2014) a estándar de la industria en menos de 10 años. AKS, EKS y GKE ofrecen Kubernetes gestionado donde el banco solo gestiona los pods, no el control plane.',
+    what:'Orquesta los contenedores de todos los microservicios: 180 pods en producción, autoscaling 6-20 nodos según carga, health checks automáticos, rolling deployments sin downtime. El equipo de plataforma gestiona AKS; los squads solo escriben Helm charts.',
+    decision:'decision-rent',
+    decisionText:'<strong>AKS managed, IaC con Terraform, GitOps con Flux.</strong> El banco nunca debe operar el control plane de Kubernetes. AKS incluye upgrades automáticos, integración con Azure AD y Azure Monitor. La responsabilidad del banco: diseñar los Helm charts, las network policies y las resource quotas — no el etcd ni el API server.',
+    movement:'Kubernetes sigue evolucionando hacia serverless containers (Azure Container Apps, AWS Fargate) donde el banco ni siquiera gestiona los nodos — solo los contenedores. Para cargas variables (el antifraude ML que procesa en ráfagas), el modelo serverless puede ser más económico en 2-3 años.'
+  },
+  cloud:{
+    name:'Cloud Azure (Infraestructura)', badge:'ARRENDAR', badgeColor:'#6A1B9A',
+    evo:'Utility — como la electricidad', evoStage:[0,0,0,1],
+    evoDesc:'La infraestructura cloud pública es utility: se consume bajo demanda como la electricidad. Azure, AWS y GCP son intercambiables en sus capacidades básicas. La diferenciación está en los servicios específicos (AI, finanzas, regulación) de cada proveedor.',
+    what:'La capa física sobre la que corre todo el banco digital: compute, storage, networking, seguridad perimetral. Azure East US 2 (primaria) + West US 3 (DR). ExpressRoute 10Gbps al data center on-premise. El banco paga $420M COP/mes por toda la infraestructura cloud.',
+    decision:'decision-rent',
+    decisionText:'<strong>Multi-cloud strategy con Azure como primario.</strong> El banco colombiano elige Azure por: soporte de Microsoft en Colombia, integración con Office 365 corporativo, y servicios de IA (OpenAI en Azure). Pero diseña con abstracción de cloud (Terraform agnóstico, contenedores portables) para poder migrar si los precios o servicios cambian.',
+    movement:'La regulación colombiana está evolucionando hacia requerir que los datos financieros residan en territorio colombiano o en jurisdicciones con acuerdos específicos. Azure Colombia Region (cuando esté disponible) o un modelo cloud híbrido con data center en Colombia será el destino estratégico.'
+  }
+};
+
+let current = null;
+
+function show(key) {
+  const d = nodes[key];
+  if (!d) return;
+
+  // Deselect previous
+  if (current) {
+    const prev = document.getElementById('n-' + current);
+    if (prev) prev.classList.remove('active');
+  }
+  current = key;
+  const cur = document.getElementById('n-' + key);
+  if (cur) cur.classList.add('active');
+
+  // Populate
+  document.getElementById('pBadge').textContent = d.badge;
+  document.getElementById('pBadge').style.background = d.badgeColor;
+  document.getElementById('pName').textContent = d.name;
+  document.getElementById('pEvo').textContent = d.evo;
+
+  // Evo bar
+  const segs = ['genesis','custom','product','commodity'];
+  segs.forEach((s, i) => {
+    const el = document.getElementById('seg-' + s);
+    el.className = 'evo-seg ' + (d.evoStage[i] ? 'on' : 'off');
+  });
+
+  document.getElementById('pEvoDesc').textContent = d.evoDesc;
+  document.getElementById('pWhat').textContent = d.what;
+
+  const dec = document.getElementById('pDecision');
+  dec.className = 'decision-box ' + d.decision;
+  dec.innerHTML = d.decisionText;
+
+  document.getElementById('pMovement').innerHTML = d.movement;
+
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('panelContent').classList.add('visible');
+
+  if (window.innerWidth < 860) {
+    document.querySelector('.panel').scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+}
+</script>
+</body>
+</html>

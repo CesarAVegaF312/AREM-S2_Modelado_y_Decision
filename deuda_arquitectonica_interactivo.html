@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Deuda Arquitectónica Interactivo — Arquitectura Empresarial</title>
+<style>
+:root {
+  --azul: #002060; --medio: #00387D; --claro: #EEF3FA;
+  --pale: #D9E1EF; --slate: #93AAC9; --gris: #4B5563;
+  --verde: #137333; --naranja: #B45309; --rojo: #B42318; --morado: #6B21A8;
+  --foco: #0B63CE;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #F0F4FB; color: #1a1a2e; font-size: 16px; line-height: 1.5; }
+:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }
+.header :focus-visible { outline-color: #fff; }
+
+.header { background: var(--azul); color: #fff; padding: 16px 28px; }
+.header h1 { font-size: 20px; font-weight: 700; }
+.header p { font-size: 13px; color: var(--slate); margin-top: 2px; }
+.header .encuadre { font-size: 15px; color: #DCE5F3; margin-top: 10px; max-width: 1050px; border-left: 4px solid var(--slate); padding-left: 12px; }
+.header .encuadre b { color: #fff; font-weight: 600; }
+.dom { display: inline-block; min-width: 26px; text-align: center; border-radius: 6px; padding: 0 7px; font-weight: 800; font-size: 13px; background: var(--azul); color: #fff; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.wrap { max-width: 1100px; margin: 24px auto 40px; padding: 0 16px; }
+.card { background: #fff; border-radius: 14px; box-shadow: 0 2px 16px rgba(0,32,96,.08); padding: 24px 28px; margin-bottom: 20px; }
+.card h2 { font-size: 20px; color: var(--azul); font-weight: 800; margin-bottom: 6px; }
+.card h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--medio); font-weight: 700; margin: 16px 0 8px; }
+.lead { color: #333; margin-bottom: 14px; }
+.small { font-size: 14px; color: var(--gris); }
+
+/* ── Conceptos ── */
+.trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.concept { background: var(--claro); border-left: 4px solid var(--medio); border-radius: 0 8px 8px 0; padding: 12px 14px; }
+.concept b { display: block; color: var(--azul); font-size: 15px; text-transform: uppercase; letter-spacing: .04em; }
+.concept p { font-size: 15px; color: #333; }
+.contraste { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.contraste div { border-radius: 8px; padding: 10px 14px; font-size: 15px; }
+.mal { background: #FDECEA; border: 1px solid #F5C2BD; }
+.bien { background: #E6F4EA; border: 1px solid #A7D7B4; }
+.contraste span { display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
+.mal span { color: var(--rojo); } .bien span { color: var(--verde); }
+
+/* ── Estrategias ── */
+.tag-est { display: inline-block; border-radius: 20px; padding: 1px 10px; font-size: 13px; font-weight: 800; letter-spacing: .04em; }
+.est-PAGAR { background: #E6F4EA; color: var(--verde); border: 1px solid #A7D7B4; }
+.est-REFINANCIAR { background: #FEF3E2; color: var(--naranja); border: 1px solid #F6C97E; }
+.est-DECLARAR { background: #F3E8FD; color: var(--morado); border: 1px solid #D8B4FE; }
+
+/* ── Formulario ── */
+.modo { display: inline-block; background: var(--claro); color: var(--medio); border: 1px solid var(--pale); border-radius: 20px; padding: 2px 12px; font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+.modo.editando { background: #FEF3E2; color: var(--naranja); border-color: #F6C97E; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+.full { grid-column: 1 / -1; }
+.campo label, .campo legend { display: block; font-weight: 700; color: var(--azul); font-size: 15px; margin-bottom: 4px; }
+.campo input[type=text], .campo textarea { width: 100%; font: inherit; padding: 8px 10px; border: 1.5px solid #B8C4D8; border-radius: 8px; background: #fff; color: #1a1a2e; }
+.campo textarea { min-height: 64px; resize: vertical; }
+.campo input[aria-invalid=true], .campo textarea[aria-invalid=true] { border-color: var(--rojo); background: #FFF7F6; }
+.hint { font-size: 13px; color: var(--gris); margin-top: 3px; }
+.error { font-size: 14px; color: var(--rojo); font-weight: 600; margin-top: 4px; }
+.error:empty { display: none; }
+fieldset.campo { border: none; }
+.radios { display: flex; flex-wrap: wrap; gap: 8px; }
+.campo label.radio { display: flex; margin-bottom: 0; font-weight: 400; }
+.radio { display: flex; gap: 8px; align-items: flex-start; border: 1.5px solid #B8C4D8; border-radius: 8px; padding: 8px 12px; cursor: pointer; background: #fff; flex: 1 1 200px; }
+.radio input { margin-top: 5px; accent-color: var(--medio); }
+.radio:has(input:checked) { border-color: var(--medio); background: var(--claro); }
+.radio small { display: block; font-size: 13px; color: var(--gris); font-weight: 400; }
+.radio strong { font-size: 15px; color: var(--azul); }
+.venc-box { background: var(--claro); border: 1.5px dashed var(--slate); border-radius: 8px; padding: 8px 12px; min-height: 42px; font-weight: 700; color: var(--azul); }
+.venc-box .sub { display: block; font-weight: 400; font-size: 13px; color: var(--gris); }
+.botones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; align-items: center; }
+button { font: inherit; font-weight: 700; border-radius: 8px; padding: 9px 18px; cursor: pointer; border: 1.5px solid var(--medio); }
+.btn-pri { background: var(--azul); color: #fff; border-color: var(--azul); }
+.btn-pri:hover { background: var(--medio); }
+.btn-sec { background: #fff; color: var(--medio); }
+.btn-sec:hover { background: var(--claro); }
+.btn-min { padding: 4px 10px; font-size: 14px; }
+.bloqueo { background: #FDECEA; border: 1px solid #F5C2BD; color: var(--rojo); border-radius: 8px; padding: 10px 14px; font-weight: 600; margin-top: 12px; }
+.bloqueo:empty { display: none; }
+.ok { background: #E6F4EA; border: 1px solid #A7D7B4; color: var(--verde); border-radius: 8px; padding: 10px 14px; font-weight: 600; margin-top: 12px; }
+.ok:empty { display: none; }
+
+/* ── Gráfica ── */
+.controles { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: flex-end; margin: 10px 0 12px; }
+.controles fieldset { border: none; }
+.controles legend, .controles label.tit { font-weight: 700; color: var(--azul); font-size: 15px; margin-bottom: 4px; display: block; }
+.seg { display: flex; border: 1.5px solid var(--medio); border-radius: 8px; overflow: hidden; }
+.seg label { padding: 6px 14px; cursor: pointer; font-size: 15px; color: var(--medio); display: flex; gap: 6px; align-items: center; }
+.seg label:has(input:checked) { background: var(--medio); color: #fff; }
+.seg label:has(input:focus-visible) { outline: 3px solid var(--foco); outline-offset: -3px; }
+.tarifa input { font: inherit; width: 150px; padding: 6px 10px; border: 1.5px solid #B8C4D8; border-radius: 8px; }
+.svg-wrap { border: 1px solid var(--pale); border-radius: 10px; background: #fff; padding: 6px; }
+.svg-wrap svg { width: 100%; height: auto; display: block; }
+.vacio { padding: 36px 16px; text-align: center; color: var(--gris); background: var(--claro); border-radius: 10px; }
+.leyenda { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; margin-top: 12px; font-size: 15px; }
+.leyenda li { display: flex; gap: 8px; align-items: flex-start; }
+.leyenda svg { flex-shrink: 0; margin-top: 4px; }
+.nota { background: var(--claro); border-left: 4px solid var(--medio); border-radius: 0 8px 8px 0; padding: 10px 14px; margin-top: 12px; font-size: 14px; color: #333; }
+
+/* ── Cartera ── */
+.regla { background: var(--azul); color: #fff; border-radius: 8px; padding: 12px 16px; margin: 10px 0 14px; }
+.regla b { color: #fff; }
+.regla span { display: block; font-size: 14px; color: #C9D6EA; margin-top: 2px; }
+.tabla-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; min-width: 960px; }
+th { background: var(--claro); color: var(--azul); text-align: left; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; padding: 8px 10px; border-bottom: 2px solid var(--pale); }
+td { padding: 10px; border-bottom: 1px solid var(--pale); vertical-align: top; }
+td .sub { display: block; font-size: 13px; color: var(--gris); }
+td.num > b, td.num > .cifra { white-space: nowrap; }
+td.elem { min-width: 250px; }
+.acciones { margin-top: 8px; }
+tr.editando td { background: #FFFBF2; }
+.orden { display: inline-flex; width: 28px; height: 28px; border-radius: 50%; color: #fff; font-weight: 800; align-items: center; justify-content: center; }
+.acciones { display: flex; flex-direction: column; gap: 6px; }
+.f18 { width: 100%; min-height: 150px; font: 14px/1.5 Consolas, 'Courier New', monospace; padding: 10px; border: 1.5px solid #B8C4D8; border-radius: 8px; background: #FAFBFD; }
+
+/* ── Declarada ── */
+.declarada { border-top: 6px solid var(--morado); }
+.declarada ol { margin: 8px 0 0 22px; }
+.declarada li { margin-bottom: 6px; }
+.cita { font-size: 18px; font-weight: 700; color: var(--azul); border-left: 4px solid var(--morado); padding: 6px 14px; margin-top: 14px; background: #F8F3FE; border-radius: 0 8px 8px 0; }
+.equiv { border-collapse: collapse; margin-top: 8px; min-width: 0; width: auto; font-size: 14px; }
+.equiv td, .equiv th { padding: 4px 12px; }
+
+@media (max-width: 760px) {
+  .trio, .contraste, .grid, .leyenda { grid-template-columns: 1fr; }
+  .card { padding: 18px 16px; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>Deuda arquitectónica — principal, interés y vencimiento (interactivo)</h1>
+  <p>Maestría en Arquitectura Empresarial · Universidad de La Sabana · Sesión 2 · B7.2 y registro de deuda F-18</p>
+  <p class="encuadre">En vocabulario del TOGAF Standard, 10th Edition: <b>la deuda arquitectónica es el conjunto de brechas del análisis de gaps (Gap Analysis, técnica de ADM Techniques) que se decide NO cerrar en esta iteración.</b> Cada partida indica de qué dominio viene su brecha: Fase B (negocio), C (datos y aplicaciones) o D (tecnología).</p>
+</header>
+
+<main class="wrap">
+
+  <section class="card" aria-labelledby="t-intro">
+    <h2 id="t-intro">Una deuda no es un pendiente: es una obligación con costo mensual</h2>
+    <p class="lead">Una lista de pendientes no se prioriza porque no dice cuánto cuesta esperar. Una partida de deuda sí: tiene principal, interés y vencimiento, y por eso se puede ordenar, presupuestar y defender ante un comité.</p>
+    <div class="trio">
+      <div class="concept"><b>Principal</b><p>Lo que quedó a medias, dicho en una frase, y cuánto costaría pagarlo hoy.</p></div>
+      <div class="concept"><b>Interés mensual</b><p>Lo que cuesta cada mes convivir con ello, en horas-persona o en pesos.</p></div>
+      <div class="concept"><b>Vencimiento</b><p>El mes en que el interés acumulado alcanza el costo de pagarla hoy. Desde ahí, convivir con la deuda ya costó más que pagarla.</p></div>
+    </div>
+    <h3>Tres estrategias, y solo tres</h3>
+    <div class="trio">
+      <div class="concept"><b><span class="tag-est est-PAGAR">PAGAR</span></b><p>Se hace el trabajo pendiente y el interés deja de correr.</p></div>
+      <div class="concept"><b><span class="tag-est est-REFINANCIAR">REFINANCIAR</span></b><p>Se aísla la deuda detrás de un adaptador para que no se propague. El principal sigue ahí, pero deja de crecer hacia otros sistemas.</p></div>
+      <div class="concept"><b><span class="tag-est est-DECLARAR">DECLARAR</span></b><p>Se asume a conciencia: se documenta, se presupuesta el interés, se nombra un responsable y se fija cuándo se revisa.</p></div>
+    </div>
+    <div class="contraste">
+      <div class="mal"><span>Así no</span>«Falta conciliar las identidades de las sedes adquiridas.»</div>
+      <div class="bien"><span>Así sí</span>«Conciliación manual de identidades: 120 horas-persona al mes; pagarla hoy cuesta 1.800 horas-persona; vence en el mes 15; responsable: Dirección de Admisiones.»</div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="t-form">
+    <h2 id="t-form">1 · Registrar una partida de deuda</h2>
+    <p class="lead">Cada partida es una fila del F-18. Las cifras aceptan formato colombiano (1.500.000 · 2,5) o un rango (80-120): con un rango se calcula con el punto medio y el rango queda a la vista.</p>
+    <p id="modo" class="modo" aria-live="polite">Partida nueva</p>
+
+    <form id="form" novalidate>
+      <div class="grid">
+        <div class="campo full">
+          <label for="f-elemento">Elemento</label>
+          <input type="text" id="f-elemento" aria-describedby="e-elemento" autocomplete="off"/>
+          <p class="error" id="e-elemento" aria-live="polite"></p>
+        </div>
+        <fieldset class="campo full" aria-describedby="e-dominio">
+          <legend>Dominio de la brecha (fase del ADM de la que viene)</legend>
+          <div class="radios">
+            <label class="radio"><input type="radio" name="dominio" value="B"/><span><strong>B · Negocio</strong><small>Business Architecture.</small></span></label>
+            <label class="radio"><input type="radio" name="dominio" value="C"/><span><strong>C · Datos y aplicaciones</strong><small>Information Systems Architectures.</small></span></label>
+            <label class="radio"><input type="radio" name="dominio" value="D"/><span><strong>D · Tecnología</strong><small>Technology Architecture.</small></span></label>
+          </div>
+          <p class="error" id="e-dominio" aria-live="polite"></p>
+        </fieldset>
+        <div class="campo full">
+          <label for="f-principal">Principal: qué quedó a medias, en una frase</label>
+          <input type="text" id="f-principal" aria-describedby="e-principal" autocomplete="off"/>
+          <p class="error" id="e-principal" aria-live="polite"></p>
+        </div>
+
+        <fieldset class="campo full">
+          <legend>Unidad de la partida</legend>
+          <div class="radios">
+            <label class="radio"><input type="radio" name="unidad" value="h" checked/><span><strong>Horas-persona</strong><small>Tiempo del equipo que la deuda consume.</small></span></label>
+            <label class="radio"><input type="radio" name="unidad" value="COP"/><span><strong>Pesos colombianos (COP)</strong><small>Costo directo en moneda.</small></span></label>
+          </div>
+          <p class="hint">El costo de pagarla hoy y el interés mensual van en la misma unidad: si no, no hay cruce que calcular.</p>
+        </fieldset>
+
+        <div class="campo">
+          <label for="f-costo">Costo de pagarla hoy (<span class="u-larga">horas-persona</span>)</label>
+          <input type="text" id="f-costo" inputmode="decimal" aria-describedby="h-costo e-costo" autocomplete="off"/>
+          <p class="hint" id="h-costo">Es el principal expresado en cifra: lo que costaría el trabajo pendiente si se hiciera hoy.</p>
+          <p class="error" id="e-costo" aria-live="polite"></p>
+        </div>
+        <div class="campo">
+          <label for="f-interes">Interés mensual (<span class="u-larga">horas-persona</span> al mes)</label>
+          <input type="text" id="f-interes" inputmode="decimal" aria-describedby="h-interes e-interes" autocomplete="off"/>
+          <p class="hint" id="h-interes">No acepta cero ni texto sin cifra. Si no hay certeza, escriba un rango: 80-120.</p>
+          <p class="error" id="e-interes" aria-live="polite"></p>
+        </div>
+
+        <div class="campo full">
+          <label for="f-desc">Qué incluye el interés (y qué queda por fuera)</label>
+          <input type="text" id="f-desc" autocomplete="off"/>
+        </div>
+
+        <div class="campo">
+          <label for="f-crec">Crecimiento mensual del interés (%)</label>
+          <input type="text" id="f-crec" inputmode="decimal" aria-describedby="h-crec e-crec" autocomplete="off"/>
+          <p class="hint" id="h-crec">0 si el interés es estable. Úselo cuando el costo de convivir con la deuda aumenta cada mes.</p>
+          <p class="error" id="e-crec" aria-live="polite"></p>
+        </div>
+        <div class="campo">
+          <span class="lbl" id="l-venc" style="display:block;font-weight:700;color:var(--azul);font-size:15px;margin-bottom:4px">Vencimiento estimado (calculado)</span>
+          <output id="f-venc" class="venc-box" aria-labelledby="l-venc" aria-live="polite" style="display:block">—</output>
+          <p class="hint">Se calcula; no se escribe. Un vencimiento tecleado a mano puede contradecir las cifras que lo producen.</p>
+        </div>
+
+        <fieldset class="campo full" aria-describedby="e-estrategia">
+          <legend>Estrategia</legend>
+          <div class="radios">
+            <label class="radio"><input type="radio" name="estrategia" value="PAGAR"/><span><strong>PAGAR</strong><small>Hacer el trabajo pendiente.</small></span></label>
+            <label class="radio"><input type="radio" name="estrategia" value="REFINANCIAR"/><span><strong>REFINANCIAR</strong><small>Aislarla detrás de un adaptador para que no se propague.</small></span></label>
+            <label class="radio"><input type="radio" name="estrategia" value="DECLARAR"/><span><strong>DECLARAR</strong><small>Asumirla, documentarla y presupuestar el interés.</small></span></label>
+          </div>
+          <p class="error" id="e-estrategia" aria-live="polite"></p>
+        </fieldset>
+
+        <div class="campo">
+          <label for="f-resp">Responsable</label>
+          <input type="text" id="f-resp" aria-describedby="e-resp" autocomplete="off"/>
+          <p class="error" id="e-resp" aria-live="polite"></p>
+        </div>
+        <div class="campo">
+          <label for="f-just">Justificación y disparador de revisión <span id="just-oblig" style="font-weight:400">(obligatorio si se declara)</span></label>
+          <textarea id="f-just" aria-describedby="e-just"></textarea>
+          <p class="error" id="e-just" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="botones">
+        <button type="submit" class="btn-pri" id="b-registrar">Registrar partida</button>
+        <button type="button" class="btn-sec" id="b-nueva">Limpiar formulario</button>
+        <button type="button" class="btn-sec" id="b-restaurar">Restaurar los tres ejemplos</button>
+      </div>
+      <p class="bloqueo" id="bloqueo" role="alert"></p>
+      <p class="ok" id="ok" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <section class="card" aria-labelledby="t-graf">
+    <h2 id="t-graf">2 · Gráfica del cruce: dónde vence cada partida</h2>
+    <p class="lead">Línea discontinua: el principal (costo de pagarla hoy). Línea continua: el interés acumulado mes a mes. El círculo numerado marca el vencimiento, y su número es el orden de pago de la cartera.</p>
+    <div class="controles">
+      <fieldset>
+        <legend>Escala vertical</legend>
+        <div class="seg">
+          <label><input type="radio" name="escala" value="pct" checked/> % del principal</label>
+          <label><input type="radio" name="escala" value="cop"/> Pesos (COP)</label>
+        </div>
+      </fieldset>
+      <div class="tarifa">
+        <label class="tit" for="f-tarifa">Tarifa hora-persona (COP)</label>
+        <input type="text" id="f-tarifa" inputmode="decimal" aria-describedby="h-tarifa e-tarifa" autocomplete="off"/>
+      </div>
+      <p class="hint" id="h-tarifa" style="flex:1 1 260px">Valor por defecto: COP 85.000 por hora-persona, un costo empresa aproximado de un profesional de TI sénior en Colombia. Ajústelo a su organización: solo se usa para convertir horas a pesos.</p>
+    </div>
+    <p class="error" id="e-tarifa" aria-live="polite"></p>
+    <div id="grafica"></div>
+    <ul class="leyenda" id="leyenda"></ul>
+    <p class="nota" id="nota-escala"></p>
+  </section>
+
+  <section class="card" aria-labelledby="t-cartera">
+    <h2 id="t-cartera">3 · Cartera de deuda</h2>
+    <div class="regla">
+      <b>Regla: se paga primero la que vence primero.</b> El orden de esta tabla es el orden de pago.
+      <span>Si dos partidas vencen el mismo mes, va primero la de mayor interés mensual en pesos. Las declaradas también entran en la fila: declarar fija cuándo se revisa la deuda, no la borra de la cartera.</span>
+    </div>
+    <div class="tabla-wrap">
+      <table>
+        <caption class="small" style="text-align:left;caption-side:bottom;padding-top:8px" id="cap-cartera"></caption>
+        <thead>
+          <tr><th scope="col" style="width:78px">Orden</th><th scope="col" style="width:62px">Dominio</th><th scope="col">Elemento y principal</th><th scope="col" style="width:150px">Costo de pagarla hoy</th><th scope="col" style="width:165px">Interés mensual</th><th scope="col" style="width:112px">Vencimiento</th><th scope="col" style="width:175px">Estrategia y responsable</th></tr>
+        </thead>
+        <tbody id="cartera"></tbody>
+      </table>
+    </div>
+    <h3><label for="f18">Texto para pegar en el F-18</label></h3>
+    <textarea id="f18" class="f18" readonly></textarea>
+  </section>
+
+  <section class="card declarada" aria-labelledby="t-decl">
+    <h2 id="t-decl">La deuda del propio curso: declarada a conciencia</h2>
+    <p>The Open Group publicó ArchiMate 4 el 27 de abril de 2026, y la Actividad 2.2 se entrega en ArchiMate 3.2. No es un descuido: Archi 5.10, liberado el 3 de septiembre de 2026, sigue implementando 3.2, y el entregable exige diagramas construidos en Archi y ajustados al metamodelo de la herramienta. ArchiMate 4 se enseña como estado del estándar.</p>
+    <p style="margin-top:8px">Eso es deuda legítima. Existe, y el curso la declara cumpliendo las cuatro condiciones que separan una estrategia de una excusa:</p>
+    <ol>
+      <li><b>Está cuantificada.</b> Pagarla hoy costaría unas 40 horas-persona por grupo (rehacer las cuatro vistas con los conceptos de ArchiMate 4). El interés es bajo hoy, 1,5 horas-persona al mes, y crece un 7 % mensual a medida que herramientas, plantillas y empleadores migren. Con ese crecimiento vence en el mes 16; si el interés fuera estable, vencería en el 27. Las cifras son estimadas.</li>
+      <li><b>Está documentada.</b> La tabla de equivalencias 3.2 → 4 de los conceptos que el curso usa:
+        <table class="equiv">
+          <thead><tr><th scope="col">ArchiMate 3.2</th><th scope="col">ArchiMate 4</th></tr></thead>
+          <tbody>
+            <tr><td>Business Process · Application Process · Technology Process</td><td>Process</td></tr>
+            <tr><td>Constraint</td><td>Requirement</td></tr>
+            <tr><td>Gap</td><td>Assessment</td></tr>
+            <tr><td>Contract</td><td>Business Object</td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li><b>Tiene responsable.</b> El docente mantiene la tabla de equivalencias; cada grupo responde por sus propios modelos.</li>
+      <li><b>Tiene disparador de revisión.</b> Cuando Archi publique soporte para ArchiMate 4, la partida se recalcula y se decide si pagarla.</li>
+    </ol>
+    <p class="nota"><b>Dominio de la brecha: C, con salvedad.</b> En rigor no es una brecha de la arquitectura de una empresa sino de la práctica de modelado, que TOGAF ubica en la capacidad de arquitectura (Fase Preliminar). Entre B, C y D, C es el más defendible: lo que no ha migrado es una aplicación (Archi) y los datos que guarda (los modelos).</p>
+    <p class="cita">Una excusa dice «no se pudo». Una declaración dice cuánto cuesta, quién la vigila y cuándo se vuelve a mirar.</p>
+    <p style="margin-top:12px">Pregunta para ustedes: si su organización modela hoy en ArchiMate 3.2, ¿eso es deuda arquitectónica? ¿Cuál es su interés mensual?</p>
+  </section>
+
+</main>
+
+<script id="calculo">
+/* Funciones de cálculo puras: sin DOM, verificables con node. */
+var Deuda = (function () {
+  'use strict';
+  var MENSAJE_INTERES = 'Sin costo mensual no hay argumento para pagarla. Estime un rango: la deuda que no se cuantifica no se prioriza nunca.';
+
+  /* Número en formato colombiano: punto de miles, coma decimal.
+     "1.500.000" -> 1500000 · "2,5" -> 2.5 · "12.5" -> 12.5 (tolerado). */
+  function parseNumero(s) {
+    s = String(s).trim();
+    if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) return parseFloat(s.replace(/\./g, '').replace(',', '.'));
+    if (/^\d+(,\d+)?$/.test(s)) return parseFloat(s.replace(',', '.'));
+    if (/^\d+\.\d+$/.test(s)) return parseFloat(s);
+    return NaN;
+  }
+
+  /* Cifra o rango positivo. Devuelve {ok, valor, min, max, rango} o {ok:false, motivo}. */
+  function parseCifra(txt) {
+    var s = String(txt == null ? '' : txt).toLowerCase()
+      .replace(/horas?[\s-]*persona|cop|\$|horas?|\bh\b|\bal mes\b|\/\s*mes|\bmes\b/g, ' ')
+      .replace(/\s+/g, ' ').trim();
+    if (!s) return { ok: false, motivo: 'vacio' };
+    var partes = s.split(/\s*(?:-|–|—|\ba\b)\s*/);
+    var nums = partes.map(parseNumero);
+    if (partes.length > 2 || nums.some(isNaN)) return { ok: false, motivo: 'sin-cifra' };
+    if (nums.some(function (n) { return n <= 0; })) return { ok: false, motivo: 'cero' };
+    var a = Math.min.apply(null, nums), b = Math.max.apply(null, nums);
+    return { ok: true, valor: (a + b) / 2, min: a, max: b, rango: a !== b };
+  }
+
+  /* Porcentaje de crecimiento mensual: vacío = 0; entre 0 y 100. Devuelve fracción o NaN. */
+  function parsePorcentaje(txt) {
+    var s = String(txt == null ? '' : txt).replace('%', '').trim();
+    if (!s) return 0;
+    var n = parseNumero(s);
+    if (isNaN(n) || n < 0 || n > 100) return NaN;
+    return n / 100;
+  }
+
+  /* Interés acumulado al cierre del mes m, con interés inicial I y crecimiento mensual g. */
+  function acumulado(I, g, m) {
+    if (m <= 0) return 0;
+    return g ? I * (Math.pow(1 + g, m) - 1) / g : I * m;
+  }
+
+  /* Vencimiento: primer mes en que el acumulado alcanza o supera el principal P.
+     Con g = 0 es ceil(P / I). */
+  function vencimiento(P, I, g) {
+    if (!(P > 0 && I > 0) || !(g >= 0)) return null;
+    if (!g) return Math.max(1, Math.ceil(P / I - 1e-9));
+    for (var m = 1; m < 100000; m++) if (acumulado(I, g, m) >= P * (1 - 1e-12)) return m;
+    return null;
+  }
+
+  /* Punto exacto (en meses, continuo) donde la línea mensual cruza el principal, para dibujar. */
+  function cruceContinuo(P, I, g) {
+    var m = vencimiento(P, I, g);
+    if (m === null) return null;
+    var a0 = acumulado(I, g, m - 1), a1 = acumulado(I, g, m);
+    return (m - 1) + (P - a0) / (a1 - a0);
+  }
+
+  /* Normalización de unidades: todo a pesos con la tarifa hora-persona explícita. */
+  function aCOP(valor, unidad, tarifa) {
+    return unidad === 'h' ? valor * tarifa : valor;
+  }
+
+  /* Formato colombiano: punto de miles, coma decimal. */
+  function formato(n, dec) {
+    if (dec == null) dec = 1;
+    var neg = n < 0, f = Math.pow(10, dec);
+    var r = Math.round(Math.abs(n) * f);
+    var ent = Math.floor(r / f), frac = r % f;
+    var s = String(ent).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    if (frac > 0) {
+      var sf = String(frac);
+      while (sf.length < dec) sf = '0' + sf;
+      s += ',' + sf.replace(/0+$/, '');
+    }
+    return (neg && r > 0 ? '-' : '') + s;
+  }
+
+  var MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  function fechaVencimiento(meses, hoy) {
+    var t = (hoy.getFullYear() * 12 + hoy.getMonth()) + meses;
+    return MESES[t % 12] + ' de ' + Math.floor(t / 12);
+  }
+
+  /* Orden de pago: vencimiento más próximo primero; empate, mayor interés mensual en COP. */
+  function ordenar(items) {
+    return items.slice().sort(function (a, b) {
+      return (a.venc - b.venc) || (b.interesCOP - a.interesCOP);
+    });
+  }
+
+  return {
+    MENSAJE_INTERES: MENSAJE_INTERES, parseNumero: parseNumero, parseCifra: parseCifra,
+    parsePorcentaje: parsePorcentaje, acumulado: acumulado, vencimiento: vencimiento,
+    cruceContinuo: cruceContinuo, aCOP: aCOP, formato: formato,
+    fechaVencimiento: fechaVencimiento, ordenar: ordenar
+  };
+})();
+if (typeof module !== 'undefined') module.exports = Deuda;
+</script>
+<script id="interfaz">
+(function () {
+  'use strict';
+  var D = Deuda, MAX = 5, NS = 'http://www.w3.org/2000/svg';
+  var COLORES = ['#002060', '#C2410C', '#0F766E', '#7C3AED', '#A16207'];
+  var DOMINIOS = { B: 'Negocio', C: 'Datos y aplicaciones', D: 'Tecnología' };
+  var HOY = new Date();
+
+  var EJEMPLOS = [
+    { elemento: 'Red Salud Andina · 6 sedes adquiridas operando con un HIS distinto', dominio: 'C',
+      principal: 'La conciliación de identidades de paciente entre los dos HIS se hace manualmente.',
+      unidad: 'h', costo: '1.800', interes: '120', crec: '0',
+      desc: '120 horas-persona al mes en admisiones (cifra del caso). El riesgo clínico de duplicados no cabe en la cifra: se registra aparte y refuerza la decisión de pagar. Costo de pagarla hoy, estimado: índice maestro de pacientes y depuración inicial de duplicados.',
+      estrategia: 'PAGAR', resp: 'Dirección de Admisiones, con el arquitecto de integración', just: '' },
+    { elemento: 'Banco Colombia Digital · integración punto a punto construida «porque el cronograma no daba»', dominio: 'C',
+      principal: 'El adaptador entre el core T24 y los microservicios no tiene contrato versionado.',
+      unidad: 'COP', costo: '45.000.000', interes: '5.000.000-7.000.000', crec: '0',
+      desc: 'Estimado: unos dos cambios de esquema al mes, y cada uno obliga a coordinar dos despliegues y una ventana conjunta de pruebas. Costo de pagarla hoy, estimado: contrato OpenAPI versionado y pruebas de contrato en la tubería.',
+      estrategia: 'REFINANCIAR', resp: 'Líder de arquitectura de integración del banco',
+      just: 'Se aísla detrás de un adaptador con contrato versionado del lado de los consumidores, para que los cambios de esquema del core no se propaguen mientras se paga.' },
+    { elemento: 'El propio curso · modelar en ArchiMate 3.2 cuando el estándar publicado es ArchiMate 4', dominio: 'C',
+      notaDominio: 'C por aproximación: es una brecha de la práctica de modelado (capacidad de arquitectura, Fase Preliminar); lo que no ha migrado es una aplicación, Archi, y los modelos que guarda.',
+      principal: 'Los modelos de la Actividad 2.2 usan conceptos que ArchiMate 4 unificó: Business, Application y Technology Process; Constraint; Gap; Contract.',
+      unidad: 'h', costo: '40', interes: '1,5', crec: '7',
+      desc: 'Estimado por grupo: traducir conceptos de 3.2 a 4 al leer material nuevo. Bajo hoy; crece a medida que herramientas, plantillas y empleadores migren a ArchiMate 4.',
+      estrategia: 'DECLARAR', resp: 'Docente del curso (tabla de equivalencias) y cada grupo (sus modelos)',
+      just: 'Se asume porque Archi 5.10 (3 de septiembre de 2026) sigue implementando ArchiMate 3.2 y la Actividad 2.2 exige Archi. Queda documentada con la tabla de equivalencias 3.2 → 4 y el interés está presupuestado. Disparador de revisión: cuando Archi soporte ArchiMate 4, se recalcula y se decide si pagarla.' }
+  ];
+
+  var MSG = {
+    elemento: 'Falta el elemento: qué parte de la arquitectura carga la deuda.',
+    dominio: 'Indique de qué dominio viene la brecha: B, C o D.',
+    principal: 'Escriba el principal en una frase: qué quedó a medias.',
+    costo: 'Sin el costo de pagarla hoy no hay vencimiento: el cruce se calcula contra esa cifra, en la misma unidad que el interés.',
+    interes: D.MENSAJE_INTERES,
+    crec: 'El crecimiento mensual es un porcentaje entre 0 y 100. Déjelo en 0 si el interés es estable.',
+    estrategia: 'Elija una estrategia: PAGAR, REFINANCIAR o DECLARAR.',
+    resp: 'Toda deuda necesita un responsable: la que no es de nadie no la paga nadie.',
+    just: 'Declarar exige decir por qué se asume y cuándo se revisa. Sin eso es una excusa, no una estrategia.'
+  };
+  var ORDEN = ['elemento', 'dominio', 'principal', 'costo', 'interes', 'crec', 'estrategia', 'resp', 'just'];
+  var INPUT = { elemento: 'f-elemento', principal: 'f-principal', costo: 'f-costo', interes: 'f-interes', crec: 'f-crec', resp: 'f-resp', just: 'f-just' };
+
+  var estado = { partidas: [], editando: null, sec: 1, tarifa: 85000, tocados: {} };
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function radio(n) { var el = document.querySelector('input[name="' + n + '"]:checked'); return el ? el.value : ''; }
+  function setRadio(n, v) { document.querySelectorAll('input[name="' + n + '"]').forEach(function (el) { el.checked = el.value === v; }); }
+  function copia(o) { var r = {}; for (var k in o) r[k] = o[k]; return r; }
+
+  function fmtU(v, u) { return u === 'h' ? D.formato(v, 1) + ' horas-persona' : 'COP ' + D.formato(v, 0); }
+  function fmtCifra(c, u) {
+    var s = fmtU(c.valor, u);
+    if (c.rango) s += ' (rango ' + (u === 'h' ? D.formato(c.min, 1) + '–' + D.formato(c.max, 1) : D.formato(c.min, 0) + '–' + D.formato(c.max, 0)) + ')';
+    return s;
+  }
+
+  function calcular(p) {
+    var c = D.parseCifra(p.costo), i = D.parseCifra(p.interes), g = D.parsePorcentaje(p.crec);
+    if (!c.ok || !i.ok || isNaN(g)) return null;
+    return { p: p, c: c, i: i, g: g,
+      venc: D.vencimiento(c.valor, i.valor, g), vencEstable: D.vencimiento(c.valor, i.valor, 0),
+      cruce: D.cruceContinuo(c.valor, i.valor, g),
+      costoCOP: D.aCOP(c.valor, p.unidad, estado.tarifa), interesCOP: D.aCOP(i.valor, p.unidad, estado.tarifa) };
+  }
+
+  /* ── Formulario ── */
+  function leerForm() {
+    return { elemento: $('f-elemento').value.trim(), dominio: radio('dominio'), principal: $('f-principal').value.trim(),
+      unidad: radio('unidad') || 'h', costo: $('f-costo').value, interes: $('f-interes').value, desc: $('f-desc').value.trim(),
+      crec: $('f-crec').value, estrategia: radio('estrategia'), resp: $('f-resp').value.trim(), just: $('f-just').value.trim() };
+  }
+  function cargarForm(p) {
+    ['elemento', 'principal', 'costo', 'interes', 'crec', 'resp', 'just'].forEach(function (k) { $(INPUT[k]).value = p[k] || ''; });
+    $('f-desc').value = p.desc || '';
+    setRadio('dominio', p.dominio); setRadio('unidad', p.unidad); setRadio('estrategia', p.estrategia);
+  }
+  function validar(f) {
+    var e = {};
+    if (!f.elemento) e.elemento = MSG.elemento;
+    if (!f.dominio) e.dominio = MSG.dominio;
+    if (!f.principal) e.principal = MSG.principal;
+    if (!D.parseCifra(f.costo).ok) e.costo = MSG.costo;
+    if (!D.parseCifra(f.interes).ok) e.interes = MSG.interes;
+    if (isNaN(D.parsePorcentaje(f.crec))) e.crec = MSG.crec;
+    if (!f.estrategia) e.estrategia = MSG.estrategia;
+    if (!f.resp) e.resp = MSG.resp;
+    if (f.estrategia === 'DECLARAR' && !f.just) e.just = MSG.just;
+    return e;
+  }
+  function mostrarErrores(e) {
+    ORDEN.forEach(function (k) {
+      var visible = estado.tocados[k] && e[k];
+      $('e-' + k).textContent = visible ? e[k] : '';
+      if (INPUT[k]) $(INPUT[k]).setAttribute('aria-invalid', visible ? 'true' : 'false');
+    });
+  }
+  function previewVenc(f) {
+    var out = $('f-venc'), c = D.parseCifra(f.costo), i = D.parseCifra(f.interes), g = D.parsePorcentaje(f.crec), u = f.unidad;
+    if (!c.ok || !i.ok || isNaN(g)) {
+      out.innerHTML = '—<span class="sub">Aparece al escribir el costo de pagarla hoy y un interés mensual válido.</span>';
+      return;
+    }
+    var v = D.vencimiento(c.valor, i.valor, g), sub;
+    if (g) {
+      sub = 'Con un crecimiento del ' + D.formato(g * 100, 1) + ' % mensual. Si el interés fuera estable, vencería en el mes ' + D.formato(D.vencimiento(c.valor, i.valor, 0), 0) + '.';
+    } else {
+      sub = fmtU(c.valor, u) + ' ÷ ' + fmtU(i.valor, u) + ' al mes = ' + D.formato(c.valor / i.valor, 2) + ' meses: el acumulado alcanza el principal durante el mes ' + D.formato(v, 0) + '.';
+    }
+    if (i.rango) sub += ' Interés tomado como punto medio del rango.';
+    if (v > 120) sub += ' Un vencimiento a más de diez años pide revisar las cifras: el costo de pagarla puede estar sobrestimado o el interés subestimado.';
+    out.innerHTML = 'Mes ' + D.formato(v, 0) + ' · ' + esc(D.fechaVencimiento(v, HOY)) + '<span class="sub">' + esc(sub) + '</span>';
+  }
+  function actualizarEtiquetas(f) {
+    var u = f.unidad === 'h' ? 'horas-persona' : 'COP';
+    document.querySelectorAll('.u-larga').forEach(function (s) { s.textContent = u; });
+    $('just-oblig').style.fontWeight = f.estrategia === 'DECLARAR' ? '700' : '400';
+    $('just-oblig').style.color = f.estrategia === 'DECLARAR' ? 'var(--morado)' : '';
+  }
+  function modo() {
+    var p = buscar(estado.editando), m = $('modo');
+    if (p) {
+      m.textContent = 'Editando la partida «' + p.elemento + '»: cada cifra válida se aplica al escribir';
+      m.className = 'modo editando';
+      $('b-registrar').textContent = 'Terminar edición';
+      $('b-nueva').textContent = 'Nueva partida';
+    } else {
+      m.textContent = 'Partida nueva';
+      m.className = 'modo';
+      $('b-registrar').textContent = 'Registrar partida';
+      $('b-nueva').textContent = 'Limpiar formulario';
+    }
+  }
+  function buscar(id) { for (var k = 0; k < estado.partidas.length; k++) if (estado.partidas[k].id === id) return estado.partidas[k]; return null; }
+
+  function alEditarForm(ev) {
+    var t = ev && ev.target;
+    if (t) {
+      var campo = t.name === 'dominio' || t.name === 'estrategia' ? t.name : null;
+      for (var k in INPUT) if (INPUT[k] === t.id) campo = k;
+      if (campo) estado.tocados[campo] = true;
+      if (t.name === 'estrategia') estado.tocados.just = true;
+    }
+    var f = leerForm(), e = validar(f);
+    if (estado.editando) {
+      for (var j in estado.tocados) estado.tocados[j] = true;
+      ORDEN.forEach(function (k) { estado.tocados[k] = true; });
+    }
+    mostrarErrores(e);
+    previewVenc(f);
+    actualizarEtiquetas(f);
+    $('ok').textContent = '';
+    if (!Object.keys(e).length) $('bloqueo').textContent = '';
+    var p = buscar(estado.editando);
+    if (p) {
+      ['elemento', 'dominio', 'principal', 'resp'].forEach(function (k) { if (!e[k]) p[k] = f[k]; });
+      p.desc = f.desc;
+      if (!e.costo && !e.interes) { p.unidad = f.unidad; p.costo = f.costo; p.interes = f.interes; }
+      else if (!e.costo && f.unidad === p.unidad) p.costo = f.costo;
+      else if (!e.interes && f.unidad === p.unidad) p.interes = f.interes;
+      if (!e.crec) p.crec = f.crec;
+      if (!e.estrategia && !e.just) { p.estrategia = f.estrategia; p.just = f.just; }
+      modo();
+      render();
+    }
+  }
+
+  function limpiar() {
+    $('form').reset();
+    setRadio('unidad', 'h');
+    estado.tocados = {};
+    alEditarForm(null);
+  }
+  function salirEdicion() { estado.editando = null; modo(); render(); }
+
+  function enfocarPrimerError(e) {
+    for (var k = 0; k < ORDEN.length; k++) {
+      var c = ORDEN[k];
+      if (!e[c]) continue;
+      var el = INPUT[c] ? $(INPUT[c]) : document.querySelector('input[name="' + c + '"]');
+      el.focus();
+      return;
+    }
+  }
+
+  $('form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var f = leerForm(), e = validar(f), n = Object.keys(e).length;
+    ORDEN.forEach(function (k) { estado.tocados[k] = true; });
+    mostrarErrores(e);
+    $('ok').textContent = '';
+    if (n) {
+      $('bloqueo').textContent = e.interes ? MSG.interes
+        : 'No se puede ' + (estado.editando ? 'terminar la edición' : 'registrar la partida') + ': ' + (n === 1 ? 'falta un dato' : 'faltan ' + n + ' datos') + ' (vea los mensajes en rojo).';
+      enfocarPrimerError(e);
+      return;
+    }
+    if (estado.editando) {
+      var editada = buscar(estado.editando);
+      salirEdicion(); limpiar();
+      $('ok').textContent = 'Edición terminada: «' + editada.elemento + '».';
+      return;
+    }
+    if (estado.partidas.length >= MAX) {
+      $('bloqueo').textContent = 'La cartera admite cinco partidas como máximo, una línea por partida en la gráfica. Pague o retire una antes de registrar otra.';
+      return;
+    }
+    $('bloqueo').textContent = '';
+    f.id = 'p' + (estado.sec++);
+    estado.partidas.push(f);
+    var r = calcular(f);
+    limpiar();
+    render();
+    $('ok').textContent = 'Partida registrada: «' + f.elemento + '». Vence en el mes ' + D.formato(r.venc, 0) + '.';
+  });
+  $('form').addEventListener('input', alEditarForm);
+  $('form').addEventListener('change', alEditarForm);
+  $('b-nueva').addEventListener('click', function () {
+    estado.editando = null; limpiar(); modo(); render();
+    $('bloqueo').textContent = ''; $('f-elemento').focus();
+  });
+  $('b-restaurar').addEventListener('click', function () { cargarEjemplos(); $('ok').textContent = 'Se restauraron los tres ejemplos precargados.'; });
+
+  function cargarEjemplos() {
+    estado.partidas = EJEMPLOS.map(function (x) { var p = copia(x); p.id = 'p' + (estado.sec++); return p; });
+    estado.editando = null; limpiar(); modo(); render();
+    $('bloqueo').textContent = '';
+  }
+
+  /* ── Tarifa y escala ── */
+  $('f-tarifa').addEventListener('input', function () {
+    var t = D.parseCifra(this.value);
+    if (!t.ok || t.rango) {
+      $('e-tarifa').textContent = 'Escriba una tarifa única mayor que cero, por ejemplo 85.000. Mientras tanto se conserva COP ' + D.formato(estado.tarifa, 0) + '.';
+      this.setAttribute('aria-invalid', 'true');
+      return;
+    }
+    $('e-tarifa').textContent = ''; this.setAttribute('aria-invalid', 'false');
+    estado.tarifa = t.valor; render();
+  });
+  document.querySelectorAll('input[name="escala"]').forEach(function (r) { r.addEventListener('change', render); });
+
+  /* ── Render general ── */
+  function render() {
+    var items = D.ordenar(estado.partidas.map(calcular).filter(Boolean));
+    items.forEach(function (it, k) { it.n = k + 1; it.color = COLORES[k % COLORES.length]; });
+    renderCartera(items);
+    renderGrafica(items);
+    renderF18(items);
+  }
+
+  function renderCartera(items) {
+    var tb = $('cartera');
+    if (!items.length) { tb.innerHTML = '<tr><td colspan="7">No hay partidas registradas.</td></tr>'; }
+    else tb.innerHTML = items.map(function (it) {
+      var p = it.p, u = p.unidad, h = u === 'h';
+      return '<tr' + (p.id === estado.editando ? ' class="editando"' : '') + '>' +
+        '<td><span class="orden" style="background:' + it.color + '">' + it.n + '</span>' +
+          '<div class="acciones"><button type="button" class="btn-sec btn-min" data-editar="' + p.id + '" aria-label="Editar la partida ' + esc(p.elemento) + '">Editar</button>' +
+          '<button type="button" class="btn-sec btn-min" data-retirar="' + p.id + '" aria-label="Retirar la partida ' + esc(p.elemento) + '">Retirar</button></div></td>' +
+        '<td><span class="dom" title="' + esc(DOMINIOS[p.dominio]) + '">' + esc(p.dominio) + '</span><span class="sub">' + esc(DOMINIOS[p.dominio]) + '</span></td>' +
+        '<td class="elem"><b>' + esc(p.elemento) + '</b><span class="sub"><b>Principal:</b> ' + esc(p.principal) + '</span>' +
+          (p.desc ? '<span class="sub"><b>Interés:</b> ' + esc(p.desc) + '</span>' : '') +
+          (p.notaDominio && p.dominio === 'C' ? '<span class="sub"><b>Dominio:</b> ' + esc(p.notaDominio) + '</span>' : '') + '</td>' +
+        '<td class="num"><span class="cifra">' + esc(fmtU(it.c.valor, u)) + '</span>' + (it.c.rango ? '<span class="sub">rango ' + esc(fmtCifra(it.c, u).split('(rango ')[1].replace(')', '')) + '</span>' : '') +
+          (h ? '<span class="sub">≈ COP ' + D.formato(it.costoCOP, 0) + '</span>' : '') + '</td>' +
+        '<td class="num"><span class="cifra">' + esc(fmtU(it.i.valor, u)) + '</span> al mes' +
+          (it.i.rango ? '<span class="sub">punto medio del rango ' + esc(fmtCifra(it.i, u).split('(rango ')[1].replace(')', '')) + '</span>' : '') +
+          (h ? '<span class="sub">≈ COP ' + D.formato(it.interesCOP, 0) + ' al mes</span>' : '') +
+          (it.g ? '<span class="sub">crece ' + D.formato(it.g * 100, 1) + ' % cada mes</span>' : '') + '</td>' +
+        '<td class="num"><b>Mes ' + D.formato(it.venc, 0) + '</b><span class="sub">' + esc(D.fechaVencimiento(it.venc, HOY)) + '</span>' +
+          (it.g ? '<span class="sub">estable: mes ' + D.formato(it.vencEstable, 0) + '</span>' : '') + '</td>' +
+        '<td><span class="tag-est est-' + esc(p.estrategia) + '">' + esc(p.estrategia) + '</span>' +
+          '<span class="sub" style="margin-top:6px"><b>Responsable:</b> ' + esc(p.resp) + '</span></td>' +
+        '</tr>';
+    }).join('');
+    $('cap-cartera').textContent = 'Vencimiento contado en meses desde hoy (' + D.fechaVencimiento(0, HOY) + '). Equivalencias en pesos con la tarifa de COP ' +
+      D.formato(estado.tarifa, 0) + ' por hora-persona. ' + items.length + ' de ' + MAX + ' partidas posibles.';
+  }
+  $('cartera').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button'); if (!b) return;
+    if (b.dataset.editar) {
+      var p = buscar(b.dataset.editar);
+      estado.editando = p.id; estado.tocados = {};
+      cargarForm(p); ORDEN.forEach(function (k) { estado.tocados[k] = true; });
+      alEditarForm(null); modo(); render();
+      $('bloqueo').textContent = ''; $('ok').textContent = '';
+      $('f-elemento').focus();
+      $('form').scrollIntoView({ block: 'start' });
+    } else if (b.dataset.retirar) {
+      var id = b.dataset.retirar, q = buscar(id);
+      estado.partidas = estado.partidas.filter(function (x) { return x.id !== id; });
+      if (estado.editando === id) { estado.editando = null; limpiar(); modo(); }
+      render();
+      $('ok').textContent = 'Partida retirada: «' + q.elemento + '».';
+      $('b-registrar').focus();
+    }
+  });
+
+  function renderF18(items) {
+    $('f18').value = items.map(function (it) {
+      var p = it.p, u = p.unidad;
+      return '[' + it.n + '] Elemento: ' + p.elemento +
+        '\n    Dominio de la brecha: ' + p.dominio + ' (' + DOMINIOS[p.dominio] + ')' +
+        '\n    Principal: ' + p.principal + ' Costo de pagarla hoy: ' + fmtCifra(it.c, u) + '.' +
+        '\n    Interés mensual: ' + fmtCifra(it.i, u) + (it.g ? ', creciente ' + D.formato(it.g * 100, 1) + ' % mensual' : '') + (p.desc ? '. ' + p.desc : '') +
+        '\n    Vencimiento estimado: mes ' + D.formato(it.venc, 0) + ' (' + D.fechaVencimiento(it.venc, HOY) + ')' +
+        '\n    Estrategia: ' + p.estrategia + (p.just ? '. ' + p.just : '') +
+        '\n    Responsable: ' + p.resp;
+    }).join('\n\n');
+  }
+
+  /* ── Gráfica SVG calculada a mano ── */
+  function el(tag, attrs, texto) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (texto != null) e.textContent = texto;
+    return e;
+  }
+  function pasoBonito(bruto) {
+    var p = Math.pow(10, Math.floor(Math.log10(bruto))), r = bruto / p;
+    return (r <= 1 ? 1 : r <= 2 ? 2 : r <= 2.5 ? 2.5 : r <= 5 ? 5 : 10) * p;
+  }
+
+  function renderGrafica(items) {
+    var cont = $('grafica'), ley = $('leyenda'), nota = $('nota-escala');
+    if (items.length < 2) {
+      cont.innerHTML = '<div class="vacio">La gráfica aparece al registrar dos o más partidas: el cruce solo sirve para priorizar cuando hay algo con qué compararlo.</div>';
+      ley.innerHTML = ''; nota.textContent = '';
+      return;
+    }
+    var pct = radio('escala') !== 'cop';
+    var W = 1000, H = 470, ml = pct ? 70 : 125, mr = 24, mt = 44, mb = 58, pw = W - ml - mr, ph = H - mt - mb;
+
+    var maxV = Math.max.apply(null, items.map(function (it) { return it.venc; }));
+    var bruto = Math.max(6, Math.ceil(maxV * 1.25)), pasoX = [1, 2, 3, 6, 12, 24, 36, 60, 120, 240, 600, 1200, 2400, 6000, 12000, 24000].filter(function (s) { return bruto / s <= 12; })[0] || 60000;
+    var xMax = Math.ceil(bruto / pasoX) * pasoX;
+    var yMax, pasoY;
+    if (pct) { yMax = 1.5; pasoY = 0.25; }
+    else {
+      var topCOP = Math.max.apply(null, items.map(function (it) { return it.costoCOP; })) * 1.3;
+      pasoY = pasoBonito(topCOP / 5); yMax = Math.ceil(topCOP / pasoY) * pasoY;
+    }
+    function X(m) { return ml + m / xMax * pw; }
+    function Y(v) { return mt + ph - v / yMax * ph; }
+    function factor(it) { return pct ? 1 / it.c.valor : (it.p.unidad === 'h' ? estado.tarifa : 1); }
+
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-labelledby': 'g-tit g-desc', 'font-family': "'Segoe UI', Arial, sans-serif" });
+    svg.appendChild(el('title', { id: 'g-tit' }, 'Interés acumulado frente al principal de cada partida'));
+    svg.appendChild(el('desc', { id: 'g-desc' }, items.map(function (it) {
+      return 'Partida ' + it.n + ', ' + it.p.elemento + ': vence en el mes ' + D.formato(it.venc, 0) + '.';
+    }).join(' ')));
+    var defs = el('defs', {}), clip = el('clipPath', { id: 'g-clip' });
+    clip.appendChild(el('rect', { x: ml, y: mt - 2, width: pw + 2, height: ph + 2 }));
+    defs.appendChild(clip); svg.appendChild(defs);
+
+    // Rejilla y ejes
+    for (var v = 0; v <= yMax + 1e-9; v += pasoY) {
+      svg.appendChild(el('line', { x1: ml, x2: ml + pw, y1: Y(v), y2: Y(v), stroke: v === 0 ? '#4B5563' : '#E3E9F3', 'stroke-width': v === 0 ? 1.5 : 1 }));
+      svg.appendChild(el('text', { x: ml - 8, y: Y(v) + 5, 'text-anchor': 'end', 'font-size': 14, fill: '#4B5563' },
+        pct ? D.formato(v * 100, 0) + ' %' : D.formato(v, 0)));
+    }
+    for (var m = 0; m <= xMax; m += pasoX) {
+      svg.appendChild(el('line', { x1: X(m), x2: X(m), y1: mt, y2: mt + ph, stroke: m === 0 ? '#4B5563' : '#F0F3F8', 'stroke-width': m === 0 ? 1.5 : 1 }));
+      svg.appendChild(el('text', { x: X(m), y: mt + ph + 22, 'text-anchor': 'middle', 'font-size': 14, fill: '#4B5563' }, D.formato(m, 0)));
+    }
+    svg.appendChild(el('text', { x: ml + pw / 2, y: H - 8, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, fill: '#002060' }, 'Meses desde hoy'));
+    svg.appendChild(el('text', { x: 8, y: 18, 'font-size': 14, 'font-weight': 700, fill: '#002060' },
+      pct ? 'Interés acumulado como % del principal · línea discontinua negra en 100 %: el principal de cada partida'
+          : 'COP (horas-persona convertidas con la tarifa) · línea discontinua de cada color: su principal'));
+
+    var capa = el('g', { 'clip-path': 'url(#g-clip)' });
+    svg.appendChild(capa);
+    if (pct) {
+      capa.appendChild(el('line', { x1: ml, x2: ml + pw, y1: Y(1), y2: Y(1), stroke: '#1a1a2e', 'stroke-width': 2, 'stroke-dasharray': '8 6' }));
+    }
+    var cajas = [];
+    items.forEach(function (it) {
+      var f = factor(it), puntos = [];
+      if (!pct) capa.appendChild(el('line', { x1: ml, x2: ml + pw, y1: Y(it.c.valor * f), y2: Y(it.c.valor * f), stroke: it.color, 'stroke-width': 2, 'stroke-dasharray': '8 6' }));
+      for (var mm = 0, pasoM = Math.max(1, Math.ceil(xMax / 600)); mm <= xMax; mm += pasoM) puntos.push(X(mm).toFixed(1) + ',' + Y(D.acumulado(it.i.valor, it.g, mm) * f).toFixed(1));
+      capa.appendChild(el('polyline', { points: puntos.join(' '), fill: 'none', stroke: it.color, 'stroke-width': 3, 'stroke-linejoin': 'round' }));
+    });
+
+    // Marcas de vencimiento con etiquetas que no se solapan
+    function choca(b) {
+      return cajas.some(function (o) { return b.x < o.x + o.w && b.x + b.w > o.x && b.y < o.y + o.h && b.y + b.h > o.y; });
+    }
+    var marcas = items.map(function (it) { return { it: it, cx: X(it.cruce), cy: Y(it.c.valor * factor(it)) }; });
+    marcas.forEach(function (mk) { cajas.push({ x: mk.cx - 12, y: mk.cy - 12, w: 24, h: 24 }); });
+    marcas.forEach(function (mk) {
+      var it = mk.it;
+      svg.appendChild(el('line', { x1: mk.cx, x2: mk.cx, y1: mk.cy, y2: mt + ph, stroke: it.color, 'stroke-width': 1.5, 'stroke-dasharray': '2 4', opacity: 0.8 }));
+    });
+    var capaConectores = el('g', {}), capaEtiquetas = el('g', {});
+    svg.appendChild(capaConectores); svg.appendChild(capaEtiquetas);
+    marcas.forEach(function (mk) {
+      var it = mk.it, texto = it.n + ' · vence mes ' + D.formato(it.venc, 0), w = texto.length * 7.6 + 10, h = 20;
+      var b = { x: Math.min(Math.max(mk.cx - w / 2, ml + 2), ml + pw - w - 2), y: mk.cy - 16 - h, w: w, h: h }, dir = -1, intentos = 0;
+      if (b.y < mt) { b.y = mk.cy + 16; dir = 1; }
+      while (choca(b) && intentos++ < 30) {
+        b.y += dir * (h + 2);
+        if (b.y < mt || b.y + h > mt + ph) { dir = -dir; b.y = mk.cy + (dir > 0 ? 16 : -16 - h); }
+      }
+      cajas.push(b);
+      var lx = b.x + w / 2, ly = b.y + h / 2;
+      if (Math.abs(ly - mk.cy) > 28) capaConectores.appendChild(el('line', { x1: mk.cx, y1: mk.cy, x2: lx, y2: ly + (ly < mk.cy ? h / 2 : -h / 2), stroke: it.color, 'stroke-width': 1 }));
+      capaEtiquetas.appendChild(el('rect', { x: b.x, y: b.y, width: w, height: h, rx: 4, fill: '#fff', stroke: it.color, 'stroke-width': 1.5 }));
+      capaEtiquetas.appendChild(el('text', { x: lx, y: ly + 5, 'text-anchor': 'middle', 'font-size': 13.5, 'font-weight': 700, fill: it.color }, texto));
+    });
+    marcas.forEach(function (mk) {
+      svg.appendChild(el('circle', { cx: mk.cx, cy: mk.cy, r: 11, fill: mk.it.color, stroke: '#fff', 'stroke-width': 2.5 }));
+      svg.appendChild(el('text', { x: mk.cx, y: mk.cy + 4.5, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 800, fill: '#fff' }, String(mk.it.n)));
+    });
+
+    var grupos = [];
+    marcas.forEach(function (mk) {
+      var g = grupos.filter(function (gr) { return Math.abs(gr[0].cx - mk.cx) < 4 && Math.abs(gr[0].cy - mk.cy) < 4; })[0];
+      if (g) g.push(mk); else grupos.push([mk]);
+    });
+    var coinciden = grupos.filter(function (gr) { return gr.length > 1; }).map(function (gr) {
+      var ns = gr.map(function (mk) { return mk.it.n; });
+      return 'las marcas de las partidas ' + ns.slice(0, -1).join(', ') + ' y ' + ns[ns.length - 1] + ' quedan superpuestas en esta escala; sus vencimientos exactos están en la leyenda y en la cartera';
+    });
+
+    var wrap = document.createElement('div'); wrap.className = 'svg-wrap'; wrap.appendChild(svg);
+    cont.innerHTML = ''; cont.appendChild(wrap);
+
+    ley.innerHTML = items.map(function (it) {
+      return '<li><svg width="40" height="16" aria-hidden="true"><line x1="0" y1="8" x2="40" y2="8" stroke="' + it.color + '" stroke-width="3"/>' +
+        '<circle cx="20" cy="8" r="7" fill="' + it.color + '"/></svg><span><b>' + it.n + '</b> · <span class="dom" title="' + esc(DOMINIOS[it.p.dominio]) + '">' + esc(it.p.dominio) + '</span> ' +
+        esc(it.p.elemento) + ' — vence en el mes ' + D.formato(it.venc, 0) + ' (' + esc(D.fechaVencimiento(it.venc, HOY)) + ')</span></li>';
+    }).join('');
+
+    if (pct) {
+      nota.textContent = 'Cada curva se divide por el principal de su propia partida, así que horas y pesos se comparan sin conversión: todas cruzan la línea del 100 % en su mes de vencimiento. Cambie la escala a pesos para ver el tamaño real de cada deuda.';
+    } else {
+      var maxC = Math.max.apply(null, items.map(function (it) { return it.costoCOP; }));
+      var chicas = items.filter(function (it) { return it.costoCOP < maxC * 0.06; });
+      nota.textContent = 'Las partidas en horas-persona se convierten con la tarifa de COP ' + D.formato(estado.tarifa, 0) +
+        ' por hora-persona. La tarifa cambia la altura de las líneas, no el vencimiento: el cruce se calcula dentro de cada partida, en su propia unidad.' +
+        (chicas.length ? ' En esta escala casi no se ve: ' + chicas.map(function (it) { return '«' + it.p.elemento + '»'; }).join(', ') +
+          '. Es pequeña frente a las demás, pero su orden de pago lo fija el vencimiento, no el tamaño.' : '');
+    }
+    if (coinciden.length) nota.textContent += ' Atención: ' + coinciden.join('; ') + '.';
+  }
+
+  $('f-tarifa').value = D.formato(estado.tarifa, 0);
+  cargarEjemplos();
+})();
+</script>
+</body>
+</html>

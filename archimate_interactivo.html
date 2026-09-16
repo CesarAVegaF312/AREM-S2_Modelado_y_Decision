@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ArchiMate 3.2 Interactivo — Arquitectura Empresarial</title>
+<style>
+:root{
+  --azul:#002060;--medio:#00387D;--claro:#EEF3FA;--pale:#D9E1EF;--slate:#93AAC9;
+  --motiv:#4A148C;--motiv-bg:#EDE7F6;
+  --biz:#0D47A1;--biz-bg:#E3F0FF;
+  --app:#00695C;--app-bg:#E0F2F1;
+  --tech:#4E342E;--tech-bg:#FBE9E7;
+  --elem-biz:#1565C0;--elem-app:#00796B;--elem-tech:#5D4037;--elem-motiv:#6A1B9A;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;}
+
+.header{background:var(--azul);color:white;padding:13px 28px;}
+.header h1{font-size:15px;font-weight:700;}
+.header p{font-size:11px;color:var(--slate);margin-top:2px;}
+
+/* ── LEGEND ── */
+.legend{background:white;border-bottom:2px solid var(--pale);padding:9px 28px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;}
+.leg{display:flex;align-items:center;gap:6px;font-size:11px;color:#444;}
+.leg-bar{width:20px;height:12px;border-radius:2px;}
+.leg-rel{font-size:10px;color:#666;display:flex;align-items:center;gap:4px;margin-left:8px;padding-left:8px;border-left:1px solid var(--pale);}
+.hint{font-size:11px;color:var(--slate);margin-left:auto;font-style:italic;}
+
+/* ── MAIN LAYOUT ── */
+.main{display:grid;grid-template-columns:1fr 380px;gap:20px;padding:20px 24px;align-items:start;}
+
+/* ── DIAGRAM ── */
+.diagram{background:white;border-radius:14px;box-shadow:0 2px 16px rgba(0,32,96,.07);overflow:hidden;}
+
+.layer{padding:14px 16px 16px;}
+.layer-header{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.layer-header span{font-size:18px;}
+.layer-header small{font-size:9px;font-weight:400;opacity:.75;}
+
+.layer-motiv{background:var(--motiv-bg);border-bottom:2px solid var(--motiv);}
+.layer-motiv .layer-header{color:var(--motiv);}
+.layer-biz{background:var(--biz-bg);border-bottom:2px solid var(--biz);}
+.layer-biz .layer-header{color:var(--biz);}
+.layer-app{background:var(--app-bg);border-bottom:2px solid var(--app);}
+.layer-app .layer-header{color:var(--app);}
+.layer-tech{background:var(--tech-bg);}
+.layer-tech .layer-header{color:var(--tech);}
+
+.elem-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+
+/* Element boxes */
+.elem{
+  border-radius:8px;padding:8px 11px;cursor:pointer;
+  transition:transform .12s,box-shadow .12s;
+  min-width:120px;max-width:160px;flex:1;
+  border:2px solid transparent;position:relative;
+}
+.elem:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.15);}
+.elem.selected{border-color:#FF6F00;box-shadow:0 0 0 3px rgba(255,111,0,.3);}
+
+.elem .e-type{font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;opacity:.75;margin-bottom:3px;}
+.elem .e-icon{font-size:14px;margin-bottom:3px;}
+.elem .e-name{font-size:11px;font-weight:700;line-height:1.3;}
+
+.elem-motiv{background:#D1C4E9;color:#3a005a;}
+.elem-actor{background:#BBDEFB;color:#00256a;}
+.elem-role{background:#90CAF9;color:#00256a;}
+.elem-process{background:#1565C0;color:white;}
+.elem-service-biz{background:#0D47A1;color:white;}
+.elem-object{background:#BBDEFB;color:#00256a;border:2px dashed #1565C0;}
+.elem-event{background:#5C6BC0;color:white;}
+.elem-comp{background:#00796B;color:white;}
+.elem-iface{background:#26A69A;color:white;}
+.elem-service-app{background:#004D40;color:white;}
+.elem-data{background:#B2DFDB;color:#00251a;border:2px dashed #00796B;}
+.elem-node{background:#5D4037;color:white;}
+.elem-sw{background:#795548;color:white;}
+.elem-artifact{background:#BCAAA4;color:#2a1200;}
+.elem-network{background:#8D6E63;color:white;}
+.elem-tech-service{background:#4E342E;color:white;}
+
+/* Relationships SVG overlay */
+.rel-svg{display:block;width:100%;height:40px;overflow:visible;}
+
+/* ── DETAIL PANEL ── */
+.detail{background:white;border-radius:14px;box-shadow:0 2px 16px rgba(0,32,96,.07);overflow:hidden;position:sticky;top:20px;}
+.detail-empty{padding:36px 24px;text-align:center;color:var(--slate);}
+.detail-empty .de-icon{font-size:40px;margin-bottom:10px;}
+.detail-empty p{font-size:12px;line-height:1.8;}
+
+.detail-content{display:none;}
+.detail-content.visible{display:block;}
+
+.dh{padding:16px 20px 12px;border-bottom:2px solid var(--pale);}
+.dh .dh-type{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;}
+.dh .dh-name{font-size:16px;font-weight:800;color:var(--azul);}
+.dh .dh-layer{font-size:10px;color:#666;margin-top:4px;}
+
+.dsec{padding:13px 20px;border-bottom:1px solid var(--pale);}
+.dsec h4{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--slate);font-weight:700;margin-bottom:7px;}
+.dsec p,.dsec ul{font-size:11px;color:#333;line-height:1.7;}
+.dsec ul{padding-left:14px;}
+
+.tag{display:inline-block;font-size:9px;font-weight:700;border-radius:10px;padding:2px 8px;margin:2px 2px 2px 0;}
+
+.rel-item{display:flex;gap:6px;align-items:flex-start;margin-bottom:6px;font-size:11px;color:#333;}
+.rel-item .rel-type{font-size:8.5px;font-weight:800;border-radius:8px;padding:1px 6px;white-space:nowrap;margin-top:1px;}
+.rel-serve{background:#E8F5E9;color:#1B5E20;}
+.rel-realize{background:#E3F2FD;color:#0D47A1;}
+.rel-assign{background:#FFF3E0;color:#E65100;}
+.rel-trigger{background:#FCE4EC;color:#880E4F;}
+.rel-compo{background:#EDE7F6;color:#4A148C;}
+.rel-access{background:#FFF8E1;color:#F57F17;}
+
+@media(max-width:900px){
+  .main{grid-template-columns:1fr;}
+  .detail{position:relative;top:0;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>ArchiMate 3.2 — Lenguaje de Modelado de Arquitectura Empresarial (Interactivo)</h1>
+  <p>Maestría en Arquitectura Empresarial · Universidad de La Sabana · Haz clic en cualquier elemento para ver su definición, relaciones y ejemplo práctico</p>
+</div>
+
+<div class="legend">
+  <div class="leg"><div class="leg-bar" style="background:var(--motiv-bg);border:2px solid var(--motiv)"></div>Motivación</div>
+  <div class="leg"><div class="leg-bar" style="background:var(--biz-bg);border:2px solid var(--biz)"></div>Negocio</div>
+  <div class="leg"><div class="leg-bar" style="background:var(--app-bg);border:2px solid var(--app)"></div>Aplicación</div>
+  <div class="leg"><div class="leg-bar" style="background:var(--tech-bg);border:2px solid var(--tech)"></div>Tecnología</div>
+  <div class="leg-rel">
+    <span>────▷</span> Serving (usa)
+    <span style="margin-left:8px">- - -▶</span> Realization
+    <span style="margin-left:8px">────●</span> Assignment
+    <span style="margin-left:8px">──▶</span> Triggering
+  </div>
+  <span class="hint">👆 Clic en cualquier elemento</span>
+</div>
+
+<div class="main">
+
+<!-- ═══ DIAGRAM ═══ -->
+<div class="diagram">
+
+  <!-- MOTIVACIÓN -->
+  <div class="layer layer-motiv">
+    <div class="layer-header"><span>🎯</span> Capa de Motivación <small>— ¿Por qué existe la arquitectura?</small></div>
+    <div class="elem-row">
+      <div class="elem elem-motiv" onclick="show('goal')" id="el-goal">
+        <div class="e-type">Goal</div>
+        <div class="e-icon">🏆</div>
+        <div class="e-name">70% clientes digitales activos</div>
+      </div>
+      <div class="elem elem-motiv" onclick="show('principle')" id="el-principle">
+        <div class="e-type">Principle</div>
+        <div class="e-icon">📐</div>
+        <div class="e-name">API-First</div>
+      </div>
+      <div class="elem elem-motiv" onclick="show('constraint')" id="el-constraint">
+        <div class="e-type">Constraint</div>
+        <div class="e-icon">⚖️</div>
+        <div class="e-name">Circular SFC 007 — Ciberseguridad</div>
+      </div>
+      <div class="elem elem-motiv" onclick="show('driver')" id="el-driver">
+        <div class="e-type">Driver</div>
+        <div class="e-icon">🚀</div>
+        <div class="e-name">Reducir costo por transacción 30%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEGOCIO -->
+  <div class="layer layer-biz">
+    <div class="layer-header"><span>🏢</span> Capa de Negocio <small>— Procesos, actores y servicios de negocio</small></div>
+    <div class="elem-row">
+      <div class="elem elem-actor" onclick="show('actor')" id="el-actor">
+        <div class="e-type">Business Actor</div>
+        <div class="e-icon">👤</div>
+        <div class="e-name">Cliente Persona Natural</div>
+      </div>
+      <div class="elem elem-role" onclick="show('role')" id="el-role">
+        <div class="e-type">Business Role</div>
+        <div class="e-icon">🎭</div>
+        <div class="e-name">Titular de Cuenta</div>
+      </div>
+      <div class="elem elem-event" onclick="show('event')" id="el-event">
+        <div class="e-type">Business Event</div>
+        <div class="e-icon">⚡</div>
+        <div class="e-name">Solicitud de Pago</div>
+      </div>
+    </div>
+    <div class="elem-row">
+      <div class="elem elem-process" onclick="show('process')" id="el-process">
+        <div class="e-type">Business Process</div>
+        <div class="e-icon">⚙️</div>
+        <div class="e-name">Proceso de Pago Electrónico</div>
+      </div>
+      <div class="elem elem-service-biz" onclick="show('biz-service')" id="el-biz-service">
+        <div class="e-type">Business Service</div>
+        <div class="e-icon">🔧</div>
+        <div class="e-name">Servicio de Pago al Tercero</div>
+      </div>
+      <div class="elem elem-object" onclick="show('biz-object')" id="el-biz-object">
+        <div class="e-type">Business Object</div>
+        <div class="e-icon">📄</div>
+        <div class="e-name">Orden de Pago</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APLICACIÓN -->
+  <div class="layer layer-app">
+    <div class="layer-header"><span>💻</span> Capa de Aplicación <small>— Componentes de software que soportan el negocio</small></div>
+    <div class="elem-row">
+      <div class="elem elem-iface" onclick="show('app-iface')" id="el-app-iface">
+        <div class="e-type">App Interface</div>
+        <div class="e-icon">🔌</div>
+        <div class="e-name">API REST de Pagos (OpenAPI)</div>
+      </div>
+      <div class="elem elem-service-app" onclick="show('app-service')" id="el-app-service">
+        <div class="e-type">Application Service</div>
+        <div class="e-icon">⚡</div>
+        <div class="e-name">Procesar Pago</div>
+      </div>
+      <div class="elem elem-comp" onclick="show('app-comp')" id="el-app-comp">
+        <div class="e-type">App Component</div>
+        <div class="e-icon">📦</div>
+        <div class="e-name">Microservicio de Pagos</div>
+      </div>
+      <div class="elem elem-data" onclick="show('data-obj')" id="el-data-obj">
+        <div class="e-type">Data Object</div>
+        <div class="e-icon">🗃</div>
+        <div class="e-name">Registro de Transacción</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TECNOLOGÍA -->
+  <div class="layer layer-tech">
+    <div class="layer-header"><span>🖥</span> Capa de Tecnología <small>— Infraestructura que ejecuta las aplicaciones</small></div>
+    <div class="elem-row">
+      <div class="elem elem-node" onclick="show('node')" id="el-node">
+        <div class="e-type">Node</div>
+        <div class="e-icon">☁️</div>
+        <div class="e-name">Cluster Kubernetes (AKS)</div>
+      </div>
+      <div class="elem elem-sw" onclick="show('sys-sw')" id="el-sys-sw">
+        <div class="e-type">System Software</div>
+        <div class="e-icon">⚙️</div>
+        <div class="e-name">Java 21 Runtime / Spring Boot</div>
+      </div>
+      <div class="elem elem-artifact" onclick="show('artifact')" id="el-artifact">
+        <div class="e-type">Artifact</div>
+        <div class="e-icon">📦</div>
+        <div class="e-name">payment-service.jar</div>
+      </div>
+      <div class="elem elem-network" onclick="show('network')" id="el-network">
+        <div class="e-type">Network</div>
+        <div class="e-icon">🔗</div>
+        <div class="e-name">Red Privada Azure VNet</div>
+      </div>
+      <div class="elem elem-tech-service" onclick="show('tech-service')" id="el-tech-service">
+        <div class="e-type">Technology Service</div>
+        <div class="e-icon">🔋</div>
+        <div class="e-name">Servicio de Cómputo (AKS)</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /diagram -->
+
+<!-- ═══ DETAIL PANEL ═══ -->
+<div class="detail">
+  <div class="detail-empty" id="emptyState">
+    <div class="de-icon">📐</div>
+    <p><strong>Selecciona un elemento</strong> del diagrama para ver su definición ArchiMate, qué representa en el caso del banco colombiano y cómo se relaciona con los demás elementos.</p>
+    <br/>
+    <p style="font-size:10px;">ArchiMate 3.2 permite modelar la arquitectura en capas coherentes, trazando desde los objetivos estratégicos (Motivación) hasta la infraestructura física (Tecnología) de forma integrada.</p>
+  </div>
+  <div class="detail-content" id="detailContent">
+    <div class="dh">
+      <div class="dh-type" id="dType"></div>
+      <div class="dh-name" id="dName"></div>
+      <div class="dh-layer" id="dLayer"></div>
+    </div>
+    <div class="dsec">
+      <h4>📖 Definición ArchiMate 3.2</h4>
+      <p id="dDef"></p>
+    </div>
+    <div class="dsec">
+      <h4>🏦 En el banco colombiano</h4>
+      <p id="dExample"></p>
+    </div>
+    <div class="dsec" id="dRelSec">
+      <h4>🔗 Relaciones principales</h4>
+      <div id="dRels"></div>
+    </div>
+    <div class="dsec">
+      <h4>💡 Por qué importa este elemento</h4>
+      <p id="dWhy"></p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+const data = {
+  goal:{
+    type:'Goal', name:'70% Clientes Digitales Activos', layer:'Capa de Motivación',
+    color:'var(--motiv)',
+    def:'Un Goal en ArchiMate representa el estado final deseado que un stakeholder quiere alcanzar. Es el "por qué" más fundamental de la arquitectura. No describe cómo lograrlo, sino qué quiere conseguir el negocio.',
+    example:'El banco busca que el 70% de sus clientes activos realicen al menos una transacción digital por mes. Hoy están en 62%. Este Goal justifica toda la inversión en la Plataforma Digital Bancaria — sin este objetivo claro, cualquier decisión arquitectónica carece de criterio de priorización.',
+    rels:[
+      {type:'Influence',cls:'rel-access',from:'Driver: Reducir costos',to:'→ motiva este Goal',desc:'La necesidad de reducir el costo por transacción influye en el objetivo de digitalización.'},
+      {type:'Realization',cls:'rel-realize',from:'Proceso de Pago Electrónico',to:'→ realiza parcialmente este Goal',desc:'Cada transacción digital exitosa avanza hacia el 70% objetivo.'},
+    ],
+    why:'Los Goals anclan las decisiones arquitectónicas en valor de negocio. Sin un Goal explícito, el ARB (Architecture Review Board) no tiene criterio para aprobar o rechazar una solución técnica. ArchiMate hace visible esta cadena de trazabilidad desde la meta hasta la implementación.'
+  },
+  principle:{
+    type:'Principle', name:'API-First', layer:'Capa de Motivación',
+    color:'var(--motiv)',
+    def:'Un Principle en ArchiMate es una norma o guía que orienta las decisiones de diseño arquitectónico. Refleja los valores de la organización traducidos a reglas de arquitectura.',
+    example:'El banco adopta el principio API-First: todo servicio de negocio nuevo debe estar disponible primero como API antes de construir cualquier interfaz. Esto significa que el microservicio de Pagos expone su API REST antes que la pantalla de la app móvil. Resultado: la misma API sirve a la app, al portal web y a terceros vía Open Banking.',
+    rels:[
+      {type:'Influence',cls:'rel-access',from:'→ Influye en',to:'App Interface (OpenAPI)',desc:'El principio API-First determina que toda funcionalidad se exponga como interfaz formal documentada.'},
+      {type:'Influence',cls:'rel-access',from:'→ Influye en',to:'Application Component (microservicio)',desc:'Los componentes se diseñan para ser consumidos por API antes que por UI.'},
+    ],
+    why:'Un principio de arquitectura registrado en ArchiMate es vinculante: cuando el equipo de frontend pide acceso directo a la base de datos, el arquitecto puede rechazarlo con referencia explícita al principio API-First, no solo por "política". ArchiMate convierte los principios implícitos en restricciones trazables.'
+  },
+  constraint:{
+    type:'Constraint', name:'Circular SFC 007 — Ciberseguridad', layer:'Capa de Motivación',
+    color:'var(--motiv)',
+    def:'Un Constraint en ArchiMate es una restricción externa que limita las opciones de diseño arquitectónico. Puede ser regulatoria, contractual o técnica. A diferencia de un Principle, no es una elección — es una obligación.',
+    example:'La Circular 007 de 2018 de la Superintendencia Financiera de Colombia exige: MFA para todos los empleados con acceso a sistemas críticos, cifrado de datos sensibles en tránsito y reposo, gestión formal de identidades (PAM), y reporte de incidentes de ciberseguridad en <2 horas. Estos requisitos no son opcionales y determinan directamente los componentes de autenticación y cifrado de la arquitectura.',
+    rels:[
+      {type:'Constraint',cls:'rel-compo',from:'→ Restringe diseño de',to:'Auth Module (App Móvil)',desc:'MFA obligatorio para operaciones sobre ciertos montos.'},
+      {type:'Constraint',cls:'rel-compo',from:'→ Restringe diseño de',to:'Data Object (Registro Transacción)',desc:'Cifrado AES-256 obligatorio para datos de clientes.'},
+    ],
+    why:'Modelar los Constraints regulatorios en ArchiMate hace visible el costo del cumplimiento: cada restricción de la SFC tiene un impacto en componentes concretos. Cuando el negocio propone reducir costos eliminando MFA, el arquitecto puede mostrar el Constraint que lo impide y el riesgo de incumplimiento regulatorio.'
+  },
+  driver:{
+    type:'Driver', name:'Reducir costo por transacción 30%', layer:'Capa de Motivación',
+    color:'var(--motiv)',
+    def:'Un Driver en ArchiMate es una condición o situación externa o interna que motiva a la organización a cambiar. Es el "disparador" que hace urgente la necesidad de transformación arquitectónica.',
+    example:'El banco tiene un costo por transacción presencial de $2.800 COP vs. $180 COP digital. La presión de neobancos (Nubank, Lulo Bank) que operan 100% digital fuerza al banco a reducir su estructura de costos. Este Driver justifica la inversión en la plataforma digital y da urgencia al Goal de 70% de clientes digitales.',
+    rels:[
+      {type:'Influence',cls:'rel-access',from:'→ Motiva',to:'Goal: 70% clientes digitales',desc:'La presión de costos motiva el objetivo de migrar transacciones al canal digital.'},
+      {type:'Association',cls:'rel-serve',from:'→ Relacionado con',to:'Constraint: Circular SFC',desc:'Los requisitos regulatorios también generan costos que el Driver obliga a optimizar.'},
+    ],
+    why:'Los Drivers conectan la estrategia de negocio con la arquitectura. Un arquitecto que solo habla de tecnología sin entender los Drivers es irrelevante para la dirección. ArchiMate hace visible esta conexión: el cluster de Kubernetes no existe porque la tecnología es bonita, sino porque habilita la reducción de costos que el negocio necesita.'
+  },
+
+  // NEGOCIO
+  actor:{
+    type:'Business Actor', name:'Cliente Persona Natural', layer:'Capa de Negocio',
+    color:'var(--biz)',
+    def:'Un Business Actor es una entidad (persona, organización o sistema) que actúa en el negocio. Realiza comportamiento activo en el mundo del negocio: inicia procesos, toma decisiones. En ArchiMate se diferencia del Role: el Actor es la entidad concreta, el Role es la función que desempeña.',
+    example:'El Cliente Persona Natural es cualquiera de los 12.4M clientes del banco. Como Actor, puede iniciar el Proceso de Pago, consultar saldos o solicitar crédito. La misma persona natural puede desempeñar diferentes Roles: puede ser "Titular de Cuenta" en una transacción y "Garante" en un crédito de un familiar.',
+    rels:[
+      {type:'Assignment',cls:'rel-assign',from:'Cliente Persona Natural',to:'→ assigned to → Titular de Cuenta (Role)',desc:'El Actor asume el Role para participar en los procesos de negocio.'},
+      {type:'Association',cls:'rel-serve',from:'Cliente Persona Natural',to:'→ usa → Servicio de Pago al Tercero',desc:'El Actor consume el Business Service expuesto por el banco.'},
+    ],
+    why:'Modelar los actores explícitamente en ArchiMate permite identificar todos los stakeholders que interactúan con un proceso. Cuando se rediseña el flujo de pago, el modelo muestra que hay 3 tipos de actores (Cliente PN, Cliente Empresa, Asesor) con necesidades diferentes — lo que puede derivar en diseños de interfaz distintos.'
+  },
+  role:{
+    type:'Business Role', name:'Titular de Cuenta', layer:'Capa de Negocio',
+    color:'var(--biz)',
+    def:'Un Business Role define la responsabilidad o función que un Actor desempeña al ejecutar cierto comportamiento de negocio. El Role abstrae quién hace algo (Actor) de qué función desempeña. Múltiples Actores pueden asumir el mismo Role, y un Actor puede asumir múltiples Roles.',
+    example:'El Role "Titular de Cuenta" puede ser asumido por: un Cliente Persona Natural (dueño de la cuenta), un representante legal de empresa (para cuentas empresariales), o un tutor legal (para cuentas de menores). Todos ejecutan el mismo proceso de pago con los mismos permisos, aunque son Actores diferentes. Este Role determina los límites de transacción y los productos disponibles.',
+    rels:[
+      {type:'Assignment',cls:'rel-assign',from:'← assigned from ← Cliente Persona Natural',to:'Actor que asume este Role',desc:'El Actor se asigna al Role para participar en los procesos.'},
+      {type:'Association',cls:'rel-serve',from:'Titular de Cuenta',to:'→ performs → Proceso de Pago',desc:'El Role ejecuta el Business Process.'},
+    ],
+    why:'La distinción Actor/Role es crítica para el diseño de IAM (Identity & Access Management). Las políticas de acceso se asignan a Roles, no a Actores individuales. Un cambio en los permisos del Role "Titular de Cuenta" afecta a todos los Actores que lo desempeñan, lo cual facilita el gobierno de accesos.'
+  },
+  event:{
+    type:'Business Event', name:'Solicitud de Pago', layer:'Capa de Negocio',
+    color:'var(--biz)',
+    def:'Un Business Event es algo que ocurre en el negocio y que dispara o interrumpe un proceso. A diferencia de un proceso, el evento no tiene duración — es instantáneo y externo al comportamiento que desencadena. ArchiMate distingue entre eventos que desencadenan procesos y eventos que estos producen.',
+    example:'La "Solicitud de Pago" ocurre cuando el cliente confirma un pago en la app. Este instante desencadena el Proceso de Pago Electrónico. En Event-Driven Architecture, este evento se materializa como el mensaje Kafka "PagoSolicitado" con un timestamp, un ID único y los datos de la transacción. El evento es inmutable: no se modifica, solo se consume.',
+    rels:[
+      {type:'Triggering',cls:'rel-trigger',from:'Solicitud de Pago',to:'→ triggers → Proceso de Pago Electrónico',desc:'El evento dispara el inicio del proceso de negocio.'},
+      {type:'Association',cls:'rel-serve',from:'← initiates ← Cliente (Actor)',to:'El Actor genera el evento',desc:'El cliente al confirmar el pago genera el evento.'},
+    ],
+    why:'Modelar eventos explícitamente en ArchiMate es fundamental para arquitecturas orientadas a eventos (EDA). El evento "Solicitud de Pago" en la capa de negocio tiene su contrapartida técnica en el mensaje Kafka de la capa de aplicación. Esta correspondencia entre capas es la trazabilidad que ArchiMate proporciona.'
+  },
+  process:{
+    type:'Business Process', name:'Proceso de Pago Electrónico', layer:'Capa de Negocio',
+    color:'var(--biz)',
+    def:'Un Business Process es una secuencia de actividades de negocio que produce un resultado con valor para el negocio o sus clientes. Consume Business Objects (datos) y produce Business Services. En ArchiMate, el proceso describe el comportamiento desde la perspectiva del negocio, sin detalles de implementación técnica.',
+    example:'El Proceso de Pago Electrónico: (1) Recibir solicitud del cliente → (2) Validar identidad y fondos → (3) Ejecutar débito cuenta origen → (4) Enviar instrucción a red de pago → (5) Confirmar acreditación → (6) Notificar cliente. Este proceso consume la Orden de Pago (Business Object) y produce el Servicio de Pago al Tercero (Business Service).',
+    rels:[
+      {type:'Triggering',cls:'rel-trigger',from:'← triggered by ← Solicitud de Pago (Event)',to:'El evento inicia el proceso',desc:'El Business Event dispara el inicio del proceso.'},
+      {type:'Serving',cls:'rel-serve',from:'Proceso de Pago',to:'→ serving → Servicio de Pago al Tercero',desc:'El proceso realiza el Business Service que el cliente consume.'},
+      {type:'Access',cls:'rel-access',from:'Proceso de Pago',to:'→ accesses → Orden de Pago (Object)',desc:'El proceso lee y modifica el Business Object durante su ejecución.'},
+      {type:'Realization',cls:'rel-realize',from:'App Service: Procesar Pago',to:'→ realizes este proceso',desc:'El Application Service implementa técnicamente el comportamiento del proceso.'},
+    ],
+    why:'El Business Process en ArchiMate es el puente entre la motivación estratégica (Goals) y la implementación técnica (Application Services). Permite al arquitecto mostrar a la dirección qué parte del proceso de negocio es afectada por cada componente técnico, y al equipo técnico entender por qué cada API existe.'
+  },
+  'biz-service':{
+    type:'Business Service', name:'Servicio de Pago al Tercero', layer:'Capa de Negocio',
+    color:'var(--biz)',
+    def:'Un Business Service es una unidad de funcionalidad que el negocio expone a sus usuarios, clientes o socios. Representa el valor entregado hacia afuera. Es el resultado observable del Business Process desde la perspectiva del consumidor. El cliente no ve el proceso interno — solo el servicio.',
+    example:'"Pagar un servicio público", "Transferir dinero a otro banco", "Pagar con código QR". Estos son los Business Services del banco: lo que el cliente ve y valora. El banco puede cambiar completamente la implementación interna (proceso, sistemas, proveedores) y el cliente solo percibe si el servicio funciona bien o mal.',
+    rels:[
+      {type:'Serving',cls:'rel-serve',from:'← consumed by ← Cliente (Actor)',to:'El Actor consume este servicio',desc:'El cliente es el consumidor del Business Service.'},
+      {type:'Realization',cls:'rel-realize',from:'Proceso de Pago',to:'→ realizes este servicio',desc:'El Business Process interna es lo que produce el servicio.'},
+      {type:'Realization',cls:'rel-realize',from:'App Service: Procesar Pago',to:'→ realizes (cross-layer)',desc:'El Application Service técnico realiza este Business Service.'},
+    ],
+    why:'La distinción proceso/servicio es clave para el pensamiento de producto. El banco no vende "el Proceso de Pago Electrónico" — vende el "Servicio de Pago Inmediato". Cuando el cliente evalúa el banco, evalúa el servicio. ArchiMate hace visible qué componentes técnicos soportan cada servicio de valor para el cliente.'
+  },
+  'biz-object':{
+    type:'Business Object', name:'Orden de Pago', layer:'Capa de Negocio',
+    color:'var(--biz)',
+    def:'Un Business Object es un concepto de información relevante desde la perspectiva del negocio. Representa los datos con significado para el negocio, sin detalles técnicos de almacenamiento. Es la contraparte de negocio del Data Object de la capa de aplicación.',
+    example:'La Orden de Pago como Business Object tiene: monto, moneda, cuenta origen, cuenta destino, descripción, fecha valor. Es el concepto que el negocio entiende y regula. Su contraparte técnica en la capa de aplicación es el Data Object "Registro de Transacción" con los campos PostgreSQL concretos (id_tx UUID, monto DECIMAL(18,2), fecha_hora TIMESTAMPTZ).',
+    rels:[
+      {type:'Access',cls:'rel-access',from:'← accessed by ← Proceso de Pago',to:'El proceso lee y escribe este objeto',desc:'El Business Process crea y modifica la Orden de Pago durante su ejecución.'},
+      {type:'Realization',cls:'rel-realize',from:'Data Object: Registro Transacción',to:'→ realizes este Business Object',desc:'El objeto de datos técnico implementa el concepto de negocio.'},
+    ],
+    why:'La separación Business Object / Data Object en ArchiMate permite que negocio y TI hablen lenguajes diferentes sin malentenderse. El negocio habla de "Orden de Pago"; el DBA habla de "tabla TRANSACCIONES". El modelo ArchiMate mapea explícitamente cuál realiza cuál, previniendo gaps de interpretación que generan bugs.'
+  },
+
+  // APLICACIÓN
+  'app-iface':{
+    type:'Application Interface', name:'API REST de Pagos (OpenAPI 3.1)', layer:'Capa de Aplicación',
+    color:'var(--app)',
+    def:'Una Application Interface es el punto de acceso a través del cual un Application Component o Service es accesible. Define el contrato de comunicación — qué puede llamarse, con qué parámetros y qué respuestas se obtienen — sin revelar la implementación interna.',
+    example:'La API REST de Pagos está documentada en OpenAPI 3.1: endpoints POST /v2/pagos, GET /v2/pagos/{id}, DELETE /v2/pagos/{id}/cancelar. Autenticación OAuth 2.0, códigos de error estandarizados, schema JSON para el request y response. Esta interfaz es el contrato entre el microservicio de Pagos y todos sus consumidores (App Móvil, Portal Web, Open Banking).',
+    rels:[
+      {type:'Serving',cls:'rel-serve',from:'App Interface',to:'→ serves → Proceso de Pago (capa negocio)',desc:'La interfaz técnica hace accesible el comportamiento de negocio.'},
+      {type:'Composition',cls:'rel-compo',from:'← part of ← Microservicio de Pagos',to:'La interfaz pertenece al componente',desc:'El Application Component expone esta interfaz.'},
+    ],
+    why:'La Application Interface en ArchiMate corresponde al concepto de "contrato de API" en microservicios. Modelarla explícitamente hace visible cuántas interfaces expone el sistema y quién las consume. Cuando se planifica una migración, el modelo muestra exactamente qué consumidores se ven afectados por un cambio en la interfaz.'
+  },
+  'app-service':{
+    type:'Application Service', name:'Procesar Pago', layer:'Capa de Aplicación',
+    color:'var(--app)',
+    def:'Un Application Service es una unidad de funcionalidad expuesta por una Application Component para ser utilizada por otros componentes o por las capas superiores. Es el comportamiento que el componente ofrece hacia afuera. La distinción servicio/componente en ArchiMate separa qué se ofrece (servicio) de quién lo ofrece (componente).',
+    example:'"Procesar Pago" es el Application Service que el Microservicio de Pagos ofrece. Cuando el API Gateway recibe un POST /v2/pagos, invoca este servicio. Internamente, el servicio coordina el Saga (débito → instrucción ACH → acreditación → notificación). El consumidor solo invoca el servicio; la orquestación interna es invisible.',
+    rels:[
+      {type:'Realization',cls:'rel-realize',from:'App Service: Procesar Pago',to:'→ realizes → Business Service: Pago al Tercero',desc:'El servicio técnico implementa el servicio de negocio (relación cross-layer clave).'},
+      {type:'Serving',cls:'rel-serve',from:'App Service',to:'→ serves → Proceso de Pago (negocio)',desc:'El servicio de aplicación soporta el proceso de negocio de la capa superior.'},
+      {type:'Realization',cls:'rel-realize',from:'← realized by ← Microservicio de Pagos',to:'El componente implementa este servicio',desc:'El Application Component provee este servicio.'},
+    ],
+    why:'La relación Application Service → Business Service (cross-layer) es una de las más poderosas de ArchiMate: hace trazable por qué existe cada API. "Procesar Pago" existe porque realiza el Business Service "Pago al Tercero" que a su vez satisface el Goal estratégico de digitalización. Sin esta cadena, la arquitectura técnica parece arbitraria.'
+  },
+  'app-comp':{
+    type:'Application Component', name:'Microservicio de Pagos', layer:'Capa de Aplicación',
+    color:'var(--app)',
+    def:'Un Application Component es una parte modular y reemplazable de un sistema de software que encapsula su contenido y expone su comportamiento a través de interfaces. En ArchiMate, el componente es la unidad de despliegue lógica — puede ser un microservicio, un módulo o una aplicación completa.',
+    example:'El Microservicio de Pagos: unidad autónoma de despliegue en Kubernetes, 4 réplicas, 8 endpoints REST documentados en OpenAPI 3.1. Escrito en Spring Boot 3 / Java 21. Tiene su propia base de datos PostgreSQL (database-per-service). Se despliega independientemente del core bancario. Equipo dedicado: 5 ingenieros del squad "Pagos".',
+    rels:[
+      {type:'Realization',cls:'rel-realize',from:'Microservicio de Pagos',to:'→ realizes → App Service: Procesar Pago',desc:'El componente provee el Application Service.'},
+      {type:'Composition',cls:'rel-compo',from:'Microservicio de Pagos',to:'→ composes → App Interface: API REST',desc:'La interfaz es parte del componente.'},
+      {type:'Realization',cls:'rel-realize',from:'← realized by ← Artifact: payment-service.jar',to:'El artefacto físico realiza el componente lógico',desc:'El jar desplegado en Kubernetes implementa el componente lógico.'},
+      {type:'Access',cls:'rel-access',from:'Microservicio de Pagos',to:'→ accesses → Data Object: Registro Transacción',desc:'El componente lee y escribe el objeto de datos.'},
+    ],
+    why:'En ArchiMate, el Application Component es la unidad de análisis para decisiones de modernización. "¿Cuánto nos costaría reemplazar el Microservicio de Pagos?" se responde mirando cuántos Application Services expone, cuántos Business Services realiza y cuántos otros componentes dependen de él. Este análisis de impacto es imposible sin el modelo.'
+  },
+  'data-obj':{
+    type:'Data Object', name:'Registro de Transacción', layer:'Capa de Aplicación',
+    color:'var(--app)',
+    def:'Un Data Object en ArchiMate representa la información que es utilizada o producida por los Application Components. Es la contraparte técnica del Business Object. Mientras el Business Object tiene significado de negocio, el Data Object es la representación técnica que puede ser almacenada, procesada y transmitida.',
+    example:'El Registro de Transacción como Data Object: {id_tx: UUID, monto: DECIMAL(18,2), moneda: VARCHAR(3), id_cuenta_origen: UUID, id_cuenta_destino: VARCHAR, canal: ENUM, estado: ENUM, fecha_hora: TIMESTAMPTZ, trace_id: UUID}. Este Data Object se persiste en PostgreSQL, se publica como evento Kafka y se retiene 7 años según la regulación SFC.',
+    rels:[
+      {type:'Realization',cls:'rel-realize',from:'Data Object',to:'→ realizes → Business Object: Orden de Pago',desc:'El objeto técnico implementa el concepto de negocio.'},
+      {type:'Access',cls:'rel-access',from:'← accessed by ← Microservicio de Pagos',to:'El componente lee y escribe este objeto',desc:'El Application Component produce y consume este dato.'},
+    ],
+    why:'La relación Data Object → Business Object cierra la trazabilidad de datos: desde el campo "monto DECIMAL(18,2)" en PostgreSQL hasta el concepto "monto de la Orden de Pago" que el regulador SFC define. En una auditoría de gobierno de datos, esta traza es lo que permite responder "¿dónde está el dato X y quién lo puede ver?"'
+  },
+
+  // TECNOLOGÍA
+  node:{
+    type:'Node', name:'Cluster Kubernetes (AKS)', layer:'Capa de Tecnología',
+    color:'var(--tech)',
+    def:'Un Node en ArchiMate es un recurso computacional en el que pueden desplegarse artefactos (código, configuración). Representa la infraestructura de ejecución física o virtual. Un Node tiene capacidad de procesamiento propia y puede hospedar System Software y Artifacts.',
+    example:'El Cluster AKS (Azure Kubernetes Service) en la región East US 2: 6 nodos D8s_v3 (8 vCPU, 32GB RAM cada uno) con autoscaling hasta 20 nodos en hora pico. Orquesta los pods del Microservicio de Pagos, el Motor Antifraude, el Servicio de Crédito y 6 microservicios más. Doble región (DR activo-activo con West US 3).',
+    rels:[
+      {type:'Assignment',cls:'rel-assign',from:'Cluster AKS (Node)',to:'→ assigned to → Tech Service: Cómputo',desc:'El Node provee el Technology Service de capacidad de ejecución.'},
+      {type:'Composition',cls:'rel-compo',from:'Cluster AKS',to:'→ hosts → Java Runtime (System Software)',desc:'El Node contiene el software de sistema que ejecuta las aplicaciones.'},
+      {type:'Realization',cls:'rel-realize',from:'← realized by ← Azure VNet (Network)',to:'La red conecta y habilita el Node',desc:'La red física/virtual es la infraestructura del Node.'},
+    ],
+    why:'En ArchiMate, los Nodes permiten modelar las decisiones de cloud: ¿on-premise, cloud pública, híbrida? ¿Una región o multi-región? ¿Qué Application Components se despliegan en qué Nodes? Estas decisiones tienen implicaciones de costo (CapEx vs OpEx), resiliencia y cumplimiento regulatorio (datos en Colombia).'
+  },
+  'sys-sw':{
+    type:'System Software', name:'Java 21 Runtime / Spring Boot 3', layer:'Capa de Tecnología',
+    color:'var(--tech)',
+    def:'System Software en ArchiMate es el software que provee servicios de ejecución para otros componentes de software: runtimes, sistemas operativos, middleware, frameworks. No implementa lógica de negocio — provee la plataforma sobre la cual corren los Application Components.',
+    example:'Java 21 LTS (GraalVM native image para reducir tiempo de startup de 8s a 0.3s en pods Kubernetes), Spring Boot 3.2 (framework base de todos los microservicios), Alpine Linux 3.19 (imagen base de los contenedores Docker, 5MB vs 200MB de Ubuntu). Estas versiones están fijadas en el Dockerfile de cada microservicio y gestionadas por el equipo de plataforma.',
+    rels:[
+      {type:'Assignment',cls:'rel-assign',from:'Java Runtime',to:'→ runs on → Cluster AKS (Node)',desc:'El System Software se ejecuta sobre el Node de infraestructura.'},
+      {type:'Serving',cls:'rel-serve',from:'Java Runtime',to:'→ serves → payment-service.jar (Artifact)',desc:'El runtime provee el ambiente de ejecución para el artefacto.'},
+    ],
+    why:'Modelar el System Software en ArchiMate es crítico para las decisiones de EOL (End of Life) de versiones: Java 8 llega a EOL y el banco tiene 340 microservicios. El modelo muestra exactamente cuántos Application Components usan Java 8, cuántos Artifacts deben recompilarse y en qué Nodes impacta, convirtiendo un "audit de versiones" en un plan de migración trazado.'
+  },
+  artifact:{
+    type:'Artifact', name:'payment-service.jar', layer:'Capa de Tecnología',
+    color:'var(--tech)',
+    def:'Un Artifact en ArchiMate es una pieza física de información producida por un proceso de desarrollo: un archivo ejecutable, un paquete de despliegue, un script de configuración. El Artifact es la manifestación física del Application Component en la capa de tecnología.',
+    example:'payment-service.jar: archivo de 47MB generado por el pipeline CI/CD (GitHub Actions) al mergear en main. Contiene el código compilado del Microservicio de Pagos. Se almacena en Azure Container Registry como imagen Docker (payment-service:2.4.1-SHA). Se despliega en el cluster AKS mediante un Helm chart versionado. Es inmutable: una vez generado, no se modifica.',
+    rels:[
+      {type:'Realization',cls:'rel-realize',from:'payment-service.jar (Artifact)',to:'→ realizes → Microservicio de Pagos (App Component)',desc:'El artefacto físico es la implementación del componente lógico.'},
+      {type:'Assignment',cls:'rel-assign',from:'payment-service.jar',to:'→ deployed on → Cluster AKS (Node)',desc:'El artefacto se despliega en el Node de infraestructura.'},
+    ],
+    why:'La relación Artifact → Application Component es la que conecta el código con la arquitectura. Un ADR (Architecture Decision Record) que decide cambiar de Spring Boot a Quarkus afecta al Artifact (se regenera) pero no al Application Component (su comportamiento es el mismo). ArchiMate hace esta distinción formal y prevenible de cambios innecesarios en la arquitectura lógica.'
+  },
+  network:{
+    type:'Network', name:'Red Privada Azure (VNet)', layer:'Capa de Tecnología',
+    color:'var(--tech)',
+    def:'Una Network en ArchiMate es la infraestructura de comunicaciones que conecta Nodes y permite el intercambio de información entre ellos. Representa los canales de comunicación físicos o virtuales sobre los cuales fluyen los datos.',
+    example:'Azure VNet: red privada 10.0.0.0/8 dividida en 4 subnets por zona de seguridad (pública, DMZ, aplicaciones, datos). Todos los microservicios se comunican dentro de la VNet (sin salir a internet). Private Endpoints para PostgreSQL, Redis y Kafka — el tráfico de datos nunca sale de la red privada. ExpressRoute de 10Gbps conecta la VNet con el data center on-premise del banco.',
+    rels:[
+      {type:'Realization',cls:'rel-realize',from:'Azure VNet (Network)',to:'→ connects → Cluster AKS (Node)',desc:'La red conecta los Nodes de infraestructura.'},
+      {type:'Serving',cls:'rel-serve',from:'Azure VNet',to:'→ serves → Tech Service: Cómputo',desc:'La red habilita el Technology Service de comunicación entre componentes.'},
+    ],
+    why:'Modelar la Network en ArchiMate hace visible la arquitectura de seguridad de red. La Circular SFC 007 exige segmentación de redes para sistemas financieros críticos. El modelo muestra si los datos de clientes (PostgreSQL) están en la misma subnet que los servicios web — lo cual sería una violación de seguridad. La Network en ArchiMate no es solo "cables" — es política de seguridad materializada.'
+  },
+  'tech-service':{
+    type:'Technology Service', name:'Servicio de Cómputo (AKS)', layer:'Capa de Tecnología',
+    color:'var(--tech)',
+    def:'Un Technology Service en ArchiMate es la funcionalidad que los Nodes de infraestructura exponen para ser usada por los Application Components. Es la contraparte de tecnología del Application Service: mientras el Application Service implementa lógica de negocio, el Technology Service provee capacidades de infraestructura.',
+    example:'El "Servicio de Cómputo AKS" provee: capacidad de ejecución de contenedores, autoscaling horizontal (6-20 pods según carga), health checks automáticos con reinicio de pods fallidos, service discovery interno (DNS de Kubernetes), y load balancing entre réplicas. El Microservicio de Pagos consume este Technology Service sin conocer en qué nodo físico está corriendo.',
+    rels:[
+      {type:'Assignment',cls:'rel-assign',from:'← assigned from ← Cluster AKS (Node)',to:'El Node provee este Technology Service',desc:'El Node de infraestructura es la fuente del Technology Service.'},
+      {type:'Serving',cls:'rel-serve',from:'Tech Service: Cómputo',to:'→ serves → Microservicio de Pagos (App Component)',desc:'El Technology Service habilita la ejecución del Application Component.'},
+    ],
+    why:'El Technology Service es la abstracción que libera a los desarrolladores de conocer la infraestructura. El equipo de Pagos sabe que hay un "Servicio de Cómputo" disponible — no necesita saber si corre en AKS, EKS o GKE. Esta abstracción es el modelo operativo de cloud: el negocio consume servicios, no máquinas. ArchiMate modela este acuerdo formalmente.'
+  }
+};
+
+let selected = null;
+
+function show(key){
+  const d = data[key];
+  if(!d) return;
+
+  // Clear previous selection
+  if(selected) {
+    const prev = document.getElementById('el-'+selected);
+    if(prev) prev.classList.remove('selected');
+  }
+  selected = key;
+  const cur = document.getElementById('el-'+key);
+  if(cur) cur.classList.add('selected');
+
+  // Populate panel
+  document.getElementById('dType').textContent = d.type;
+  document.getElementById('dType').style.color = d.color;
+  document.getElementById('dName').textContent = d.name;
+  document.getElementById('dLayer').textContent = d.layer;
+  document.getElementById('dDef').textContent = d.def;
+  document.getElementById('dExample').textContent = d.example;
+  document.getElementById('dWhy').textContent = d.why;
+
+  const relsEl = document.getElementById('dRels');
+  relsEl.innerHTML = d.rels.map(r => `
+    <div class="rel-item">
+      <span class="rel-type ${r.cls}">${r.type}</span>
+      <span>${r.from} <strong>${r.to}</strong> — ${r.desc}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('detailContent').classList.add('visible');
+
+  // Scroll detail into view on mobile
+  if(window.innerWidth < 900){
+    document.querySelector('.detail').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+}
+</script>
+</body>
+</html>
