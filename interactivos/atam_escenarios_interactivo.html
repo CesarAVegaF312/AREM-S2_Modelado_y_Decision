@@ -66,6 +66,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .aviso-bloqueo strong { display: block; }
 .aviso-info { background: var(--claro); border-left: 5px solid var(--medio); color: #1F2F4F; }
 .aviso-ok { background: var(--verde-bg); border-left: 5px solid var(--verde); color: #0B3D1C; }
+.aviso-advertencia { background: var(--ambar-bg); border-left: 5px solid #D69E00; color: #4A2D00; }
 .cita { font-weight: 700; font-size: 1.05rem; }
 .faltantes { margin-top: 6px; font-size: .95rem; }
 
@@ -154,6 +155,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .comp-col-cab .letra { font-size: .8rem; font-weight: 800; color: var(--medio); text-transform: uppercase; letter-spacing: .05em; }
 .celda { border: 2px solid var(--pale); border-radius: 10px; padding: 10px 12px; min-width: 0; }
 .celda .campo + .campo { margin-top: 8px; }
+.celda.riesgo { margin-bottom: 10px; }
 .celda.renuncia { border-color: #E8B4AF; background: #FFFBFA; }
 .celda.renuncia.completa { border-color: var(--verde); background: #F6FBF7; }
 .estado-renuncia { font-size: .9rem; font-weight: 700; margin-top: 8px; }
@@ -177,6 +179,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .radios input { width: 20px; height: 20px; accent-color: var(--medio); }
 .resumen { margin-top: 22px; border: 3px solid var(--verde); border-radius: 12px; padding: 16px; background: #F6FBF7; }
 .resumen h3 { margin-top: 0; }
+.resumen .aviso-advertencia { margin: 8px 0 12px; }
 .resumen textarea { width: 100%; min-height: 420px; font-family: Consolas, 'Courier New', monospace; font-size: .85rem; line-height: 1.45; border: 2px solid #B8C4D8; border-radius: 8px; padding: 12px; background: #fff; white-space: pre-wrap; overflow-wrap: anywhere; overflow: auto; }
 #titResumen:focus { outline: none; }
 .resumen-acc { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 10px; }
@@ -343,6 +346,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 
     <div class="resumen" id="resumen" hidden>
       <h3 id="titResumen" tabindex="-1">Resumen para el informe de la Actividad 2.2</h3>
+      <div class="aviso aviso-advertencia" id="avisoRiesgos" role="note" hidden></div>
       <p class="intro">Texto plano: selecciónenlo o cópienlo y péguenlo en el informe.</p>
       <label for="textoResumen" class="sr-only">Resumen en texto plano</label>
       <textarea id="textoResumen" readonly spellcheck="false"></textarea>
@@ -394,6 +398,9 @@ function faltantesRenuncia(r) {
 }
 function renunciaCompleta(r) { return faltantesRenuncia(r).length === 0; }
 function puedeCerrarDecision(alts) { return renunciaCompleta(alts.A.renuncia) && renunciaCompleta(alts.B.renuncia); }
+/* Los riesgos no bloquean el cierre: solo alimentan un aviso de la rúbrica. */
+function alternativasSinRiesgos(alts) { return ['A', 'B'].filter((k) => !lleno(alts[k].riesgos)); }
+const MSG_RIESGOS = 'La rúbrica de la Actividad 2.2 pide análisis de riesgos y puntos de sensibilidad: documenten al menos un riesgo por alternativa.';
 
 /* ════════ Caso precargado: Red Salud Andina ════════ */
 function casoRedSalud() {
@@ -449,6 +456,8 @@ function casoRedSalud() {
     descripcion: 'Se conservan los HIS de las sedes y se construye encima una capa de integración con un índice maestro de pacientes que une las identidades y expone la historia clínica única.',
     viabilidad: 'La red va a seguir adquiriendo sedes con su propio HIS, o el presupuesto no alcanza para migrar 6 sedes y la promesa pública exige resultados visibles en meses.',
     sensibilidad: 'La exactitud del emparejamiento del MPI: un umbral de coincidencia mal calibrado produce duplicados o historias mezcladas. El costo de los adaptadores es sensible a la modernización asistida por IA.',
+    riesgos: 'Si el umbral de emparejamiento del MPI queda mal calibrado, aparecen historias mezcladas o duplicadas (pone en riesgo E2 y la promesa de historia única). El resumen clínico compone datos de HIS con modelos distintos: sin normalizarlos antes, la exactitud puede quedar por debajo del 85 % (pone en riesgo E5).',
+    noRiesgos: 'Cada HIS queda detrás de su propio adaptador con modo degradado, de modo que la caída del HIS de una sede no se propaga a las demás (sostiene E1). Los contratos de eventos versionados en el registro de esquemas absorben el cambio de una sede sin redesplegar consumidores (sostiene E3).',
     renuncia: { que: 'Una fuente única de verdad: la historia sigue viviendo en varios HIS y su unidad depende del MPI.',
       cuanto: 'Operar para siempre adaptadores, MPI y bus de eventos, más las horas mensuales de conciliación de duplicados.',
       quien: '' },
@@ -465,6 +474,8 @@ function casoRedSalud() {
     descripcion: 'Se migran las 6 sedes adquiridas al HIS de la red, de modo que las 24 sedes operen sobre un solo sistema y una sola historia clínica.',
     viabilidad: 'El HIS de las sedes adquiridas llega al fin de soporte dentro del horizonte del plan, o la autoridad sanitaria exige un registro único con trazabilidad que una capa de integración no garantiza.',
     sensibilidad: 'El cronograma depende de la calidad de los datos históricos de cada HIS de origen y de la ventana de corte de cada sede; el costo total, del licenciamiento por sede.',
+    riesgos: 'Migrar las 6 sedes antes del vencimiento del contrato de HIS-NORTE en 2027 concentra el corte en una ventana corta (pone en riesgo E1, disponibilidad). Si el HIS único se dimensiona para la carga promedio, el pico de facturación de fin de mes de las 24 sedes recae sobre un solo núcleo y puede superar los 350 COP por atención (pone en riesgo E4).',
+    noRiesgos: 'La historia clínica queda en una sola base con un modelo de datos común, de modo que la consulta no cruza sistemas (sostiene E2). El asistente de resumen lee una sola historia normalizada, lo que acota la latencia y las omisiones (sostiene E5).',
     renuncia: { que: 'La continuidad operativa de las 6 sedes durante la migración y la autonomía de su HIS actual.',
       cuanto: '',
       quien: 'Al personal asistencial y de admisiones de las 6 sedes, que cambia de sistema y de flujo de trabajo en plena operación.' },
@@ -483,7 +494,7 @@ function casoRedSalud() {
 }
 
 function casoVacio() {
-  const alt = () => ({ nombre: '', descripcion: '', viabilidad: '', sensibilidad: '',
+  const alt = () => ({ nombre: '', descripcion: '', viabilidad: '', sensibilidad: '', riesgos: '', noRiesgos: '',
     renuncia: { que: '', cuanto: '', quien: '' }, valoracion: {} });
   return { decision: '', escenarios: [], alternativas: { A: alt(), B: alt() }, elegida: '', invalidaria: '', contador: 0 };
 }
@@ -772,10 +783,12 @@ function crearHoja(esc) {
 function campoTexto(id, etq, valor, alCambiar, opts) {
   const o = opts || {};
   /* Textarea que crece con su contenido: el texto precargado nunca queda recortado al proyectar. */
-  const control = el('textarea', { id, class: 'auto', rows: o.rows || 1, placeholder: o.placeholder || null, spellcheck: 'true' });
+  const control = el('textarea', { id, class: 'auto', rows: o.rows || 1, placeholder: o.placeholder || null, spellcheck: 'true',
+    'aria-describedby': o.ayuda ? id + '-ayuda' : null });
   control.value = valor || '';
   control.addEventListener('input', () => { ajustarAltura(control); alCambiar(control.value); });
-  return el('div', { class: 'campo' }, el('label', { for: id, text: etq }), control);
+  return el('div', { class: 'campo' }, el('label', { for: id, text: etq }), control,
+    o.ayuda ? el('span', { class: 'ayuda', id: id + '-ayuda', text: o.ayuda }) : null);
 }
 function ajustarAltura(ta) {
   if (!ta.offsetParent) return;          /* panel oculto: se ajusta al mostrarse */
@@ -831,9 +844,14 @@ function renderComparador() {
     });
   });
 
-  g.append(el('div', { class: 'comp-fila-tit' }, 'Punto de sensibilidad ', el('small', { text: '· la decisión en la que un cambio pequeño mueve mucho un atributo' })));
-  ['A', 'B'].forEach((k) => g.append(el('div', { class: 'celda' },
-    campoTexto('alt' + k + '-sens', 'Alternativa ' + k, alts[k].sensibilidad, (v) => { alts[k].sensibilidad = v; cambio(); }, { area: true, rows: 3 }))));
+  /* Vocabulario de ATAM (SEI): riesgos, no-riesgos y puntos de sensibilidad. Una fila por concepto para que A y B queden alineadas. */
+  g.append(el('div', { class: 'comp-fila-tit' }, 'Riesgos, no-riesgos y puntos de sensibilidad ', el('small', { text: '· las decisiones que ponen en riesgo o sostienen cada escenario' })));
+  [
+    ['riesgos', 'riesgos', 'Riesgos', 'Una decisión que puede hacer fallar un escenario. Nombren el escenario (E1, E2…) que pone en riesgo.'],
+    ['noRiesgos', 'noriesgos', 'No-riesgos', 'Una decisión que protege un escenario, y por qué.'],
+    ['sensibilidad', 'sens', 'Punto de sensibilidad', 'La decisión en la que un cambio pequeño mueve mucho un atributo.']
+  ].forEach(([prop, sufijo, etq, ayuda]) => ['A', 'B'].forEach((k) => g.append(el('div', { class: 'celda riesgo' },
+    campoTexto('alt' + k + '-' + sufijo, etq + ' · Alternativa ' + k, alts[k][prop], (v) => { alts[k][prop] = v; cambio(); }, { area: true, rows: 3, ayuda })))));
 
   g.append(el('div', { class: 'comp-fila-tit renuncia' }, 'RENUNCIA ', el('small', { text: '· obligatoria en las dos alternativas: qué se pierde, cuánto vale, a quién le duele' })));
   ['A', 'B'].forEach((k) => {
@@ -896,10 +914,19 @@ function cerrarDecision() {
   $('textoResumen').value = generarResumen();
   decisionCerrada = true;
   $('notaCambio').hidden = true;
+  const sinRiesgos = alternativasSinRiesgos(estado.alternativas);   /* aviso no bloqueante */
+  const avisoR = $('avisoRiesgos');
+  avisoR.replaceChildren();
+  avisoR.hidden = !sinRiesgos.length;
+  if (sinRiesgos.length) {
+    avisoR.append(el('strong', { text: MSG_RIESGOS }),
+      el('div', { class: 'faltantes', text: 'Sin riesgos documentados: ' + sinRiesgos.map((k) => 'Alternativa ' + k).join(' y ') + '.' }));
+  }
   $('resumen').hidden = false;
   $('estadoCopia').textContent = '';
   $('titResumen').focus();
   $('resumen').scrollIntoView({ block: 'start' });
+  if (sinRiesgos.length) anunciar('Decisión cerrada. ' + MSG_RIESGOS);
   return true;
 }
 
@@ -952,6 +979,8 @@ function generarResumen() {
       const v = a.valoracion[esc.id] || {};
       L.push('      ' + codigo(esc) + ' ' + esc.atributo + ': ' + semEtq(v.sem) + ' — ' + txt(v.just, 'sin justificación'));
     });
+    L.push('   Riesgos: ' + txt(a.riesgos, 'sin documentar'));
+    L.push('   No-riesgos: ' + txt(a.noRiesgos, 'sin documentar'));
     L.push('   Punto de sensibilidad: ' + txt(a.sensibilidad));
     L.push('   RENUNCIA');
     SUBRENUNCIA.forEach(([sub, etq]) => L.push('      ' + etq + ': ' + txt(a.renuncia[sub])));

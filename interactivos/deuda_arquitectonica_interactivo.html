@@ -104,6 +104,10 @@ button { font: inherit; font-weight: 700; border-radius: 8px; padding: 9px 18px;
 .regla { background: var(--azul); color: #fff; border-radius: 8px; padding: 12px 16px; margin: 10px 0 14px; }
 .regla b { color: #fff; }
 .regla span { display: block; font-size: 14px; color: #C9D6EA; margin-top: 2px; }
+.est-cartera { margin: -4px 0 14px; font-size: 15px; }
+.est-cartera:empty { display: none; }
+.est-cartera.suficientes { color: var(--verde); font-weight: 600; }
+.est-cartera.insuficientes { background: #FEF3E2; border: 1px solid #F6C97E; border-left: 5px solid #D97706; color: #7C2D12; border-radius: 0 8px 8px 0; padding: 10px 14px; }
 .tabla-wrap { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-size: 15px; min-width: 960px; }
 th { background: var(--claro); color: var(--azul); text-align: left; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; padding: 8px 10px; border-bottom: 2px solid var(--pale); }
@@ -136,7 +140,7 @@ tr.editando td { background: #FFFBF2; }
 <header class="header">
   <h1>Deuda arquitectónica — principal, interés y vencimiento (interactivo)</h1>
   <p>Maestría en Arquitectura Empresarial · Universidad de La Sabana · Sesión 2 · B7.2 y registro de deuda F-18</p>
-  <p class="encuadre">En vocabulario del TOGAF Standard, 10th Edition: <b>la deuda arquitectónica es el conjunto de brechas del análisis de gaps (Gap Analysis, técnica de ADM Techniques) que se decide NO cerrar en esta iteración.</b> Cada partida indica de qué dominio viene su brecha: Fase B (negocio), C (datos y aplicaciones) o D (tecnología).</p>
+  <p class="encuadre">Leída con el TOGAF Standard, 10th Edition, <b>la deuda arquitectónica puede entenderse como el conjunto de brechas del análisis de brechas (Gap Analysis, técnica de ADM Techniques) que se decide NO cerrar en esta iteración.</b> Cada partida indica de qué dominio viene su brecha: Fase B (negocio), C (datos y aplicaciones) o D (tecnología).</p>
 </header>
 
 <main class="wrap">
@@ -149,7 +153,8 @@ tr.editando td { background: #FFFBF2; }
       <div class="concept"><b>Interés mensual</b><p>Lo que cuesta cada mes convivir con ello, en horas-persona o en pesos.</p></div>
       <div class="concept"><b>Vencimiento</b><p>El mes en que el interés acumulado alcanza el costo de pagarla hoy. Desde ahí, convivir con la deuda ya costó más que pagarla.</p></div>
     </div>
-    <h3>Tres estrategias, y solo tres</h3>
+    <h3>Tres estrategias entre las que elegir en cada partida</h3>
+    <p class="small" style="margin-bottom:8px">Cada partida lleva una sola estrategia; la cartera completa debe usar al menos dos, porque así lo pide la Actividad 2.2.</p>
     <div class="trio">
       <div class="concept"><b><span class="tag-est est-PAGAR">PAGAR</span></b><p>Se hace el trabajo pendiente y el interés deja de correr.</p></div>
       <div class="concept"><b><span class="tag-est est-REFINANCIAR">REFINANCIAR</span></b><p>Se aísla la deuda detrás de un adaptador para que no se propague. El principal sigue ahí, pero deja de crecer hacia otros sistemas.</p></div>
@@ -288,6 +293,7 @@ tr.editando td { background: #FFFBF2; }
       <b>Regla: se paga primero la que vence primero.</b> El orden de esta tabla es el orden de pago.
       <span>Si dos partidas vencen el mismo mes, va primero la de mayor interés mensual en pesos. Las declaradas también entran en la fila: declarar fija cuándo se revisa la deuda, no la borra de la cartera.</span>
     </div>
+    <p id="estrategias" class="est-cartera" aria-live="polite"></p>
     <div class="tabla-wrap">
       <table>
         <caption class="small" style="text-align:left;caption-side:bottom;padding-top:8px" id="cap-cartera"></caption>
@@ -423,11 +429,21 @@ var Deuda = (function () {
     });
   }
 
+  /* Estrategias distintas que usa la cartera, en el orden PAGAR, REFINANCIAR, DECLARAR.
+     Cada partida elige una sola; la Actividad 2.2 pide que la cartera completa use al menos dos.
+     Ignora partidas sin estrategia o con un valor que no sea una de las tres. */
+  var ESTRATEGIAS = ['PAGAR', 'REFINANCIAR', 'DECLARAR'], MIN_ESTRATEGIAS = 2;
+  function estrategiasDistintas(partidas) {
+    var usadas = (partidas || []).map(function (p) { return p ? p.estrategia : null; });
+    return ESTRATEGIAS.filter(function (e) { return usadas.indexOf(e) !== -1; });
+  }
+
   return {
     MENSAJE_INTERES: MENSAJE_INTERES, parseNumero: parseNumero, parseCifra: parseCifra,
     parsePorcentaje: parsePorcentaje, acumulado: acumulado, vencimiento: vencimiento,
     cruceContinuo: cruceContinuo, aCOP: aCOP, formato: formato,
-    fechaVencimiento: fechaVencimiento, ordenar: ordenar
+    fechaVencimiento: fechaVencimiento, ordenar: ordenar,
+    ESTRATEGIAS: ESTRATEGIAS, MIN_ESTRATEGIAS: MIN_ESTRATEGIAS, estrategiasDistintas: estrategiasDistintas
   };
 })();
 if (typeof module !== 'undefined') module.exports = Deuda;
@@ -444,7 +460,7 @@ if (typeof module !== 'undefined') module.exports = Deuda;
     { elemento: 'Red Salud Andina · 6 sedes adquiridas operando con un HIS distinto', dominio: 'C',
       principal: 'La conciliación de identidades de paciente entre los dos HIS se hace manualmente.',
       unidad: 'h', costo: '1.800', interes: '120', crec: '0',
-      desc: '120 horas-persona al mes en admisiones (cifra del caso). El riesgo clínico de duplicados no cabe en la cifra: se registra aparte y refuerza la decisión de pagar. Costo de pagarla hoy, estimado: índice maestro de pacientes y depuración inicial de duplicados.',
+      desc: '120 horas-persona al mes en admisiones (supuesto declarado: el dossier del caso solo da el error estimado del 6 % en la conciliación). El riesgo clínico de duplicados no cabe en la cifra: se registra aparte y refuerza la decisión de pagar. Costo de pagarla hoy, estimado: índice maestro de pacientes y depuración inicial de duplicados.',
       estrategia: 'PAGAR', resp: 'Dirección de Admisiones, con el arquitecto de integración', just: '' },
     { elemento: 'Banco Colombia Digital · integración punto a punto construida «porque el cronograma no daba»', dominio: 'C',
       principal: 'El adaptador entre el core T24 y los microservicios no tiene contrato versionado.',
@@ -679,8 +695,33 @@ if (typeof module !== 'undefined') module.exports = Deuda;
     var items = D.ordenar(estado.partidas.map(calcular).filter(Boolean));
     items.forEach(function (it, k) { it.n = k + 1; it.color = COLORES[k % COLORES.length]; });
     renderCartera(items);
+    renderEstrategias(items);
     renderGrafica(items);
     renderF18(items);
+  }
+
+  /* ── Estrategias de la cartera: la Actividad 2.2 pide al menos dos. Avisa, no bloquea. ── */
+  var ALTERNATIVAS = {
+    PAGAR: 'se refinancia o se declara en vez de pagarse',
+    REFINANCIAR: 'se paga o se declara en vez de refinanciarse',
+    DECLARAR: 'se paga o se refinancia en vez de declararse'
+  };
+  var NUMEROS = ['cero', 'una', 'dos', 'tres'];
+  function listaY(xs) { return xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' y ' + xs[xs.length - 1]; }
+  function renderEstrategias(items) {
+    var usadas = D.estrategiasDistintas(items.map(function (it) { return it.p; })), n = usadas.length, caja = $('estrategias'), texto, clase;
+    if (n >= D.MIN_ESTRATEGIAS) {
+      clase = 'est-cartera suficientes';
+      texto = 'La cartera usa ' + (NUMEROS[n] || n) + ' estrategias distintas: ' + listaY(usadas) + '.';
+    } else {
+      clase = 'est-cartera insuficientes';
+      texto = 'La Actividad 2.2 pide al menos dos estrategias de gestión de la deuda. ';
+      if (!n) texto += 'Registren al menos dos partidas con estrategias distintas.';
+      else if (items.length === 1) texto += 'Hoy la cartera tiene una sola partida y usa una sola estrategia (' + usadas[0] + '). Registren otra partida con una estrategia distinta.';
+      else texto += 'Hoy la cartera usa una sola (' + usadas[0] + '). Revisen si alguna partida ' + ALTERNATIVAS[usadas[0]] + '.';
+    }
+    caja.className = clase;
+    if (caja.textContent !== texto) caja.textContent = texto;
   }
 
   function renderCartera(items) {
@@ -742,6 +783,8 @@ if (typeof module !== 'undefined') module.exports = Deuda;
         '\n    Estrategia: ' + p.estrategia + (p.just ? '. ' + p.just : '') +
         '\n    Responsable: ' + p.resp;
     }).join('\n\n');
+    var nEst = D.estrategiasDistintas(items.map(function (it) { return it.p; })).length;
+    $('f18').value += (items.length ? '\n\n' : '') + 'Estrategias usadas en la cartera: ' + nEst + ' (la Actividad 2.2 pide al menos dos).';
   }
 
   /* ── Gráfica SVG calculada a mano ── */

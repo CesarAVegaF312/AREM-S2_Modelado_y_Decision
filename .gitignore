@@ -1,0 +1,5 @@
+# Copias de respaldo que Archi crea al guardar un modelo
+*.bak
+
+# Decks en PowerPoint: se conservan en local, en el repositorio solo van los PDF
+*.pptx

@@ -1,0 +1,1130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://www.opengroup.org/xsd/archimate/3.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengroup.org/xsd/archimate/3.0/ http://www.opengroup.org/xsd/archimate/3.1/archimate3_Diagram.xsd" identifier="model-5a17d001">
+  <name>Red Salud Andina — Arquitectura Unidad 2</name>
+  <documentation>Modelo de ejemplo de la Unidad 2 del curso de Arquitectura Empresarial (Maestría en Ingeniería de Software, Universidad de La Sabana).
+
+Caso: Red Salud Andina, IPS de 24 sedes que creció por replicación, adquirió seis sedes que siguen operando con otro sistema de historia clínica, y prometió públicamente «historia clínica única».
+
+Contiene las cuatro vistas que exige la Actividad 2.2, cada una con su stakeholder, su concern y la decisión que habilita, en la documentación de la propia vista. Marco: TOGAF Standard, 10.ª edición. Lenguaje: ArchiMate 3.2.
+
+La costura —el punto donde las dos alternativas difieren— está marcada en la vista de aplicación y tecnología.</documentation>
+  <elements>
+    <element identifier="id-5a17d013" xsi:type="Capability">
+      <name>Gestión de identidad del paciente</name>
+      <documentation>Madurez 1 de 5 en el heat map de la Unidad 1. Es la única capacidad que entra al alcance de esta unidad.</documentation>
+    </element>
+    <element identifier="id-5a17d014" xsi:type="Capability">
+      <name>Atención clínica ambulatoria</name>
+      <documentation>Madurez 3 de 5. Se muestra para dar contexto; no se detalla.</documentation>
+    </element>
+    <element identifier="id-5a17d015" xsi:type="Capability">
+      <name>Facturación de servicios</name>
+      <documentation>Madurez 3 de 5. Contexto.</documentation>
+    </element>
+    <element identifier="id-5a17d016" xsi:type="BusinessActor">
+      <name>Paciente</name>
+      <documentation>Actor: existe en el mundo. No confundir con el rol que cumple.</documentation>
+    </element>
+    <element identifier="id-5a17d017" xsi:type="BusinessRole">
+      <name>Auxiliar de admisiones</name>
+      <documentation>Rol: la función, no la persona. Hoy hace la conciliación manual de identidades. SUPUESTO DECLARADO: 120 horas-persona al mes; el dossier solo da el error estimado del 6 % en la conciliación.</documentation>
+    </element>
+    <element identifier="id-5a17d018" xsi:type="BusinessRole">
+      <name>Médico tratante</name>
+    </element>
+    <element identifier="id-5a17d019" xsi:type="BusinessProcess">
+      <name>Identificar al paciente</name>
+    </element>
+    <element identifier="id-5a17d01a" xsi:type="BusinessProcess">
+      <name>Recuperar historia previa</name>
+      <documentation>AQUÍ SE ROMPE la historia única: el paso devuelve solo la historia de la sede actual. Es el punto que el modelo existe para mostrar.</documentation>
+    </element>
+    <element identifier="id-5a17d01b" xsi:type="BusinessProcess">
+      <name>Atender consulta</name>
+    </element>
+    <element identifier="id-5a17d01c" xsi:type="BusinessProcess">
+      <name>Registrar y facturar</name>
+    </element>
+    <element identifier="id-5a17d01d" xsi:type="BusinessObject">
+      <name>Historia clínica</name>
+      <documentation>Objeto de negocio: de esto habla el negocio, independientemente del sistema que lo almacene.</documentation>
+    </element>
+    <element identifier="id-5a17d01e" xsi:type="BusinessObject">
+      <name>Identidad del paciente</name>
+    </element>
+    <element identifier="id-5a17d01f" xsi:type="BusinessService">
+      <name>Consulta de historia clínica unificada</name>
+      <documentation>El servicio que la organización prometió y hoy no presta completo.</documentation>
+    </element>
+    <element identifier="id-5a17d020" xsi:type="ApplicationComponent">
+      <name>HIS corporativo</name>
+      <documentation>18 sedes. Sistema de historia clínica principal.</documentation>
+    </element>
+    <element identifier="id-5a17d021" xsi:type="ApplicationComponent">
+      <name>HIS adquirido</name>
+      <documentation>6 sedes adquiridas. SUPUESTO DECLARADO: se asume que expone una API de consulta. Si solo permitiera acceso a base de datos, el adaptador cambia de naturaleza y el esfuerzo se duplica (F-12, fila 7).</documentation>
+    </element>
+    <element identifier="id-5a17d022" xsi:type="ApplicationComponent">
+      <name>Índice maestro de pacientes</name>
+      <documentation>ABB, no un producto: «motor de reglas de identidad». Elegir el producto es una decisión de la Fase E y se toma después de comparar alternativas.
+
+ESTE ES EL COMPONENTE DE LA COSTURA. La alternativa B lo elimina.</documentation>
+    </element>
+    <element identifier="id-5a17d023" xsi:type="ApplicationComponent">
+      <name>Adaptador de integración</name>
+      <documentation>Aísla al HIS adquirido para que nadie le hable directo. Es la estrategia de refinanciación de la deuda: no baja el principal, baja el riesgo de contagio.</documentation>
+    </element>
+    <element identifier="id-5a17d024" xsi:type="DataObject">
+      <name>Registro de identidad</name>
+      <documentation>Realiza el objeto de negocio «Identidad del paciente». Esa trazabilidad entre capas es un criterio de la rúbrica.</documentation>
+    </element>
+    <element identifier="id-5a17d025" xsi:type="ApplicationService">
+      <name>Consulta unificada de historia</name>
+    </element>
+    <element identifier="id-5a17d026" xsi:type="Node">
+      <name>Servidor de aplicaciones sede central</name>
+    </element>
+    <element identifier="id-5a17d027" xsi:type="Node">
+      <name>Clúster de contenedores (nube privada)</name>
+      <documentation>El límite de la vista es el nodo y el servicio de tecnología. Cuántas réplicas tiene el clúster no es una decisión de arquitectura empresarial.</documentation>
+    </element>
+    <element identifier="id-5a17d028" xsi:type="Node">
+      <name>Servidor de la sede adquirida</name>
+      <documentation>Otra sede, otro servidor, otra ventana de mantenimiento. Importa para el escenario de disponibilidad.</documentation>
+    </element>
+    <element identifier="id-5a17d00b" xsi:type="Stakeholder">
+      <name>Dirección General (Presidencia)</name>
+      <documentation>En el dossier del caso es la Presidencia. Responde ante el consejo directivo por la promesa pública. Su interés: que la promesa sea sostenible sin duplicar la plataforma clínica.</documentation>
+    </element>
+    <element identifier="id-5a17d00c" xsi:type="Stakeholder">
+      <name>Superintendencia Nacional de Salud</name>
+      <documentation>Regulador nacional del sector. Vigila la calidad y la trazabilidad de la atención, y por eso le importa que la promesa de historia clínica única se cumpla.</documentation>
+    </element>
+    <element identifier="id-5a17d00d" xsi:type="Driver">
+      <name>Promesa pública de historia clínica única</name>
+      <documentation>No es algo que la organización eligió técnicamente: es un compromiso declarado que restringe lo que se puede decidir.</documentation>
+    </element>
+    <element identifier="id-5a17d00e" xsi:type="Assessment">
+      <name>6 sedes operan con otro HIS</name>
+      <documentation>Hallazgo del diagnóstico de la Unidad 1. Es la brecha priorizada que define la decisión de esta unidad.</documentation>
+    </element>
+    <element identifier="id-5a17d00f" xsi:type="Goal">
+      <name>Historia completa del paciente en ≤ 5 min</name>
+      <documentation>SUPUESTO DECLARADO: la meta de 5 minutos no está en ningún documento; se infirió de la declaración pública de la Dirección (F-12, fila 3).</documentation>
+    </element>
+    <element identifier="id-5a17d010" xsi:type="Outcome">
+      <name>Cero duplicados de paciente</name>
+      <documentation>Resultado medible. A diferencia de la meta, este se puede verificar.</documentation>
+    </element>
+    <element identifier="id-5a17d011" xsi:type="Principle">
+      <name>Interoperar antes que consolidar</name>
+      <documentation>Un principio restringe. Este descarta la alternativa B —migrar las 6 sedes adquiridas al HIS corporativo y apagar el suyo— salvo que el contexto cambie. Un principio que no descarta ninguna alternativa no es un principio: es un eslogan.</documentation>
+    </element>
+    <element identifier="id-5a17d012" xsi:type="Requirement">
+      <name>Identidad única de paciente</name>
+      <documentation>Requisito que la capacidad de gestión de identidad debe realizar.</documentation>
+    </element>
+    <element identifier="id-5a17d029" xsi:type="Plateau">
+      <name>T+0 · Estado actual</name>
+      <documentation>Dos HIS. Conciliación manual de identidades.</documentation>
+    </element>
+    <element identifier="id-5a17d02a" xsi:type="Plateau">
+      <name>T+1 · Identidad única</name>
+      <documentation>MPI en producción y dos sedes piloto. Un plateau es un estado estable: si el proyecto se detiene aquí, la organización queda funcionando.</documentation>
+    </element>
+    <element identifier="id-5a17d02b" xsi:type="Plateau">
+      <name>T+2 · Historia unificada</name>
+      <documentation>Seis sedes integradas. Conciliación automática.
+
+DEJA DE EXISTIR: la conciliación manual de admisiones (supuesto: 120 horas-persona al mes).</documentation>
+    </element>
+    <element identifier="id-5a17d02c" xsi:type="Gap">
+      <name>No existe fuente única de identidad</name>
+    </element>
+    <element identifier="id-5a17d02d" xsi:type="Gap">
+      <name>HIS de las 6 sedes adquiridas sin contrato de integración</name>
+    </element>
+    <element identifier="id-5a17d02e" xsi:type="WorkPackage">
+      <name>Construir el MPI</name>
+    </element>
+    <element identifier="id-5a17d02f" xsi:type="WorkPackage">
+      <name>Depurar duplicados</name>
+    </element>
+    <element identifier="id-5a17d030" xsi:type="WorkPackage">
+      <name>Adaptador por sede</name>
+    </element>
+    <element identifier="id-5a17d031" xsi:type="WorkPackage">
+      <name>Apagar conciliación manual</name>
+    </element>
+    <element identifier="id-5a17d032" xsi:type="Deliverable">
+      <name>Índice maestro en producción</name>
+      <documentation>El paquete de trabajo produce un entregable, y el entregable es el que realiza el plateau. Saltarse el entregable es el error típico de esta vista.</documentation>
+    </element>
+    <element identifier="id-5a17d033" xsi:type="Deliverable">
+      <name>Seis sedes integradas</name>
+    </element>
+  </elements>
+  <relationships>
+    <relationship identifier="id-5a17d034" source="id-5a17d00b" target="id-5a17d00d" xsi:type="Association" />
+    <relationship identifier="id-5a17d035" source="id-5a17d00c" target="id-5a17d00d" xsi:type="Association" />
+    <relationship identifier="id-5a17d036" source="id-5a17d00e" target="id-5a17d00d" xsi:type="Influence" />
+    <relationship identifier="id-5a17d037" source="id-5a17d00d" target="id-5a17d00f" xsi:type="Influence" />
+    <relationship identifier="id-5a17d038" source="id-5a17d010" target="id-5a17d00f" xsi:type="Realization" />
+    <relationship identifier="id-5a17d039" source="id-5a17d011" target="id-5a17d00f" xsi:type="Realization" />
+    <relationship identifier="id-5a17d03a" source="id-5a17d012" target="id-5a17d011" xsi:type="Realization" />
+    <relationship identifier="id-5a17d03b" source="id-5a17d013" target="id-5a17d012" xsi:type="Realization" />
+    <relationship identifier="id-5a17d03c" source="id-5a17d013" target="id-5a17d01f" xsi:type="Association">
+      <name>sostiene</name>
+    </relationship>
+    <relationship identifier="id-5a17d03d" source="id-5a17d017" target="id-5a17d019" xsi:type="Assignment" />
+    <relationship identifier="id-5a17d03e" source="id-5a17d018" target="id-5a17d01b" xsi:type="Assignment" />
+    <relationship identifier="id-5a17d03f" source="id-5a17d019" target="id-5a17d01a" xsi:type="Triggering" />
+    <relationship identifier="id-5a17d040" source="id-5a17d01a" target="id-5a17d01b" xsi:type="Triggering" />
+    <relationship identifier="id-5a17d041" source="id-5a17d01b" target="id-5a17d01c" xsi:type="Triggering" />
+    <relationship identifier="id-5a17d042" source="id-5a17d01a" target="id-5a17d01d" xsi:type="Access" accessType="Write" />
+    <relationship identifier="id-5a17d043" source="id-5a17d019" target="id-5a17d01e" xsi:type="Access" accessType="Write" />
+    <relationship identifier="id-5a17d044" source="id-5a17d01b" target="id-5a17d01f" xsi:type="Realization" />
+    <relationship identifier="id-5a17d045" source="id-5a17d01f" target="id-5a17d016" xsi:type="Serving" />
+    <relationship identifier="id-5a17d046" source="id-5a17d022" target="id-5a17d025" xsi:type="Realization" />
+    <relationship identifier="id-5a17d047" source="id-5a17d025" target="id-5a17d01f" xsi:type="Serving" />
+    <relationship identifier="id-5a17d048" source="id-5a17d022" target="id-5a17d020" xsi:type="Serving" />
+    <relationship identifier="id-5a17d049" source="id-5a17d023" target="id-5a17d022" xsi:type="Serving" />
+    <relationship identifier="id-5a17d04a" source="id-5a17d021" target="id-5a17d023" xsi:type="Flow" />
+    <relationship identifier="id-5a17d04b" source="id-5a17d022" target="id-5a17d024" xsi:type="Access" accessType="Write" />
+    <relationship identifier="id-5a17d04c" source="id-5a17d024" target="id-5a17d01e" xsi:type="Realization" />
+    <relationship identifier="id-5a17d04d" source="id-5a17d026" target="id-5a17d020" xsi:type="Realization" />
+    <relationship identifier="id-5a17d04e" source="id-5a17d027" target="id-5a17d022" xsi:type="Realization" />
+    <relationship identifier="id-5a17d04f" source="id-5a17d028" target="id-5a17d021" xsi:type="Realization" />
+    <relationship identifier="id-5a17d050" source="id-5a17d029" target="id-5a17d02a" xsi:type="Triggering" />
+    <relationship identifier="id-5a17d051" source="id-5a17d02a" target="id-5a17d02b" xsi:type="Triggering" />
+    <relationship identifier="id-5a17d052" source="id-5a17d02c" target="id-5a17d02a" xsi:type="Association" />
+    <relationship identifier="id-5a17d053" source="id-5a17d02d" target="id-5a17d02b" xsi:type="Association" />
+    <relationship identifier="id-5a17d054" source="id-5a17d02e" target="id-5a17d032" xsi:type="Realization" />
+    <relationship identifier="id-5a17d055" source="id-5a17d02f" target="id-5a17d032" xsi:type="Realization" />
+    <relationship identifier="id-5a17d056" source="id-5a17d030" target="id-5a17d033" xsi:type="Realization" />
+    <relationship identifier="id-5a17d057" source="id-5a17d031" target="id-5a17d033" xsi:type="Realization" />
+    <relationship identifier="id-5a17d058" source="id-5a17d032" target="id-5a17d02a" xsi:type="Realization" />
+    <relationship identifier="id-5a17d059" source="id-5a17d033" target="id-5a17d02b" xsi:type="Realization" />
+    <relationship identifier="id-5a17d0b0" source="id-5a17d032" target="id-5a17d022" xsi:type="Realization" />
+  </relationships>
+  <organizations>
+    <item>
+      <label>Strategy</label>
+      <item identifierRef="id-5a17d013" />
+      <item identifierRef="id-5a17d014" />
+      <item identifierRef="id-5a17d015" />
+    </item>
+    <item>
+      <label>Business</label>
+      <item identifierRef="id-5a17d016" />
+      <item identifierRef="id-5a17d017" />
+      <item identifierRef="id-5a17d018" />
+      <item identifierRef="id-5a17d019" />
+      <item identifierRef="id-5a17d01a" />
+      <item identifierRef="id-5a17d01b" />
+      <item identifierRef="id-5a17d01c" />
+      <item identifierRef="id-5a17d01d" />
+      <item identifierRef="id-5a17d01e" />
+      <item identifierRef="id-5a17d01f" />
+    </item>
+    <item>
+      <label>Application</label>
+      <item identifierRef="id-5a17d020" />
+      <item identifierRef="id-5a17d021" />
+      <item identifierRef="id-5a17d022" />
+      <item identifierRef="id-5a17d023" />
+      <item identifierRef="id-5a17d024" />
+      <item identifierRef="id-5a17d025" />
+    </item>
+    <item>
+      <label>Technology &amp; Physical</label>
+      <item identifierRef="id-5a17d026" />
+      <item identifierRef="id-5a17d027" />
+      <item identifierRef="id-5a17d028" />
+    </item>
+    <item>
+      <label>Motivation</label>
+      <item identifierRef="id-5a17d00b" />
+      <item identifierRef="id-5a17d00c" />
+      <item identifierRef="id-5a17d00d" />
+      <item identifierRef="id-5a17d00e" />
+      <item identifierRef="id-5a17d00f" />
+      <item identifierRef="id-5a17d010" />
+      <item identifierRef="id-5a17d011" />
+      <item identifierRef="id-5a17d012" />
+    </item>
+    <item>
+      <label>Implementation &amp; Migration</label>
+      <item identifierRef="id-5a17d029" />
+      <item identifierRef="id-5a17d02a" />
+      <item identifierRef="id-5a17d02b" />
+      <item identifierRef="id-5a17d02c" />
+      <item identifierRef="id-5a17d02d" />
+      <item identifierRef="id-5a17d02e" />
+      <item identifierRef="id-5a17d02f" />
+      <item identifierRef="id-5a17d030" />
+      <item identifierRef="id-5a17d031" />
+      <item identifierRef="id-5a17d032" />
+      <item identifierRef="id-5a17d033" />
+    </item>
+    <item>
+      <label>Relations</label>
+      <item identifierRef="id-5a17d034" />
+      <item identifierRef="id-5a17d035" />
+      <item identifierRef="id-5a17d036" />
+      <item identifierRef="id-5a17d037" />
+      <item identifierRef="id-5a17d038" />
+      <item identifierRef="id-5a17d039" />
+      <item identifierRef="id-5a17d03a" />
+      <item identifierRef="id-5a17d03b" />
+      <item identifierRef="id-5a17d03c" />
+      <item identifierRef="id-5a17d03d" />
+      <item identifierRef="id-5a17d03e" />
+      <item identifierRef="id-5a17d03f" />
+      <item identifierRef="id-5a17d040" />
+      <item identifierRef="id-5a17d041" />
+      <item identifierRef="id-5a17d042" />
+      <item identifierRef="id-5a17d043" />
+      <item identifierRef="id-5a17d044" />
+      <item identifierRef="id-5a17d045" />
+      <item identifierRef="id-5a17d046" />
+      <item identifierRef="id-5a17d047" />
+      <item identifierRef="id-5a17d048" />
+      <item identifierRef="id-5a17d049" />
+      <item identifierRef="id-5a17d04a" />
+      <item identifierRef="id-5a17d04b" />
+      <item identifierRef="id-5a17d04c" />
+      <item identifierRef="id-5a17d04d" />
+      <item identifierRef="id-5a17d04e" />
+      <item identifierRef="id-5a17d04f" />
+      <item identifierRef="id-5a17d050" />
+      <item identifierRef="id-5a17d051" />
+      <item identifierRef="id-5a17d052" />
+      <item identifierRef="id-5a17d053" />
+      <item identifierRef="id-5a17d054" />
+      <item identifierRef="id-5a17d055" />
+      <item identifierRef="id-5a17d056" />
+      <item identifierRef="id-5a17d057" />
+      <item identifierRef="id-5a17d058" />
+      <item identifierRef="id-5a17d059" />
+      <item identifierRef="id-5a17d0b0" />
+    </item>
+    <item>
+      <label>Views</label>
+      <item identifierRef="view-5a17d05a" />
+      <item identifierRef="view-5a17d071" />
+      <item identifierRef="view-5a17d086" />
+      <item identifierRef="view-5a17d099" />
+    </item>
+  </organizations>
+  <views>
+    <diagrams>
+      <view identifier="view-5a17d05a" xsi:type="Diagram">
+        <name>1 · Qué promesa hay que sostener y con qué capacidad</name>
+        <documentation>STAKEHOLDER: Dirección General (Presidencia) y Superintendencia Nacional de Salud
+CONCERN: que la promesa pública de historia clínica única sea sostenible
+PUNTO DE VISTA: motivación y capacidades. Sin aplicaciones ni nodos
+FASE DEL ADM: B · Business Architecture
+DECISIÓN QUE HABILITA: cuál capacidad se interviene primero
+
+SUPUESTO DECLARADO: la meta de 5 minutos se infirió de la declaración pública de la Dirección; no está en ningún documento (F-12, fila 3).</documentation>
+        <node identifier="obj-5a17d05b" elementRef="id-5a17d00b" xsi:type="Element" x="24" y="60" w="160" h="61">
+          <style>
+            <fillColor r="204" g="204" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d05c" elementRef="id-5a17d00c" xsi:type="Element" x="24" y="150" w="160" h="61">
+          <style>
+            <fillColor r="204" g="204" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d05d" elementRef="id-5a17d00d" xsi:type="Element" x="240" y="60" w="180" h="61">
+          <style>
+            <fillColor r="204" g="204" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d05e" elementRef="id-5a17d00e" xsi:type="Element" x="240" y="150" w="180" h="61">
+          <style>
+            <fillColor r="204" g="204" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d05f" elementRef="id-5a17d00f" xsi:type="Element" x="480" y="60" w="180" h="61">
+          <style>
+            <fillColor r="204" g="204" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d060" elementRef="id-5a17d010" xsi:type="Element" x="480" y="150" w="180" h="61">
+          <style>
+            <fillColor r="204" g="204" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d061" elementRef="id-5a17d011" xsi:type="Element" x="720" y="60" w="180" h="61">
+          <style>
+            <fillColor r="204" g="204" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d062" elementRef="id-5a17d012" xsi:type="Element" x="720" y="150" w="180" h="61">
+          <style>
+            <fillColor r="204" g="204" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d063" elementRef="id-5a17d013" xsi:type="Element" x="240" y="290" w="200" h="70">
+          <style>
+            <fillColor r="245" g="222" b="170" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d064" elementRef="id-5a17d014" xsi:type="Element" x="480" y="290" w="200" h="70">
+          <style>
+            <fillColor r="245" g="222" b="170" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d065" elementRef="id-5a17d015" xsi:type="Element" x="720" y="290" w="200" h="70">
+          <style>
+            <fillColor r="245" g="222" b="170" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d066" elementRef="id-5a17d01f" xsi:type="Element" x="480" y="410" w="200" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="note-5a17d070" xsi:type="Label" x="24" y="290" w="190" h="90">
+          <label>La capacidad en rojo del heat map de la U1 (madurez 1 de 5) es la única que entra al alcance. Las otras dos dan contexto y no se detallan.</label>
+          <style>
+            <fillColor r="255" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <connection identifier="conn-5a17d067" relationshipRef="id-5a17d034" xsi:type="Relationship" source="obj-5a17d05b" target="obj-5a17d05d">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d068" relationshipRef="id-5a17d035" xsi:type="Relationship" source="obj-5a17d05c" target="obj-5a17d05d">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d06a" relationshipRef="id-5a17d037" xsi:type="Relationship" source="obj-5a17d05d" target="obj-5a17d05f">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d069" relationshipRef="id-5a17d036" xsi:type="Relationship" source="obj-5a17d05e" target="obj-5a17d05d">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d06b" relationshipRef="id-5a17d038" xsi:type="Relationship" source="obj-5a17d060" target="obj-5a17d05f">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d06c" relationshipRef="id-5a17d039" xsi:type="Relationship" source="obj-5a17d061" target="obj-5a17d05f">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d06d" relationshipRef="id-5a17d03a" xsi:type="Relationship" source="obj-5a17d062" target="obj-5a17d061">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d06e" relationshipRef="id-5a17d03b" xsi:type="Relationship" source="obj-5a17d063" target="obj-5a17d062">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d06f" relationshipRef="id-5a17d03c" xsi:type="Relationship" source="obj-5a17d063" target="obj-5a17d066">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+      </view>
+      <view identifier="view-5a17d071" xsi:type="Diagram">
+        <name>2 · En qué punto de la atención se rompe la historia única</name>
+        <documentation>STAKEHOLDER: dirección médica
+CONCERN: en qué punto de la atención se rompe la historia única
+PUNTO DE VISTA: proceso de negocio con actores, roles y objetos
+FASE DEL ADM: B · Business Architecture
+DECISIÓN QUE HABILITA: dónde se interviene, si en admisión o en consulta
+
+SUPUESTO DECLARADO: se asume que el laboratorio B2B no consume la historia clínica. No fue posible verificarlo con el área comercial (F-12, fila 5).</documentation>
+        <node identifier="obj-5a17d072" elementRef="id-5a17d016" xsi:type="Element" x="36" y="420" w="160" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d073" elementRef="id-5a17d017" xsi:type="Element" x="24" y="140" w="160" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d074" elementRef="id-5a17d018" xsi:type="Element" x="804" y="276" w="160" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d075" elementRef="id-5a17d019" xsi:type="Element" x="260" y="140" w="160" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d076" elementRef="id-5a17d01a" xsi:type="Element" x="460" y="140" w="160" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d077" elementRef="id-5a17d01b" xsi:type="Element" x="660" y="140" w="160" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d078" elementRef="id-5a17d01c" xsi:type="Element" x="860" y="140" w="160" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d079" elementRef="id-5a17d01e" xsi:type="Element" x="260" y="300" w="160" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d07a" elementRef="id-5a17d01d" xsi:type="Element" x="460" y="300" w="160" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d07b" elementRef="id-5a17d01f" xsi:type="Element" x="560" y="410" w="220" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="note-5a17d085" xsi:type="Label" x="430" y="40" w="250" h="70">
+          <label>AQUÍ SE ROMPE
+El paso «Recuperar historia previa» devuelve solo la historia de la sede actual.</label>
+          <style>
+            <fillColor r="255" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <connection identifier="conn-5a17d07c" relationshipRef="id-5a17d03d" xsi:type="Relationship" source="obj-5a17d073" target="obj-5a17d075">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d07d" relationshipRef="id-5a17d03e" xsi:type="Relationship" source="obj-5a17d074" target="obj-5a17d077">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d07e" relationshipRef="id-5a17d03f" xsi:type="Relationship" source="obj-5a17d075" target="obj-5a17d076">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d081" relationshipRef="id-5a17d043" xsi:type="Relationship" source="obj-5a17d075" target="obj-5a17d079">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d07f" relationshipRef="id-5a17d040" xsi:type="Relationship" source="obj-5a17d076" target="obj-5a17d077">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d082" relationshipRef="id-5a17d042" xsi:type="Relationship" source="obj-5a17d076" target="obj-5a17d07a">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d080" relationshipRef="id-5a17d041" xsi:type="Relationship" source="obj-5a17d077" target="obj-5a17d078">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d083" relationshipRef="id-5a17d044" xsi:type="Relationship" source="obj-5a17d077" target="obj-5a17d07b">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d084" relationshipRef="id-5a17d045" xsi:type="Relationship" source="obj-5a17d07b" target="obj-5a17d072">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+      </view>
+      <view identifier="view-5a17d086" xsi:type="Diagram">
+        <name>3 · Qué sistemas tendrían que hablarse y por dónde</name>
+        <documentation>STAKEHOLDER: equipo de arquitectura y comité de inversión
+CONCERN: qué sistemas tendrían que hablarse, y por dónde
+PUNTO DE VISTA: aplicación con su sustrato tecnológico
+FASE DEL ADM: C y D · Sistemas de información y tecnología
+DECISIÓN QUE HABILITA: qué se pone en la costura. Es la decisión de la Fase E
+
+ENGANCHE CON LAS OTRAS VISTAS: el servicio de aplicación sirve al servicio de negocio de las vistas 1 y 2, y el registro de identidad realiza el objeto de negocio «Identidad del paciente» de la vista 2.
+
+LA COSTURA está entre los dos HIS: el índice maestro y el adaptador. La alternativa B elimina ambos: migra las 6 sedes adquiridas al HIS corporativo y apaga el HIS de esas sedes.</documentation>
+        <node identifier="obj-5a17d087" elementRef="id-5a17d025" xsi:type="Element" x="400" y="40" w="220" h="61">
+          <style>
+            <fillColor r="181" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d088" elementRef="id-5a17d020" xsi:type="Element" x="40" y="180" w="160" h="61">
+          <style>
+            <fillColor r="181" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d089" elementRef="id-5a17d021" xsi:type="Element" x="840" y="180" w="160" h="61">
+          <style>
+            <fillColor r="181" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d08a" elementRef="id-5a17d022" xsi:type="Element" x="320" y="180" w="180" h="61">
+          <style>
+            <fillColor r="181" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d08b" elementRef="id-5a17d023" xsi:type="Element" x="560" y="180" w="160" h="61">
+          <style>
+            <fillColor r="181" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d08c" elementRef="id-5a17d024" xsi:type="Element" x="320" y="290" w="180" h="61">
+          <style>
+            <fillColor r="181" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d08d" elementRef="id-5a17d026" xsi:type="Element" x="40" y="420" w="180" h="61">
+          <style>
+            <fillColor r="201" g="231" b="183" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d08e" elementRef="id-5a17d027" xsi:type="Element" x="540" y="372" w="180" h="61">
+          <style>
+            <fillColor r="201" g="231" b="183" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d08f" elementRef="id-5a17d028" xsi:type="Element" x="800" y="420" w="180" h="61">
+          <style>
+            <fillColor r="201" g="231" b="183" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d0b2" elementRef="id-5a17d01f" xsi:type="Element" x="680" y="40" w="220" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d0b4" elementRef="id-5a17d01e" xsi:type="Element" x="320" y="470" w="180" h="61">
+          <style>
+            <fillColor r="255" g="255" b="181" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="note-5a17d098" xsi:type="Label" x="300" y="100" w="320" h="60">
+          <label>LA COSTURA
+Aquí difieren las dos alternativas. Los elementos se nombran como ABB, nunca con un nombre comercial.</label>
+          <style>
+            <fillColor r="255" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <connection identifier="conn-5a17d0b1" relationshipRef="id-5a17d047" xsi:type="Relationship" source="obj-5a17d087" target="obj-5a17d0b2">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d093" relationshipRef="id-5a17d04a" xsi:type="Relationship" source="obj-5a17d089" target="obj-5a17d08b">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d090" relationshipRef="id-5a17d046" xsi:type="Relationship" source="obj-5a17d08a" target="obj-5a17d087">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d091" relationshipRef="id-5a17d048" xsi:type="Relationship" source="obj-5a17d08a" target="obj-5a17d088">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d094" relationshipRef="id-5a17d04b" xsi:type="Relationship" source="obj-5a17d08a" target="obj-5a17d08c">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d092" relationshipRef="id-5a17d049" xsi:type="Relationship" source="obj-5a17d08b" target="obj-5a17d08a">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d0b3" relationshipRef="id-5a17d04c" xsi:type="Relationship" source="obj-5a17d08c" target="obj-5a17d0b4">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d095" relationshipRef="id-5a17d04d" xsi:type="Relationship" source="obj-5a17d08d" target="obj-5a17d088">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d096" relationshipRef="id-5a17d04e" xsi:type="Relationship" source="obj-5a17d08e" target="obj-5a17d08a">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d097" relationshipRef="id-5a17d04f" xsi:type="Relationship" source="obj-5a17d08f" target="obj-5a17d089">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+      </view>
+      <view identifier="view-5a17d099" xsi:type="Diagram">
+        <name>4 · En qué orden se hace y qué deja de existir</name>
+        <documentation>STAKEHOLDER: comité de inversión
+CONCERN: en qué orden se hace, y qué deja de existir
+PUNTO DE VISTA: implementación y migración, plateaus y brechas
+FASE DEL ADM: E · Opportunities &amp; Solutions
+DECISIÓN QUE HABILITA: aprobación por tramos, con puntos de corte
+
+ENGANCHE CON LAS OTRAS VISTAS: el entregable «Índice maestro en producción» realiza el índice maestro de pacientes de la vista 3.
+
+RESTRICCIÓN DEL CASO: el contrato del HIS de las sedes adquiridas (HIS-NORTE) vence en 2027 y renovarlo antes tiene penalidad. Es la fecha que fija los puntos de corte.
+
+SUPUESTO DECLARADO: la convivencia se presupuestó a 18 meses. Ese número es el punto de sensibilidad de toda la decisión: a 30 meses, la alternativa descartada sería la mejor.</documentation>
+        <node identifier="obj-5a17d09a" elementRef="id-5a17d029" xsi:type="Element" x="40" y="60" w="220" h="70">
+          <style>
+            <fillColor r="255" g="224" b="224" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d09b" elementRef="id-5a17d02a" xsi:type="Element" x="340" y="60" w="220" h="70">
+          <style>
+            <fillColor r="255" g="224" b="224" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d09c" elementRef="id-5a17d02b" xsi:type="Element" x="640" y="60" w="220" h="70">
+          <style>
+            <fillColor r="255" g="224" b="224" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d09d" elementRef="id-5a17d02c" xsi:type="Element" x="160" y="180" w="220" h="61">
+          <style>
+            <fillColor r="255" g="224" b="224" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d09e" elementRef="id-5a17d02d" xsi:type="Element" x="470" y="180" w="220" h="61">
+          <style>
+            <fillColor r="255" g="224" b="224" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d09f" elementRef="id-5a17d032" xsi:type="Element" x="340" y="290" w="220" h="61">
+          <style>
+            <fillColor r="255" g="224" b="224" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d0a0" elementRef="id-5a17d033" xsi:type="Element" x="640" y="290" w="220" h="61">
+          <style>
+            <fillColor r="255" g="224" b="224" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d0a1" elementRef="id-5a17d02e" xsi:type="Element" x="300" y="410" w="150" h="61">
+          <style>
+            <fillColor r="255" g="224" b="224" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d0a2" elementRef="id-5a17d02f" xsi:type="Element" x="470" y="410" w="150" h="61">
+          <style>
+            <fillColor r="255" g="224" b="224" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d0a3" elementRef="id-5a17d030" xsi:type="Element" x="640" y="410" w="150" h="61">
+          <style>
+            <fillColor r="255" g="224" b="224" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d0a4" elementRef="id-5a17d031" xsi:type="Element" x="810" y="410" w="150" h="61">
+          <style>
+            <fillColor r="255" g="224" b="224" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="obj-5a17d0b6" elementRef="id-5a17d022" xsi:type="Element" x="40" y="290" w="200" h="61">
+          <style>
+            <fillColor r="181" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <node identifier="note-5a17d0af" xsi:type="Label" x="40" y="410" w="230" h="90">
+          <label>DEJA DE EXISTIR
+La conciliación manual de admisiones (supuesto: 120 horas-persona al mes). Una transformación que solo suma cosas no es una transformación.</label>
+          <style>
+            <fillColor r="255" g="255" b="255" a="100" />
+            <lineColor r="92" g="92" b="92" a="100" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </node>
+        <connection identifier="conn-5a17d0a5" relationshipRef="id-5a17d050" xsi:type="Relationship" source="obj-5a17d09a" target="obj-5a17d09b">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d0a6" relationshipRef="id-5a17d051" xsi:type="Relationship" source="obj-5a17d09b" target="obj-5a17d09c">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d0a7" relationshipRef="id-5a17d052" xsi:type="Relationship" source="obj-5a17d09d" target="obj-5a17d09b">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d0a8" relationshipRef="id-5a17d053" xsi:type="Relationship" source="obj-5a17d09e" target="obj-5a17d09c">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d0b5" relationshipRef="id-5a17d0b0" xsi:type="Relationship" source="obj-5a17d09f" target="obj-5a17d0b6">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d0ad" relationshipRef="id-5a17d058" xsi:type="Relationship" source="obj-5a17d09f" target="obj-5a17d09b">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d0ae" relationshipRef="id-5a17d059" xsi:type="Relationship" source="obj-5a17d0a0" target="obj-5a17d09c">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d0a9" relationshipRef="id-5a17d054" xsi:type="Relationship" source="obj-5a17d0a1" target="obj-5a17d09f">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d0aa" relationshipRef="id-5a17d055" xsi:type="Relationship" source="obj-5a17d0a2" target="obj-5a17d09f">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d0ab" relationshipRef="id-5a17d056" xsi:type="Relationship" source="obj-5a17d0a3" target="obj-5a17d0a0">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+        <connection identifier="conn-5a17d0ac" relationshipRef="id-5a17d057" xsi:type="Relationship" source="obj-5a17d0a4" target="obj-5a17d0a0">
+          <style>
+            <lineColor r="0" g="0" b="0" />
+            <font name="Segoe UI" size="9">
+              <color r="0" g="0" b="0" />
+            </font>
+          </style>
+        </connection>
+      </view>
+    </diagrams>
+  </views>
+</model>
