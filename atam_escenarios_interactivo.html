@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Escenarios ATAM Interactivo — Arquitectura Empresarial</title>
+<style>
+:root {
+  --azul: #002060; --medio: #00387D; --claro: #EEF3FA;
+  --pale: #D9E1EF; --slate: #93AAC9; --gris: #4B5563; --gris-claro: #E5E7EB;
+  --verde: #137333; --verde-bg: #E6F4EA;
+  --ambar: #8A5300; --ambar-bg: #FFF4D6;
+  --rojo: #B3261E; --rojo-bg: #FCE8E6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 18px; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #F0F4FB; color: #1a1a2e; line-height: 1.45; }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--medio); outline-offset: 3px; }
+.header :focus-visible { outline-color: #fff; }
+
+/* ── Encabezado ── */
+.header { background: var(--azul); color: #fff; padding: 18px 24px; }
+.header-in { max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
+.header h1 { font-size: 1.45rem; font-weight: 700; line-height: 1.25; }
+.header p { font-size: .9rem; color: #C9D6EA; margin-top: 4px; }
+.header-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn-header { background: transparent; border: 2px solid #C9D6EA; color: #fff; border-radius: 8px; padding: 6px 14px; font-size: .85rem; font-weight: 600; cursor: pointer; }
+.btn-header:hover { background: var(--medio); }
+
+.wrap { max-width: 1100px; margin: 0 auto; padding: 20px 24px 48px; }
+
+/* ── Pestañas ── */
+.tablist { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.tab {
+  flex: 1 1 260px; text-align: left; cursor: pointer;
+  background: #fff; border: 2px solid var(--pale); border-radius: 12px;
+  padding: 12px 16px; color: var(--azul);
+}
+.tab .tab-num { font-size: .8rem; font-weight: 800; color: var(--gris); letter-spacing: .04em; text-transform: uppercase; }
+.tab .tab-nom { display: block; font-size: 1.1rem; font-weight: 700; }
+.tab:hover { border-color: var(--slate); }
+.tab[aria-selected="true"] { background: var(--azul); border-color: var(--azul); color: #fff; }
+.tab[aria-selected="true"] .tab-num { color: #C9D6EA; }
+
+.panel { background: #fff; border-radius: 14px; box-shadow: 0 2px 16px rgba(0,32,96,.08); padding: 26px 28px 30px; }
+.panel h2 { font-size: 1.5rem; color: var(--azul); line-height: 1.25; }
+.panel h3 { font-size: 1.2rem; color: var(--azul); margin: 26px 0 12px; }
+.intro { font-size: 1rem; color: #333; margin: 8px 0 18px; max-width: 70ch; }
+.instrumento { display: inline-block; background: var(--claro); border: 1px solid var(--pale); color: var(--medio); border-radius: 20px; padding: 2px 12px; font-size: .8rem; font-weight: 700; margin-left: 8px; vertical-align: middle; }
+
+/* ── Botones ── */
+.btn { border-radius: 10px; padding: 10px 20px; font-size: 1rem; font-weight: 700; cursor: pointer; border: 2px solid var(--medio); }
+.btn-primario { background: var(--medio); color: #fff; }
+.btn-primario:hover:not(:disabled) { background: var(--azul); border-color: var(--azul); }
+.btn-secundario { background: #fff; color: var(--medio); }
+.btn-secundario:hover { background: var(--claro); }
+.btn-pequeno { padding: 5px 12px; font-size: .85rem; border-width: 1.5px; border-radius: 8px; }
+.btn:disabled { background: var(--gris-claro); border-color: #C4C9D1; color: #6B7280; cursor: not-allowed; }
+
+/* ── Avisos ── */
+.accion { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 14px 18px; margin-top: 20px; padding-top: 18px; border-top: 2px solid var(--pale); }
+.aviso { flex: 1 1 380px; font-size: 1rem; border-radius: 10px; padding: 10px 14px; }
+.aviso:empty { display: none; }
+.aviso-bloqueo { background: var(--rojo-bg); border-left: 5px solid var(--rojo); color: #5C1510; }
+.aviso-bloqueo strong { display: block; }
+.aviso-info { background: var(--claro); border-left: 5px solid var(--medio); color: #1F2F4F; }
+.aviso-ok { background: var(--verde-bg); border-left: 5px solid var(--verde); color: #0B3D1C; }
+.cita { font-weight: 700; font-size: 1.05rem; }
+.faltantes { margin-top: 6px; font-size: .95rem; }
+
+/* ── Formulario ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.campo { display: flex; flex-direction: column; gap: 4px; }
+.campo.ancho { grid-column: 1 / -1; }
+.campo label, .etiqueta { font-size: .9rem; font-weight: 700; color: var(--azul); }
+.campo .ayuda { font-size: .82rem; color: var(--gris); }
+.campo input, .campo textarea, .campo select {
+  border: 2px solid #B8C4D8; border-radius: 8px; padding: 8px 10px; font-size: 1rem; background: #fff; width: 100%;
+}
+.campo textarea { resize: vertical; min-height: 2.8em; }
+.campo input:focus, .campo textarea:focus, .campo select:focus { border-color: var(--medio); }
+.campo.canonico label::after { content: " *"; color: var(--rojo); }
+.campo-medida textarea { border-width: 3px; }
+.medida-estado { font-size: .9rem; font-weight: 600; min-height: 1.4em; }
+.medida-estado.ok { color: var(--verde); }
+.medida-estado.mal { color: var(--rojo); }
+.separador { grid-column: 1 / -1; font-size: .8rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--gris); border-bottom: 1px solid var(--pale); padding-bottom: 4px; margin-top: 6px; }
+
+/* ── Tarjetas de escenario ── */
+.tarjetas { display: grid; gap: 16px; }
+.tarjeta { border: 2px solid var(--pale); border-radius: 12px; overflow: hidden; background: #fff; }
+.tarjeta:focus { outline: 3px solid var(--medio); outline-offset: 2px; }
+.tarjeta-cab { background: var(--claro); padding: 10px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; border-bottom: 2px solid var(--pale); }
+.tarjeta-tit { font-size: 1.05rem; font-weight: 700; color: var(--azul); }
+.tarjeta-tit .cod { background: var(--azul); color: #fff; border-radius: 6px; padding: 1px 8px; margin-right: 8px; font-size: .9rem; }
+.tarjeta-ref { font-size: .9rem; color: var(--gris); font-weight: 600; }
+.tarjeta-acc { display: flex; gap: 8px; flex-wrap: wrap; }
+.tarjeta-campos { display: grid; grid-template-columns: repeat(3, 1fr); }
+.tc { padding: 10px 16px; border-right: 1px solid var(--pale); border-bottom: 1px solid var(--pale); min-width: 0; }
+.tc:nth-child(3n) { border-right: none; }
+.tc dt { font-size: .75rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--medio); }
+.tc dd { font-size: .95rem; overflow-wrap: anywhere; }
+.tc.medida { background: #F6F9FE; }
+.tc.medida dd { font-weight: 700; color: var(--azul); }
+.tarjeta-extra { display: grid; grid-template-columns: 1fr 2fr; background: #FAFBFD; }
+.tarjeta-extra .tc { border-bottom: none; }
+.tarjeta-extra .tc:nth-child(3n) { border-right: 1px solid var(--pale); }
+.tarjeta-extra .tc:last-child { border-right: none; }
+.sin-verif { color: var(--rojo); font-weight: 600; }
+.vacio { color: var(--gris); font-style: italic; }
+
+/* ── Árbol de utilidad ── */
+.regla-arbol { background: var(--claro); border-left: 5px solid var(--medio); border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 1.05rem; margin-bottom: 8px; }
+.regla-arbol strong { color: var(--azul); }
+.conteo { font-size: 1rem; margin: 10px 0 18px; font-weight: 600; }
+.conteo.alerta { color: var(--rojo); }
+.leyenda { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: .9rem; color: var(--gris); margin-bottom: 18px; }
+.raiz { display: inline-block; background: var(--azul); color: #fff; font-weight: 700; border-radius: 10px; padding: 8px 18px; font-size: 1.1rem; }
+.arbol, .arbol ul { list-style: none; }
+.arbol { margin: 6px 0 0 18px; border-left: 3px solid var(--slate); padding-left: 0; }
+.arbol ul { margin-left: 26px; border-left: 3px solid var(--pale); }
+.arbol li { position: relative; padding: 8px 0 8px 22px; }
+.arbol li::before { content: ""; position: absolute; left: 0; top: 30px; width: 18px; border-top: 3px solid var(--slate); }
+.arbol ul li::before { border-top-color: var(--pale); }
+.nodo-atr { display: inline-block; background: var(--medio); color: #fff; border-radius: 8px; padding: 6px 14px; font-weight: 700; font-size: 1.05rem; }
+.nodo-ref { display: inline-block; background: var(--claro); color: var(--azul); border: 2px solid var(--pale); border-radius: 8px; padding: 5px 12px; font-weight: 700; }
+.hoja { border: 2px solid var(--pale); border-radius: 10px; padding: 10px 14px; background: #fff; display: grid; grid-template-columns: 1fr auto; gap: 8px 18px; align-items: center; }
+.hoja.aa { border: 3px solid var(--azul); background: #FFF8E1; box-shadow: 0 0 0 3px #FFE08A; }
+.hoja-texto { font-size: 1rem; min-width: 0; }
+.hoja-texto .cod { font-weight: 800; color: var(--azul); margin-right: 6px; }
+.hoja-medida { display: block; font-size: .88rem; color: var(--gris); margin-top: 2px; }
+.sello-aa { display: none; font-size: .8rem; font-weight: 800; color: var(--azul); background: #FFE08A; border-radius: 6px; padding: 1px 8px; margin-top: 6px; width: fit-content; }
+.hoja.aa .sello-aa { display: block; }
+.valoracion { display: flex; flex-wrap: wrap; gap: 10px; }
+.val { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.val-etq { font-size: .75rem; font-weight: 700; color: var(--gris); text-align: center; }
+.btn-val { min-width: 118px; border-radius: 8px; border: 2px solid var(--medio); padding: 5px 10px; font-weight: 800; font-size: .95rem; cursor: pointer; background: #fff; color: var(--medio); }
+.btn-val[data-v="A"] { background: var(--azul); color: #fff; border-color: var(--azul); }
+.btn-val[data-v="M"] { background: var(--claro); color: var(--azul); }
+.btn-val[data-v="B"] { background: #fff; color: var(--gris); border-color: #9CA3AF; }
+.btn-val[data-v=""] { border-style: dashed; color: var(--rojo); border-color: var(--rojo); }
+
+/* ── Comparador ── */
+.fase-e { background: var(--azul); color: #fff; font-size: 1.05rem; font-weight: 600; border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; }
+.decision-campo { margin-bottom: 18px; }
+.comp { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+.comp-fila-tit { grid-column: 1 / -1; font-size: .85rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: #fff; background: var(--medio); border-radius: 8px; padding: 6px 12px; margin: 18px 0 8px; }
+.comp-fila-tit.renuncia { background: var(--rojo); font-size: 1rem; }
+.comp-fila-tit small { text-transform: none; letter-spacing: 0; font-weight: 600; color: #DCE6F5; font-size: .95em; }
+.campo textarea.auto { resize: none; overflow: hidden; min-height: 0; }
+.comp-fila-tit.renuncia small { color: #FDE2DF; }
+.comp-col-cab { background: var(--claro); border: 2px solid var(--pale); border-radius: 10px; padding: 12px 14px; }
+.comp-col-cab .letra { font-size: .8rem; font-weight: 800; color: var(--medio); text-transform: uppercase; letter-spacing: .05em; }
+.celda { border: 2px solid var(--pale); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+.celda .campo + .campo { margin-top: 8px; }
+.celda.renuncia { border-color: #E8B4AF; background: #FFFBFA; }
+.celda.renuncia.completa { border-color: var(--verde); background: #F6FBF7; }
+.estado-renuncia { font-size: .9rem; font-weight: 700; margin-top: 8px; }
+.estado-renuncia.ok { color: var(--verde); }
+.estado-renuncia.mal { color: var(--rojo); }
+.semaforo { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.btn-sem { border: 2px solid #B8C4D8; background: #fff; border-radius: 20px; padding: 3px 12px; font-size: .9rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: #374151; }
+.btn-sem .punto { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 2px solid transparent; }
+.btn-sem[data-s="verde"] .punto { background: var(--verde); }
+.btn-sem[data-s="amarillo"] .punto { background: #D69E00; }
+.btn-sem[data-s="rojo"] .punto { background: var(--rojo); }
+.btn-sem[aria-pressed="true"][data-s="verde"] { background: var(--verde-bg); border-color: var(--verde); color: var(--verde); }
+.btn-sem[aria-pressed="true"][data-s="amarillo"] { background: var(--ambar-bg); border-color: #D69E00; color: var(--ambar); }
+.btn-sem[aria-pressed="true"][data-s="rojo"] { background: var(--rojo-bg); border-color: var(--rojo); color: var(--rojo); }
+.esc-ref { grid-column: 1 / -1; font-size: .95rem; color: #1F2F4F; margin: -2px 0 6px; }
+.esc-ref .cod { font-weight: 800; color: var(--azul); }
+.elegir { border: 2px solid var(--pale); border-radius: 12px; padding: 14px 16px; margin-top: 24px; background: #FAFBFD; }
+.elegir legend { font-weight: 800; color: var(--azul); padding: 0 6px; font-size: 1.05rem; }
+.radios { display: flex; flex-wrap: wrap; gap: 10px 26px; margin: 6px 0 12px; }
+.radios label { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 1rem; }
+.radios input { width: 20px; height: 20px; accent-color: var(--medio); }
+.resumen { margin-top: 22px; border: 3px solid var(--verde); border-radius: 12px; padding: 16px; background: #F6FBF7; }
+.resumen h3 { margin-top: 0; }
+.resumen textarea { width: 100%; min-height: 420px; font-family: Consolas, 'Courier New', monospace; font-size: .85rem; line-height: 1.45; border: 2px solid #B8C4D8; border-radius: 8px; padding: 12px; background: #fff; white-space: pre-wrap; overflow-wrap: anywhere; overflow: auto; }
+#titResumen:focus { outline: none; }
+.resumen-acc { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 10px; }
+.nota-cambio { font-weight: 600; color: var(--ambar); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.pie { text-align: center; color: var(--gris); font-size: .85rem; margin-top: 18px; }
+
+@media (max-width: 820px) {
+  html { font-size: 17px; }
+  .form-grid, .comp { grid-template-columns: 1fr; }
+  .tarjeta-campos { grid-template-columns: 1fr 1fr; }
+  .tc:nth-child(3n) { border-right: 1px solid var(--pale); }
+  .tc:nth-child(2n) { border-right: none; }
+  .tarjeta-extra { grid-template-columns: 1fr; }
+  .hoja { grid-template-columns: 1fr; }
+  .comp .celda, .comp .comp-col-cab { margin-bottom: 8px; }
+  .panel { padding: 20px 16px; }
+  .wrap { padding: 16px 16px 40px; }
+}
+@media (max-width: 520px) {
+  .tarjeta-campos { grid-template-columns: 1fr; }
+  .tc { border-right: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-in">
+    <div>
+      <h1>Escenarios de calidad, árbol de utilidad y renuncia (ATAM)</h1>
+      <p>Maestría en Arquitectura Empresarial · Universidad de La Sabana · Caso Red Salud Andina · Instrumentos F-14, F-15 y F-16</p>
+    </div>
+    <div class="header-acciones">
+      <button type="button" class="btn-header" id="btnCasoPropio">Empezar con el caso del grupo</button>
+      <button type="button" class="btn-header" id="btnRestaurar">Restaurar Red Salud Andina</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="tablist" role="tablist" aria-label="Pasos de la evaluación">
+    <button type="button" class="tab" role="tab" id="tab-escenarios" aria-controls="panel-escenarios" aria-selected="true" tabindex="0">
+      <span class="tab-num">Paso 1 · F-14</span><span class="tab-nom">Constructor de escenarios</span>
+    </button>
+    <button type="button" class="tab" role="tab" id="tab-arbol" aria-controls="panel-arbol" aria-selected="false" tabindex="-1">
+      <span class="tab-num">Paso 2 · F-15</span><span class="tab-nom">Árbol de utilidad</span>
+    </button>
+    <button type="button" class="tab" role="tab" id="tab-comparador" aria-controls="panel-comparador" aria-selected="false" tabindex="-1">
+      <span class="tab-num">Paso 3 · F-16 · Fase E</span><span class="tab-nom">Comparador de alternativas</span>
+    </button>
+  </div>
+
+  <!-- ══ PESTAÑA 1 ══ -->
+  <section class="panel" role="tabpanel" id="panel-escenarios" aria-labelledby="tab-escenarios" tabindex="0">
+    <h2>Constructor de escenarios de calidad <span class="instrumento">F-14</span></h2>
+    <p class="intro">Un escenario de calidad tiene seis campos canónicos. El curso añade dos: el umbral y la forma de verificarlo automáticamente. Sin medida de respuesta no hay escenario: el botón no se habilita.</p>
+
+    <form id="formEscenario" novalidate>
+      <div class="form-grid">
+        <div class="campo">
+          <label for="f-atributo">Atributo de calidad</label>
+          <select id="f-atributo"></select>
+        </div>
+        <div class="campo">
+          <label for="f-refinamiento">Refinamiento</label>
+          <input type="text" id="f-refinamiento" autocomplete="off" placeholder="Ej.: Latencia de la consulta unificada"/>
+          <span class="ayuda">Nivel intermedio del árbol de utilidad.</span>
+        </div>
+
+        <p class="separador">Seis campos canónicos</p>
+        <div class="campo canonico">
+          <label for="f-fuente">1. Fuente del estímulo</label>
+          <input type="text" id="f-fuente" autocomplete="off" placeholder="¿Quién o qué genera el estímulo?"/>
+        </div>
+        <div class="campo canonico">
+          <label for="f-estimulo">2. Estímulo</label>
+          <input type="text" id="f-estimulo" autocomplete="off" placeholder="¿Qué ocurre?"/>
+        </div>
+        <div class="campo canonico">
+          <label for="f-artefacto">3. Artefacto</label>
+          <input type="text" id="f-artefacto" autocomplete="off" placeholder="¿Qué parte del sistema lo recibe?"/>
+        </div>
+        <div class="campo canonico">
+          <label for="f-entorno">4. Entorno</label>
+          <input type="text" id="f-entorno" autocomplete="off" placeholder="¿En qué condiciones de operación?"/>
+        </div>
+        <div class="campo canonico ancho">
+          <label for="f-respuesta">5. Respuesta</label>
+          <textarea id="f-respuesta" rows="2" placeholder="¿Qué hace el sistema?"></textarea>
+        </div>
+        <div class="campo canonico ancho campo-medida">
+          <label for="f-medida">6. Medida de respuesta</label>
+          <textarea id="f-medida" rows="2" aria-describedby="medidaAyuda medidaEstado" placeholder="Ej.: p95 ≤ 1,5 s con 300 consultas concurrentes"></textarea>
+          <span class="ayuda" id="medidaAyuda">Debe contener al menos un valor numérico con unidad (ms, s, min, %, tps, $/transacción) o un percentil (p95, p99).</span>
+          <span class="medida-estado" id="medidaEstado" aria-live="polite"></span>
+        </div>
+
+        <p class="separador">Campos que añade el curso</p>
+        <div class="campo">
+          <label for="f-umbral">Umbral</label>
+          <input type="text" id="f-umbral" autocomplete="off" placeholder="Ej.: p95 ≤ 1,5 s"/>
+        </div>
+        <div class="campo">
+          <label for="f-verificacion">Cómo se verifica automáticamente</label>
+          <input type="text" id="f-verificacion" autocomplete="off" placeholder="Ej.: traza distribuida OpenTelemetry"/>
+        </div>
+      </div>
+
+      <div class="accion">
+        <button type="submit" class="btn btn-primario" id="btnRegistrar" disabled>Registrar escenario</button>
+        <button type="button" class="btn btn-secundario" id="btnContraejemplo">Probar con un escenario sin medida</button>
+        <button type="button" class="btn btn-secundario" id="btnLimpiar">Limpiar formulario</button>
+        <div class="aviso" id="avisoEscenario" aria-live="polite"></div>
+      </div>
+    </form>
+
+    <h3 id="titRegistrados">Escenarios registrados</h3>
+    <div class="tarjetas" id="listaTarjetas" aria-labelledby="titRegistrados"></div>
+  </section>
+
+  <!-- ══ PESTAÑA 2 ══ -->
+  <section class="panel" role="tabpanel" id="panel-arbol" aria-labelledby="tab-arbol" tabindex="0" hidden>
+    <h2>Árbol de utilidad <span class="instrumento">F-15</span></h2>
+    <p class="intro">Atributo de calidad → refinamiento → escenario. Cada atributo traduce un concern de los stakeholders. Cada hoja lleva la doble valoración: importancia para el negocio y dificultad técnica. Hagan clic (o Enter) sobre una valoración para cambiarla: Alta → Media → Baja.</p>
+    <p class="regla-arbol"><strong>Estas son las únicas que hay que evaluar en profundidad.</strong> Un árbol donde todo es Alta/Alta no priorizó nada.</p>
+    <p class="conteo" id="conteoArbol" aria-live="polite"></p>
+    <div class="leyenda">
+      <span>Hoja resaltada en amarillo con borde azul = Alta/Alta</span>
+      <span>Borde punteado rojo = sin valorar</span>
+    </div>
+    <div id="arbolUtilidad"></div>
+  </section>
+
+  <!-- ══ PESTAÑA 3 ══ -->
+  <section class="panel" role="tabpanel" id="panel-comparador" aria-labelledby="tab-comparador" tabindex="0" hidden>
+    <p class="fase-e">Fase E · Opportunities &amp; Solutions. Las alternativas son Solution Building Blocks candidatos; se comparan después del análisis de brechas, no durante el modelado.</p>
+    <h2>Comparador de alternativas (Fase E del ADM de TOGAF 10) <span class="instrumento">F-16</span></h2>
+    <p class="intro">Los dos SBB candidatos se comparan contra los mismos escenarios de calidad. La herramienta no elige: el botón para cerrar la decisión solo se habilita cuando las dos alternativas tienen la renuncia completa.</p>
+    <div class="campo decision-campo">
+      <label for="c-decision">Decisión que se evalúa</label>
+      <input type="text" id="c-decision" autocomplete="off"/>
+    </div>
+    <div id="filasComparador"></div>
+
+    <fieldset class="elegir">
+      <legend>Cierre de la decisión</legend>
+      <p class="etiqueta" id="etqElegida">Alternativa que elige el grupo</p>
+      <div class="radios" role="radiogroup" aria-labelledby="etqElegida">
+        <label><input type="radio" name="elegida" value="A"/> Alternativa A</label>
+        <label><input type="radio" name="elegida" value="B"/> Alternativa B</label>
+        <label><input type="radio" name="elegida" value="" checked/> Aún sin elegir</label>
+      </div>
+      <div class="campo">
+        <label for="c-invalidaria">Evidencia que invalidaría la decisión</label>
+        <input type="text" id="c-invalidaria" autocomplete="off" placeholder="¿Qué dato, si apareciera, obligaría a reabrirla?"/>
+      </div>
+      <div class="accion">
+        <button type="button" class="btn btn-primario" id="btnCerrar" disabled>Cerrar la decisión</button>
+        <div class="aviso" id="avisoDecision" aria-live="polite"></div>
+      </div>
+    </fieldset>
+
+    <div class="resumen" id="resumen" hidden>
+      <h3 id="titResumen" tabindex="-1">Resumen para el informe de la Actividad 2.2</h3>
+      <p class="intro">Texto plano: selecciónenlo o cópienlo y péguenlo en el informe.</p>
+      <label for="textoResumen" class="sr-only">Resumen en texto plano</label>
+      <textarea id="textoResumen" readonly spellcheck="false"></textarea>
+      <div class="resumen-acc">
+        <button type="button" class="btn btn-primario" id="btnCopiar">Copiar resumen</button>
+        <span id="estadoCopia" aria-live="polite"></span>
+      </div>
+    </div>
+    <p class="nota-cambio" id="notaCambio" aria-live="polite" hidden>Hubo cambios después de cerrar la decisión: vuelvan a cerrarla para regenerar el resumen.</p>
+  </section>
+
+  <p class="pie">Herramienta autocontenida: funciona sin conexión y no guarda nada. Al recargar la página vuelve el caso Red Salud Andina.</p>
+  <div class="sr-only" id="anuncio" aria-live="polite"></div>
+</main>
+
+<script>
+'use strict';
+
+/* ════════ Vocabulario y reglas ════════ */
+const ATRIBUTOS = ['Disponibilidad', 'Rendimiento', 'Evolubilidad', 'Costo de operación', 'Componente de IA',
+  'Seguridad', 'Interoperabilidad', 'Usabilidad'];
+const CANONICOS = [
+  ['fuente', 'Fuente del estímulo'], ['estimulo', 'Estímulo'], ['artefacto', 'Artefacto'],
+  ['entorno', 'Entorno'], ['respuesta', 'Respuesta'], ['medida', 'Medida de respuesta']
+];
+const ESCALA = { A: 'Alta', M: 'Media', B: 'Baja', '': 'Sin valorar' };
+const SIGUIENTE = { '': 'A', A: 'M', M: 'B', B: 'A' };
+const SEMAFORO = [['verde', 'Favorable'], ['amarillo', 'Con reservas'], ['rojo', 'Desfavorable']];
+const SUBRENUNCIA = [
+  ['que', 'Qué se pierde', '¿Qué deja de tener la organización si elige esta alternativa?'],
+  ['cuanto', 'Cuánto vale', '¿Cuánto cuesta esa pérdida: dinero, tiempo, riesgo?'],
+  ['quien', 'A quién le duele', '¿Qué stakeholder la sufre, y con razón?']
+];
+const MSG_MEDIDA = '«"El sistema debe ser rápido" no es un escenario de calidad. Falta la medida con la que se verificará.»';
+const MSG_RENUNCIA = '«Una alternativa sin renuncia es una justificación, no una opción. Si no encuentran el contexto en el que la alternativa descartada sería la mejor, esa alternativa es de paja y hay que buscar otra.»';
+
+/* Valor numérico con unidad (ms, s, min, %, tps, $/transacción o COP/atención) o percentil (p95, p99). */
+const RE_VALOR_UNIDAD = /(?<![\p{L}\d])\d+(?:[.,]\d+)*\s*(?:ms|milisegundos?|min|minutos?|s|seg|segundos?|tps|%|(?:\$|COP)\s*\/\s*(?:transacci[oó]n|consulta|atenci[oó]n|evento))(?![\p{L}\d])/iu;
+const RE_PERCENTIL = /(?<![\p{L}\d])p\d{2}(?:[.,]\d+)?(?![\p{L}\d])/iu;
+
+function medidaVerificable(texto) {
+  const t = String(texto || '');
+  const m = t.match(RE_PERCENTIL) || t.match(RE_VALOR_UNIDAD);
+  return m ? m[0].trim() : null;
+}
+function lleno(v) { return String(v || '').trim().length >= 2; }
+function faltantesRenuncia(r) {
+  return SUBRENUNCIA.filter(([k]) => !lleno(r && r[k])).map(([, etq]) => etq.toLowerCase());
+}
+function renunciaCompleta(r) { return faltantesRenuncia(r).length === 0; }
+function puedeCerrarDecision(alts) { return renunciaCompleta(alts.A.renuncia) && renunciaCompleta(alts.B.renuncia); }
+
+/* ════════ Caso precargado: Red Salud Andina ════════ */
+function casoRedSalud() {
+  const escenarios = [
+    { id: 'e1', atributo: 'Disponibilidad', refinamiento: 'Continuidad de la atención ante la caída del HIS de una sede',
+      fuente: 'Falla interna del HIS de una de las 6 sedes adquiridas',
+      estimulo: 'El HIS de la sede deja de responder durante la consulta externa',
+      artefacto: 'Adaptador de integración de la sede y registro de atenciones',
+      entorno: 'Operación normal, en horario de consulta externa',
+      respuesta: 'El registro de la atención se acepta en modo degradado, sin esperar al HIS, y se concilia cuando el HIS vuelve a responder',
+      medida: 'Cero atenciones perdidas; registro aceptado en modo degradado y conciliado en ≤ 15 min',
+      umbral: '0 atenciones perdidas por incidente; conciliación ≤ 15 min',
+      verificacion: 'Prueba de caos programada sobre el adaptador', imp: 'A', dif: 'A' },
+    { id: 'e2', atributo: 'Rendimiento', refinamiento: 'Latencia de la consulta de historia clínica unificada',
+      fuente: 'Médico tratante en cualquiera de las 24 sedes',
+      estimulo: 'Consulta la historia clínica unificada de un paciente con historia en 6 sedes',
+      artefacto: 'Servicio de consulta de la historia clínica unificada',
+      entorno: 'Carga pico de consulta externa',
+      respuesta: 'Se devuelve la historia consolidada de las 6 sedes en una sola vista',
+      medida: 'p95 ≤ 1,5 s con 300 consultas concurrentes',
+      umbral: 'p95 ≤ 1,5 s',
+      verificacion: 'Traza distribuida OpenTelemetry, percentil por endpoint', imp: 'A', dif: 'A' },
+    { id: 'e3', atributo: 'Evolubilidad', refinamiento: 'Cambio de contrato del evento de atención en una sede',
+      fuente: 'Equipo de TI de una sede nueva',
+      estimulo: 'Una sede nueva cambia el esquema de su evento de atención',
+      artefacto: 'Contrato del evento de atención y sus consumidores',
+      entorno: 'Sistema en producción, cambio planeado',
+      respuesta: 'El cambio se publica como nueva versión del contrato, compatible hacia atrás; los consumidores siguen operando',
+      medida: 'Ningún consumidor requiere despliegue (0 % de consumidores redesplegados); contrato versionado con compatibilidad hacia atrás',
+      umbral: '0 despliegues coordinados por cambio de esquema',
+      verificacion: 'Validación de contrato AsyncAPI en la tubería de integración', imp: 'M', dif: 'A' },
+    { id: 'e4', atributo: 'Costo de operación', refinamiento: 'Costo unitario de integración bajo picos de volumen',
+      fuente: 'Proceso de facturación de fin de mes',
+      estimulo: 'Pico de facturación de fin de mes duplica el volumen de eventos',
+      artefacto: 'Plataforma de integración (eventos, adaptadores e índice de pacientes)',
+      entorno: 'Cierre mensual de facturación',
+      respuesta: 'La plataforma escala de forma automática y absorbe el pico',
+      medida: 'Costo por atención integrada ≤ 350 COP/atención durante el pico; sin escalamiento manual',
+      umbral: '≤ 350 COP por atención integrada, también en el cierre de fin de mes',
+      verificacion: 'Etiquetado de recursos por capacidad; tablero de costo unitario', imp: 'M', dif: 'M' },
+    { id: 'e5', atributo: 'Componente de IA', refinamiento: 'Resumen clínico asistido: latencia, exactitud, costo y degradación',
+      fuente: 'Médico tratante',
+      estimulo: 'Un asistente resume la historia clínica del paciente para el médico tratante',
+      artefacto: 'Asistente de resumen clínico (modelo de lenguaje y su orquestación)',
+      entorno: 'Consulta externa en operación normal, incluida la indisponibilidad del modelo',
+      respuesta: 'Entrega el resumen; si el modelo no responde, muestra la historia sin resumen',
+      medida: 'p95 ≤ 3 s; exactitud ≥ 85 % contra un conjunto de evaluación versionado; costo por consulta acotado; si el modelo no responde, se muestra la historia sin resumen',
+      umbral: 'p95 ≤ 3 s · exactitud ≥ 85 % · costo por consulta ≤ tope declarado',
+      verificacion: 'Conjunto de evaluación versionado en la tubería; convenciones GenAI de OpenTelemetry', imp: 'M', dif: 'A' }
+  ];
+  const A = {
+    nombre: 'Capa de integración con índice maestro de pacientes (MPI) sobre los HIS existentes',
+    descripcion: 'Se conservan los HIS de las sedes y se construye encima una capa de integración con un índice maestro de pacientes que une las identidades y expone la historia clínica única.',
+    viabilidad: 'La red va a seguir adquiriendo sedes con su propio HIS, o el presupuesto no alcanza para migrar 6 sedes y la promesa pública exige resultados visibles en meses.',
+    sensibilidad: 'La exactitud del emparejamiento del MPI: un umbral de coincidencia mal calibrado produce duplicados o historias mezcladas. El costo de los adaptadores es sensible a la modernización asistida por IA.',
+    renuncia: { que: 'Una fuente única de verdad: la historia sigue viviendo en varios HIS y su unidad depende del MPI.',
+      cuanto: 'Operar para siempre adaptadores, MPI y bus de eventos, más las horas mensuales de conciliación de duplicados.',
+      quien: '' },
+    valoracion: {
+      e1: { sem: 'verde', just: 'La falla queda aislada en la sede; el adaptador acepta en modo degradado y concilia al volver el HIS.' },
+      e2: { sem: 'amarillo', just: 'Alcanzable solo con una vista materializada alimentada por eventos; consultar en vivo 6 HIS no llega a 1,5 s.' },
+      e3: { sem: 'verde', just: 'El contrato versionado en el registro de esquemas absorbe el cambio; ningún consumidor redespliega.' },
+      e4: { sem: 'amarillo', just: 'El costo escala con el volumen de eventos; se controla si el etiquetado por capacidad existe desde el inicio.' },
+      e5: { sem: 'amarillo', just: 'El resumen compone la historia desde fuentes con modelos de datos distintos: más latencia y riesgo de omisiones.' }
+    }
+  };
+  const B = {
+    nombre: 'Consolidación de las 6 sedes adquiridas en un único HIS',
+    descripcion: 'Se migran las 6 sedes adquiridas al HIS de la red, de modo que las 24 sedes operen sobre un solo sistema y una sola historia clínica.',
+    viabilidad: 'El HIS de las sedes adquiridas llega al fin de soporte dentro del horizonte del plan, o la autoridad sanitaria exige un registro único con trazabilidad que una capa de integración no garantiza.',
+    sensibilidad: 'El cronograma depende de la calidad de los datos históricos de cada HIS de origen y de la ventana de corte de cada sede; el costo total, del licenciamiento por sede.',
+    renuncia: { que: 'La continuidad operativa de las 6 sedes durante la migración y la autonomía de su HIS actual.',
+      cuanto: '',
+      quien: 'Al personal asistencial y de admisiones de las 6 sedes, que cambia de sistema y de flujo de trabajo en plena operación.' },
+    valoracion: {
+      e1: { sem: 'rojo', just: 'Una falla del HIS único detiene la consulta externa en las 24 sedes, no en una: el radio de impacto se multiplica.' },
+      e2: { sem: 'verde', just: 'La historia vive en una sola base; la consulta no cruza sistemas.' },
+      e3: { sem: 'amarillo', just: 'No hay esquemas por sede, pero cada sede nueva exige una migración completa antes de integrarse.' },
+      e4: { sem: 'amarillo', just: 'Menor costo de operación en régimen, pero el pico de facturación recae sobre un solo núcleo que hay que dimensionar.' },
+      e5: { sem: 'verde', just: 'El asistente lee una sola historia normalizada; el p95 ≤ 3 s es alcanzable.' }
+    }
+  };
+  return {
+    decision: '¿Cómo cumplir la promesa pública de historia clínica única en las 24 sedes de Red Salud Andina?',
+    escenarios, alternativas: { A, B }, elegida: '', invalidaria: '', contador: escenarios.length
+  };
+}
+
+function casoVacio() {
+  const alt = () => ({ nombre: '', descripcion: '', viabilidad: '', sensibilidad: '',
+    renuncia: { que: '', cuanto: '', quien: '' }, valoracion: {} });
+  return { decision: '', escenarios: [], alternativas: { A: alt(), B: alt() }, elegida: '', invalidaria: '', contador: 0 };
+}
+
+/* ════════ Estado y utilidades ════════ */
+let estado = casoRedSalud();
+let decisionCerrada = false;
+let medidaIntentada = false;
+
+const $ = (id) => document.getElementById(id);
+function el(tag, attrs, ...hijos) {
+  const n = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? '' : v);
+  }
+  for (const h of hijos) if (h !== null && h !== undefined) n.append(h);
+  return n;
+}
+function anunciar(txt) { const a = $('anuncio'); a.textContent = ''; setTimeout(() => { a.textContent = txt; }, 30); }
+function codigo(esc) { return 'E' + (estado.escenarios.indexOf(esc) + 1); }
+
+/* ════════ Pestañas (ARIA, flechas, Inicio/Fin) ════════ */
+const TABS = ['escenarios', 'arbol', 'comparador'];
+function activarPestana(nombre, enfocar) {
+  TABS.forEach((t) => {
+    const tab = $('tab-' + t), panel = $('panel-' + t), activa = t === nombre;
+    tab.setAttribute('aria-selected', String(activa));
+    tab.tabIndex = activa ? 0 : -1;
+    panel.hidden = !activa;
+  });
+  if (nombre === 'arbol') renderArbol();
+  if (nombre === 'comparador') ajustarAlturasComparador();
+  if (enfocar) $('tab-' + nombre).focus();
+  if (history.replaceState) history.replaceState(null, '', '#' + nombre);
+}
+TABS.forEach((t, i) => {
+  const tab = $('tab-' + t);
+  tab.addEventListener('click', () => activarPestana(t, false));
+  tab.addEventListener('keydown', (ev) => {
+    let j = null;
+    if (ev.key === 'ArrowRight') j = (i + 1) % TABS.length;
+    else if (ev.key === 'ArrowLeft') j = (i - 1 + TABS.length) % TABS.length;
+    else if (ev.key === 'Home') j = 0;
+    else if (ev.key === 'End') j = TABS.length - 1;
+    if (j !== null) { ev.preventDefault(); activarPestana(TABS[j], true); }
+  });
+});
+
+/* ════════ Pestaña 1: constructor de escenarios ════════ */
+const CAMPOS_FORM = ['atributo', 'refinamiento', 'fuente', 'estimulo', 'artefacto', 'entorno', 'respuesta', 'medida', 'umbral', 'verificacion'];
+ATRIBUTOS.forEach((a) => $('f-atributo').append(el('option', { value: a, text: a })));
+
+function leerFormulario() {
+  const d = {};
+  CAMPOS_FORM.forEach((c) => { d[c] = $('f-' + c).value.trim(); });
+  return d;
+}
+function escribirFormulario(d) {
+  CAMPOS_FORM.forEach((c) => { $('f-' + c).value = d[c] || ''; });
+  if (!ATRIBUTOS.includes($('f-atributo').value)) $('f-atributo').value = ATRIBUTOS[0];
+}
+function validarEscenario(d) {
+  const faltan = CANONICOS.filter(([k]) => k !== 'medida' && !lleno(d[k])).map(([, etq]) => etq.toLowerCase());
+  const token = medidaVerificable(d.medida);
+  return { faltan, token, valido: faltan.length === 0 && !!token };
+}
+
+function actualizarEstadoFormulario() {
+  const v = validarEscenario(leerFormulario());
+  $('btnRegistrar').disabled = !v.valido;
+  const est = $('medidaEstado');
+  if (v.token) { est.textContent = '✓ Medida verificable detectada: «' + v.token + '»'; est.className = 'medida-estado ok'; medidaIntentada = false; }
+  else if (medidaIntentada) { est.textContent = '✗ Sin valor numérico con unidad ni percentil'; est.className = 'medida-estado mal'; }
+  else { est.textContent = ''; est.className = 'medida-estado'; }
+
+  const aviso = $('avisoEscenario');
+  aviso.replaceChildren();
+  if (v.valido) {
+    aviso.className = 'aviso aviso-ok';
+    aviso.textContent = 'Listo para registrar.';
+    return v;
+  }
+  if (!v.token && medidaIntentada) {
+    aviso.className = 'aviso aviso-bloqueo';
+    aviso.append(el('span', { class: 'cita', text: MSG_MEDIDA }));
+    if (v.faltan.length) aviso.append(el('div', { class: 'faltantes', text: 'Faltan además: ' + v.faltan.join(', ') + '.' }));
+  } else {
+    aviso.className = 'aviso aviso-info';
+    const partes = [];
+    if (v.faltan.length) partes.push(v.faltan.join(', '));
+    if (!v.token) partes.push('una medida de respuesta con valor y unidad, o un percentil');
+    aviso.textContent = 'Registrar escenario se habilita cuando tengan: ' + partes.join('; ') + '.';
+  }
+  return v;
+}
+
+function intentarRegistrar() {
+  medidaIntentada = true;
+  const d = leerFormulario();
+  const v = validarEscenario(d);
+  if (!v.valido) {               /* la validación también vive en el manejador, no solo en el botón */
+    actualizarEstadoFormulario();
+    const primero = CANONICOS.find(([k]) => (k === 'medida' ? !v.token : !lleno(d[k])));
+    if (primero) $('f-' + primero[0]).focus();
+    anunciar('No se registró. ' + (v.token ? '' : MSG_MEDIDA));
+    return false;
+  }
+  const esc = Object.assign({ id: 'e' + (++estado.contador), imp: '', dif: '' }, d);
+  estado.escenarios.push(esc);
+  escribirFormulario({ atributo: d.atributo });
+  medidaIntentada = false;
+  invalidarCierre();
+  renderTarjetas();
+  renderComparador();
+  actualizarEstadoFormulario();
+  const tarjeta = document.querySelector('[data-esc="' + esc.id + '"]');
+  if (tarjeta) { tarjeta.scrollIntoView({ block: 'nearest' }); tarjeta.focus(); }
+  anunciar('Escenario ' + codigo(esc) + ' registrado. Ya aparece en el árbol de utilidad y en el comparador.');
+  return true;
+}
+
+$('formEscenario').addEventListener('submit', (ev) => { ev.preventDefault(); intentarRegistrar(); });
+$('formEscenario').addEventListener('input', actualizarEstadoFormulario);
+$('formEscenario').addEventListener('keydown', (ev) => {
+  if (ev.key !== 'Enter') return;
+  const t = ev.target;
+  if (t.tagName === 'INPUT' || (t.tagName === 'TEXTAREA' && (ev.ctrlKey || ev.metaKey))) {
+    ev.preventDefault();
+    intentarRegistrar();
+  }
+});
+$('f-medida').addEventListener('blur', () => {
+  if (!medidaVerificable($('f-medida').value)) { medidaIntentada = true; actualizarEstadoFormulario(); }
+});
+$('btnContraejemplo').addEventListener('click', () => {
+  escribirFormulario({ atributo: 'Rendimiento', refinamiento: 'Latencia de la consulta de historia clínica unificada',
+    fuente: 'Médico tratante', estimulo: 'Consulta la historia clínica de un paciente',
+    artefacto: 'Sistema de historia clínica', entorno: 'Operación normal',
+    respuesta: 'El sistema muestra la historia', medida: 'El sistema debe ser rápido', umbral: '', verificacion: '' });
+  medidaIntentada = true;
+  actualizarEstadoFormulario();
+  $('f-medida').focus();
+});
+$('btnLimpiar').addEventListener('click', () => {
+  escribirFormulario({});
+  medidaIntentada = false;
+  actualizarEstadoFormulario();
+  $('f-atributo').focus();
+});
+
+function renderTarjetas() {
+  const lista = $('listaTarjetas');
+  lista.replaceChildren();
+  if (!estado.escenarios.length) {
+    lista.append(el('p', { class: 'vacio', text: 'Todavía no hay escenarios registrados.' }));
+    return;
+  }
+  estado.escenarios.forEach((esc) => {
+    const campos = el('dl', { class: 'tarjeta-campos' });
+    CANONICOS.forEach(([k, etq], i) => {
+      campos.append(el('div', { class: 'tc' + (k === 'medida' ? ' medida' : '') },
+        el('dt', { text: (i + 1) + '. ' + etq }), el('dd', { text: esc[k] })));
+    });
+    const extra = el('dl', { class: 'tarjeta-extra' },
+      el('div', { class: 'tc' }, el('dt', { text: 'Umbral' }),
+        el('dd', { class: esc.umbral ? null : 'vacio', text: esc.umbral || 'Sin declarar' })),
+      el('div', { class: 'tc' }, el('dt', { text: 'Cómo se verifica automáticamente' }),
+        el('dd', { class: esc.verificacion ? null : 'sin-verif',
+          text: esc.verificacion || 'Sin verificación automática: el escenario se degrada a declaración de intenciones.' })));
+    const cod = codigo(esc);
+    lista.append(el('article', { class: 'tarjeta', 'data-esc': esc.id, tabindex: '-1', 'aria-label': 'Escenario ' + cod + ', ' + esc.atributo },
+      el('div', { class: 'tarjeta-cab' },
+        el('div', null,
+          el('div', { class: 'tarjeta-tit' }, el('span', { class: 'cod', text: cod }), esc.atributo),
+          el('div', { class: 'tarjeta-ref', text: esc.refinamiento || 'Refinamiento sin nombrar' })),
+        el('div', { class: 'tarjeta-acc' },
+          el('button', { type: 'button', class: 'btn btn-secundario btn-pequeno', 'aria-label': 'Usar ' + cod + ' como plantilla en el formulario',
+            onclick: () => { escribirFormulario(esc); medidaIntentada = false; actualizarEstadoFormulario(); $('f-atributo').focus(); $('formEscenario').scrollIntoView({ block: 'start' }); },
+            text: 'Usar como plantilla' }),
+          el('button', { type: 'button', class: 'btn btn-secundario btn-pequeno', 'aria-label': 'Eliminar el escenario ' + cod,
+            onclick: () => eliminarEscenario(esc.id), text: 'Eliminar' }))),
+      campos, extra));
+  });
+}
+
+function eliminarEscenario(id) {
+  const i = estado.escenarios.findIndex((e) => e.id === id);
+  if (i < 0) return;
+  const cod = 'E' + (i + 1);
+  if (!window.confirm('¿Eliminar el escenario ' + cod + '? También sale del árbol de utilidad y del comparador.')) return;
+  estado.escenarios.splice(i, 1);
+  ['A', 'B'].forEach((k) => { delete estado.alternativas[k].valoracion[id]; });
+  invalidarCierre();
+  renderTarjetas();
+  renderComparador();
+  $('titRegistrados').setAttribute('tabindex', '-1');
+  $('titRegistrados').focus();
+  anunciar('Escenario ' + cod + ' eliminado.');
+}
+
+/* ════════ Pestaña 2: árbol de utilidad ════════ */
+function agruparArbol() {
+  const orden = [];
+  const mapa = new Map();
+  estado.escenarios.forEach((esc) => {
+    const atr = esc.atributo || 'Otro';
+    if (!mapa.has(atr)) { mapa.set(atr, new Map()); orden.push(atr); }
+    const ref = esc.refinamiento || 'Refinamiento sin nombrar';
+    const refs = mapa.get(atr);
+    if (!refs.has(ref)) refs.set(ref, []);
+    refs.get(ref).push(esc);
+  });
+  orden.sort((a, b) => (ATRIBUTOS.indexOf(a) + 99 * (ATRIBUTOS.indexOf(a) < 0)) - (ATRIBUTOS.indexOf(b) + 99 * (ATRIBUTOS.indexOf(b) < 0)));
+  return orden.map((atr) => [atr, [...mapa.get(atr).entries()]]);
+}
+const esAA = (esc) => esc.imp === 'A' && esc.dif === 'A';
+
+function actualizarConteoArbol() {
+  const n = estado.escenarios.length;
+  const aa = estado.escenarios.filter(esAA).length;
+  const sin = estado.escenarios.filter((e) => !e.imp || !e.dif).length;
+  const c = $('conteoArbol');
+  if (!n) { c.textContent = 'No hay escenarios registrados: construyan al menos uno en el paso 1.'; c.className = 'conteo'; return; }
+  let txt = aa + ' de ' + n + (n === 1 ? ' hoja es' : ' hojas son') + ' Alta/Alta.';
+  if (sin) txt += ' ' + sin + (sin === 1 ? ' hoja sigue' : ' hojas siguen') + ' sin valoración completa.';
+  const todo = n > 1 && aa === n;
+  if (todo) txt += ' Todo es Alta/Alta: este árbol no priorizó nada.';
+  c.textContent = txt;
+  c.className = 'conteo' + (todo ? ' alerta' : '');
+}
+
+function renderArbol() {
+  const cont = $('arbolUtilidad');
+  cont.replaceChildren();
+  actualizarConteoArbol();
+  if (!estado.escenarios.length) return;
+  cont.append(el('div', { class: 'raiz', text: 'Utilidad' }));
+  const raiz = el('ul', { class: 'arbol' });
+  agruparArbol().forEach(([atr, refs]) => {
+    const ulRef = el('ul');
+    refs.forEach(([ref, hojas]) => {
+      const ulHoja = el('ul');
+      hojas.forEach((esc) => ulHoja.append(el('li', null, crearHoja(esc))));
+      ulRef.append(el('li', null, el('span', { class: 'nodo-ref', text: ref }), ulHoja));
+    });
+    raiz.append(el('li', null, el('span', { class: 'nodo-atr', text: atr }), ulRef));
+  });
+  cont.append(raiz);
+}
+
+function crearHoja(esc) {
+  const cod = codigo(esc);
+  const hoja = el('div', { class: 'hoja' + (esAA(esc) ? ' aa' : ''), 'data-hoja': esc.id });
+  const boton = (campo, etq) => {
+    const b = el('button', { type: 'button', class: 'btn-val', 'data-v': esc[campo] || '' });
+    const pintar = () => {
+      b.dataset.v = esc[campo] || '';
+      b.textContent = ESCALA[esc[campo] || ''];
+      b.setAttribute('aria-label', etq + ' de ' + cod + ': ' + ESCALA[esc[campo] || ''] + '. Pulsar para cambiar.');
+    };
+    pintar();
+    b.addEventListener('click', () => {
+      esc[campo] = SIGUIENTE[esc[campo] || ''];
+      pintar();
+      hoja.classList.toggle('aa', esAA(esc));
+      actualizarConteoArbol();
+      invalidarCierre();
+      anunciar(etq + ' de ' + cod + ': ' + ESCALA[esc[campo]] + (esAA(esc) ? '. Hoja Alta/Alta.' : '.'));
+    });
+    return el('div', { class: 'val' }, el('span', { class: 'val-etq', text: etq }), b);
+  };
+  hoja.append(
+    el('div', { class: 'hoja-texto' },
+      el('span', { class: 'cod', text: cod }), esc.estimulo,
+      el('span', { class: 'hoja-medida', text: 'Medida: ' + esc.medida }),
+      el('span', { class: 'sello-aa', text: 'Alta/Alta · evaluar en profundidad' })),
+    el('div', { class: 'valoracion' }, boton('imp', 'Importancia para el negocio'), boton('dif', 'Dificultad técnica')));
+  return hoja;
+}
+
+/* ════════ Pestaña 3: comparador de alternativas (Fase E) ════════ */
+function campoTexto(id, etq, valor, alCambiar, opts) {
+  const o = opts || {};
+  /* Textarea que crece con su contenido: el texto precargado nunca queda recortado al proyectar. */
+  const control = el('textarea', { id, class: 'auto', rows: o.rows || 1, placeholder: o.placeholder || null, spellcheck: 'true' });
+  control.value = valor || '';
+  control.addEventListener('input', () => { ajustarAltura(control); alCambiar(control.value); });
+  return el('div', { class: 'campo' }, el('label', { for: id, text: etq }), control);
+}
+function ajustarAltura(ta) {
+  if (!ta.offsetParent) return;          /* panel oculto: se ajusta al mostrarse */
+  ta.style.height = 'auto';
+  ta.style.height = (ta.scrollHeight + 4) + 'px';
+}
+function ajustarAlturasComparador() {
+  document.querySelectorAll('#panel-comparador textarea.auto').forEach(ajustarAltura);
+}
+window.addEventListener('resize', ajustarAlturasComparador);
+
+function renderComparador() {
+  const cont = $('filasComparador');
+  cont.replaceChildren();
+  $('c-decision').value = estado.decision;
+  const alts = estado.alternativas;
+  const g = el('div', { class: 'comp' });
+  const cambio = () => { invalidarCierre(); actualizarEstadoDecision(); };
+
+  ['A', 'B'].forEach((k) => {
+    g.append(el('div', { class: 'comp-col-cab' },
+      el('div', { class: 'letra', text: 'Alternativa ' + k + ' · SBB candidato' }),
+      campoTexto('alt' + k + '-nombre', 'Nombre', alts[k].nombre, (v) => { alts[k].nombre = v; cambio(); }),
+      campoTexto('alt' + k + '-desc', 'En una frase', alts[k].descripcion, (v) => { alts[k].descripcion = v; cambio(); }, { area: true, rows: 3 })));
+  });
+
+  g.append(el('div', { class: 'comp-fila-tit' }, 'Prueba de viabilidad ', el('small', { text: '· contexto en el que esta alternativa sería la mejor' })));
+  ['A', 'B'].forEach((k) => g.append(el('div', { class: 'celda' },
+    campoTexto('alt' + k + '-viab', 'Alternativa ' + k + ' sería la mejor si…', alts[k].viabilidad, (v) => { alts[k].viabilidad = v; cambio(); }, { area: true, rows: 3 }))));
+
+  g.append(el('div', { class: 'comp-fila-tit' }, 'Comportamiento frente a cada escenario ', el('small', { text: '· semáforo y justificación en una línea' })));
+  if (!estado.escenarios.length) {
+    g.append(el('p', { class: 'esc-ref vacio', text: 'No hay escenarios registrados. Constrúyanlos en el paso 1 para poder comparar.' }));
+  }
+  estado.escenarios.forEach((esc) => {
+    const cod = codigo(esc);
+    g.append(el('p', { class: 'esc-ref' }, el('span', { class: 'cod', text: cod + ' · ' + esc.atributo + ': ' }), esc.medida));
+    ['A', 'B'].forEach((k) => {
+      const val = alts[k].valoracion[esc.id] || (alts[k].valoracion[esc.id] = { sem: '', just: '' });
+      const grupo = el('div', { class: 'semaforo', role: 'group', 'aria-label': 'Semáforo de la alternativa ' + k + ' frente a ' + cod });
+      SEMAFORO.forEach(([s, etq]) => {
+        const b = el('button', { type: 'button', class: 'btn-sem', 'data-s': s, 'aria-pressed': String(val.sem === s) },
+          el('span', { class: 'punto', 'aria-hidden': 'true' }), etq);
+        b.addEventListener('click', () => {
+          val.sem = val.sem === s ? '' : s;
+          grupo.querySelectorAll('.btn-sem').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.s === val.sem)));
+          cambio();
+        });
+        grupo.append(b);
+      });
+      g.append(el('div', { class: 'celda' }, grupo,
+        campoTexto('alt' + k + '-just-' + esc.id, 'Justificación de ' + k + ' frente a ' + cod, val.just, (v) => { val.just = v; cambio(); })));
+    });
+  });
+
+  g.append(el('div', { class: 'comp-fila-tit' }, 'Punto de sensibilidad ', el('small', { text: '· la decisión en la que un cambio pequeño mueve mucho un atributo' })));
+  ['A', 'B'].forEach((k) => g.append(el('div', { class: 'celda' },
+    campoTexto('alt' + k + '-sens', 'Alternativa ' + k, alts[k].sensibilidad, (v) => { alts[k].sensibilidad = v; cambio(); }, { area: true, rows: 3 }))));
+
+  g.append(el('div', { class: 'comp-fila-tit renuncia' }, 'RENUNCIA ', el('small', { text: '· obligatoria en las dos alternativas: qué se pierde, cuánto vale, a quién le duele' })));
+  ['A', 'B'].forEach((k) => {
+    const r = alts[k].renuncia;
+    const estadoR = el('p', { class: 'estado-renuncia', id: 'estadoRen' + k, 'aria-live': 'polite' });
+    const celda = el('div', { class: 'celda renuncia', id: 'celdaRen' + k });
+    celda.append(el('div', { class: 'letra etiqueta', text: 'Alternativa ' + k }));
+    SUBRENUNCIA.forEach(([sub, etq, ph]) => celda.append(
+      campoTexto('alt' + k + '-ren-' + sub, etq, r[sub], (v) => { r[sub] = v; cambio(); }, { area: true, rows: 2, placeholder: ph })));
+    celda.append(estadoR);
+    g.append(celda);
+  });
+
+  cont.append(g);
+  ajustarAlturasComparador();
+  actualizarEstadoDecision();
+}
+
+function actualizarEstadoDecision() {
+  const alts = estado.alternativas;
+  const faltas = [];
+  ['A', 'B'].forEach((k) => {
+    const f = faltantesRenuncia(alts[k].renuncia);
+    const est = $('estadoRen' + k), celda = $('celdaRen' + k);
+    if (est) {
+      est.textContent = f.length ? '✗ Falta: ' + f.join(', ') : '✓ Renuncia completa';
+      est.className = 'estado-renuncia ' + (f.length ? 'mal' : 'ok');
+      celda.classList.toggle('completa', !f.length);
+    }
+    if (f.length) faltas.push('Alternativa ' + k + ': ' + f.join(', '));
+  });
+  const ok = faltas.length === 0;
+  $('btnCerrar').disabled = !ok;
+  const aviso = $('avisoDecision');
+  aviso.replaceChildren();
+  if (ok) {
+    aviso.className = 'aviso aviso-ok';
+    aviso.textContent = 'Las dos alternativas declaran su renuncia. Ya pueden cerrar la decisión.';
+  } else {
+    aviso.className = 'aviso aviso-bloqueo';
+    aviso.append(el('span', { class: 'cita', text: MSG_RENUNCIA }),
+      el('div', { class: 'faltantes', text: 'Falta la renuncia completa en ' + faltas.join(' · ') + '.' }));
+  }
+  return ok;
+}
+
+function invalidarCierre() {
+  if (!decisionCerrada) return;
+  decisionCerrada = false;
+  $('resumen').hidden = true;
+  $('notaCambio').hidden = false;
+}
+
+function cerrarDecision() {
+  if (!puedeCerrarDecision(estado.alternativas)) {   /* validación en el manejador */
+    actualizarEstadoDecision();
+    anunciar('No se puede cerrar la decisión. ' + MSG_RENUNCIA);
+    return false;
+  }
+  $('textoResumen').value = generarResumen();
+  decisionCerrada = true;
+  $('notaCambio').hidden = true;
+  $('resumen').hidden = false;
+  $('estadoCopia').textContent = '';
+  $('titResumen').focus();
+  $('resumen').scrollIntoView({ block: 'start' });
+  return true;
+}
+
+function generarResumen() {
+  const L = [];
+  const alts = estado.alternativas;
+  const nom = (k) => alts[k].nombre || '(sin nombre)';
+  const txt = (v, def) => (String(v || '').trim() || def || '(sin diligenciar)');
+  const semEtq = (s) => (SEMAFORO.find(([x]) => x === s) || [null, 'Sin valorar'])[1];
+  L.push('RESUMEN DE LA DECISIÓN ARQUITECTÓNICA');
+  L.push('Actividad 2.2 · TOGAF Standard, 10th Edition · Fase E (Opportunities & Solutions)');
+  L.push('Instrumentos: F-14 escenarios de calidad · F-15 árbol de utilidad · F-16 comparación de SBB candidatos y renuncia');
+  L.push('');
+  L.push('Decisión evaluada: ' + txt(estado.decision));
+  L.push('Las alternativas son Solution Building Blocks (SBB) candidatos, comparados después del Gap Analysis.');
+  L.push('');
+  L.push('1. ESCENARIOS DE CALIDAD (F-14)');
+  if (!estado.escenarios.length) L.push('   (sin escenarios registrados)');
+  estado.escenarios.forEach((esc) => {
+    L.push('');
+    L.push(codigo(esc) + '. ' + esc.atributo + ' — ' + txt(esc.refinamiento, 'refinamiento sin nombrar'));
+    CANONICOS.forEach(([k, etq]) => L.push('   ' + etq + ': ' + txt(esc[k])));
+    L.push('   Umbral: ' + txt(esc.umbral, 'sin declarar'));
+    L.push('   Cómo se verifica automáticamente: ' + txt(esc.verificacion, 'sin verificación automática'));
+  });
+  L.push('');
+  L.push('2. ÁRBOL DE UTILIDAD (F-15) · importancia para el negocio / dificultad técnica');
+  agruparArbol().forEach(([atr, refs]) => {
+    L.push('');
+    L.push(atr);
+    refs.forEach(([ref, hojas]) => {
+      L.push('   > ' + ref);
+      hojas.forEach((esc) => L.push('      - ' + codigo(esc) + ' [' + ESCALA[esc.imp || ''] + ' / ' + ESCALA[esc.dif || ''] + ']'
+        + (esAA(esc) ? ' ALTA/ALTA: se evalúa en profundidad' : '') + ' · ' + esc.estimulo));
+    });
+  });
+  const aa = estado.escenarios.filter(esAA).map(codigo);
+  L.push('');
+  L.push('Escenarios Alta/Alta: ' + (aa.length ? aa.join(', ') : 'ninguno'));
+  L.push('');
+  L.push('3. COMPARACIÓN DE SBB CANDIDATOS (F-16)');
+  ['A', 'B'].forEach((k) => {
+    const a = alts[k];
+    L.push('');
+    L.push('Alternativa ' + k + ' — ' + nom(k));
+    L.push('   En una frase: ' + txt(a.descripcion));
+    L.push('   Prueba de viabilidad (sería la mejor si): ' + txt(a.viabilidad));
+    L.push('   Comportamiento frente a los escenarios:');
+    estado.escenarios.forEach((esc) => {
+      const v = a.valoracion[esc.id] || {};
+      L.push('      ' + codigo(esc) + ' ' + esc.atributo + ': ' + semEtq(v.sem) + ' — ' + txt(v.just, 'sin justificación'));
+    });
+    L.push('   Punto de sensibilidad: ' + txt(a.sensibilidad));
+    L.push('   RENUNCIA');
+    SUBRENUNCIA.forEach(([sub, etq]) => L.push('      ' + etq + ': ' + txt(a.renuncia[sub])));
+  });
+  L.push('');
+  L.push('4. CIERRE DE LA DECISIÓN');
+  const e = estado.elegida;
+  if (e === 'A' || e === 'B') {
+    const d = e === 'A' ? 'B' : 'A';
+    const r = alts[e].renuncia;
+    L.push('SBB elegido: Alternativa ' + e + ' — ' + nom(e));
+    L.push('Renuncia que se asume:');
+    SUBRENUNCIA.forEach(([sub, etq]) => L.push('   ' + etq + ': ' + txt(r[sub])));
+    L.push('Alternativa descartada: ' + d + ' — ' + nom(d));
+    L.push('Contexto en el que la descartada sería la mejor: ' + txt(alts[d].viabilidad));
+  } else {
+    L.push('SBB elegido: SIN DECLARAR. El grupo debe escribir aquí cuál elige y por qué antes de pegar este resumen en el informe.');
+  }
+  L.push('Evidencia que invalidaría la decisión: ' + txt(estado.invalidaria, 'sin declarar'));
+  return L.join('\n');
+}
+
+$('btnCerrar').addEventListener('click', cerrarDecision);
+$('c-decision').addEventListener('input', () => { estado.decision = $('c-decision').value; invalidarCierre(); });
+$('c-invalidaria').addEventListener('input', () => { estado.invalidaria = $('c-invalidaria').value; invalidarCierre(); });
+document.querySelectorAll('input[name="elegida"]').forEach((r) => r.addEventListener('change', () => {
+  estado.elegida = r.value; invalidarCierre();
+}));
+$('btnCopiar').addEventListener('click', () => {
+  const ta = $('textoResumen');
+  const ok = () => { $('estadoCopia').textContent = 'Resumen copiado al portapapeles.'; };
+  const respaldo = () => {
+    ta.focus(); ta.select();
+    let copiado = false;
+    try { copiado = document.execCommand('copy'); } catch (e) { copiado = false; }
+    $('estadoCopia').textContent = copiado ? 'Resumen copiado al portapapeles.' : 'Texto seleccionado: usen Ctrl+C para copiarlo.';
+  };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(ta.value).then(ok, respaldo);
+  else respaldo();
+});
+
+/* ════════ Caso propio / restaurar ════════ */
+function cargarCaso(nuevo) {
+  estado = nuevo;
+  decisionCerrada = false;
+  $('resumen').hidden = true;
+  $('notaCambio').hidden = true;
+  $('c-invalidaria').value = estado.invalidaria;
+  document.querySelectorAll('input[name="elegida"]').forEach((r) => { r.checked = r.value === estado.elegida; });
+  escribirFormulario({});
+  medidaIntentada = false;
+  renderTarjetas();
+  renderArbol();
+  renderComparador();
+  actualizarEstadoFormulario();
+}
+$('btnCasoPropio').addEventListener('click', () => {
+  if (!window.confirm('Se borrarán los escenarios y las alternativas de Red Salud Andina para trabajar con el caso del grupo. ¿Continuar?')) return;
+  cargarCaso(casoVacio());
+  activarPestana('escenarios', false);
+  $('f-atributo').focus();
+  anunciar('Herramienta vacía, lista para el caso del grupo.');
+});
+$('btnRestaurar').addEventListener('click', () => {
+  if (!window.confirm('Se restaurará el caso Red Salud Andina y se perderán los cambios. ¿Continuar?')) return;
+  cargarCaso(casoRedSalud());
+  anunciar('Caso Red Salud Andina restaurado.');
+});
+
+/* ════════ Inicio ════════ */
+cargarCaso(estado);
+activarPestana(TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'escenarios', false);
+</script>
+</body>
+</html>

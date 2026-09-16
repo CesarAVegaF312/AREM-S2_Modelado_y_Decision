@@ -1,0 +1,733 @@
+<title>Las Cuatro Vistas — Red Salud Andina</title>
+<style>
+:root{
+  --azul:#002060; --medio:#00387D; --claro:#EEF3FA; --pale:#D9E1EF; --slate:#93AAC9;
+  --motiv:#CCCCFF; --motiv-b:#6A5ACD;
+  --estr:#F5DEAA; --estr-b:#B8860B;
+  --biz:#FFFFB5; --biz-b:#9A9A2E;
+  --app:#B5FFFF; --app-b:#2E8B8B;
+  --tec:#C9E7B7; --tec-b:#4E8C3A;
+  --impl:#FFE0E0; --impl-b:#B5615F;
+  --coral:#C2622C;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;}
+
+.header{background:var(--azul);color:#fff;padding:16px 28px;}
+.header h1{font-size:18px;font-weight:700;letter-spacing:.2px;}
+.header p{font-size:12.5px;color:var(--slate);margin-top:4px;}
+
+.wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px;}
+
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
+.tab{padding:10px 15px;border:1px solid var(--pale);background:#fff;border-radius:6px 6px 0 0;
+     cursor:pointer;font-size:13px;font-weight:600;color:var(--medio);}
+.tab:hover{background:var(--claro);}
+.tab.active{background:var(--azul);color:#fff;border-color:var(--azul);}
+.tab .n{display:inline-block;background:var(--claro);color:var(--azul);border-radius:3px;
+        padding:1px 6px;margin-right:7px;font-size:11px;}
+.tab.active .n{background:rgba(255,255,255,.22);color:#fff;}
+
+.view{display:none;}
+.view.active{display:block;}
+
+.band{background:#fff;border:1px solid var(--pale);border-left:5px solid var(--azul);
+      border-radius:5px;padding:14px 18px;margin-bottom:14px;}
+.band .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px 22px;}
+.band .k{font-size:10.5px;letter-spacing:.7px;text-transform:uppercase;color:#7C8DA8;font-weight:700;}
+.band .v{font-size:13.5px;margin-top:3px;line-height:1.35;}
+.band .sup{margin-top:12px;padding-top:10px;border-top:1px dashed var(--pale);
+           font-size:12.5px;color:#5A6B82;}
+.band .sup b{color:var(--coral);}
+
+.canvas{background:#fff;border:1px solid var(--pale);border-radius:5px;padding:10px;overflow-x:auto;}
+svg{display:block;max-width:100%;height:auto;}
+
+.reading{background:var(--claro);border-radius:5px;padding:14px 18px;margin-top:14px;font-size:13.5px;line-height:1.55;}
+.reading h4{font-size:13px;color:var(--azul);margin-bottom:6px;}
+.reading ul{margin:6px 0 0 18px;}
+.reading li{margin-bottom:5px;}
+
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:12px;color:#44546A;}
+.legend span{display:flex;align-items:center;gap:6px;}
+.sw{width:15px;height:11px;border:1px solid #888;display:inline-block;}
+
+.bad{border-left-color:var(--coral);}
+.diag{background:#FDF1EA;border-left:5px solid var(--coral);border-radius:5px;
+      padding:13px 17px;margin-top:12px;font-size:13.5px;line-height:1.5;}
+.diag b{color:var(--coral);}
+h3.sec{font-size:15px;color:var(--azul);margin:26px 0 10px;}
+.foot{margin-top:26px;font-size:12px;color:#7C8DA8;border-top:1px solid var(--pale);padding-top:12px;}
+</style>
+
+<div class="header">
+  <h1>Las cuatro vistas — Red Salud Andina</h1>
+  <p>Ejemplo trabajado para la Actividad 2.2 · ArchiMate 3.2 · TOGAF® Standard, 10.ª edición · Arquitectura Empresarial, Maestría</p>
+</div>
+
+<div class="wrap">
+
+<div class="tabs">
+  <div class="tab active" onclick="show(0,this)"><span class="n">1</span>Motivación y estrategia</div>
+  <div class="tab" onclick="show(1,this)"><span class="n">2</span>Negocio</div>
+  <div class="tab" onclick="show(2,this)"><span class="n">3</span>Aplicación y tecnología</div>
+  <div class="tab" onclick="show(3,this)"><span class="n">4</span>Implementación y migración</div>
+  <div class="tab" onclick="show(4,this)"><span class="n">✕</span>Contraejemplos</div>
+</div>
+
+<!-- ══════════════════════════════════ VISTA 1 ══════════════════════════════════ -->
+<div class="view active">
+  <div class="band">
+    <div class="grid">
+      <div><div class="k">Stakeholder</div><div class="v">Dirección General y Secretaría de Salud</div></div>
+      <div><div class="k">Concern</div><div class="v">Que la promesa pública de historia clínica única sea sostenible</div></div>
+      <div><div class="k">Punto de vista</div><div class="v">Motivación y capacidades. Sin aplicaciones ni nodos</div></div>
+      <div><div class="k">Fase del ADM</div><div class="v">B · Business Architecture</div></div>
+      <div><div class="k">Decisión que habilita</div><div class="v">Cuál capacidad se interviene primero</div></div>
+    </div>
+    <div class="sup"><b>Supuesto declarado:</b> la meta de 5 minutos para acceder a la historia completa no está en ningún documento; se infirió de la declaración pública de la Dirección (F-12, fila 3).</div>
+  </div>
+
+  <div class="canvas">
+  <svg viewBox="0 0 1080 560" role="img" aria-label="Vista de motivación y estrategia">
+    <defs>
+      <marker id="realz" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto">
+        <path d="M1,1 L11,6 L1,11 Z" fill="#fff" stroke="#444" stroke-width="1.2"/>
+      </marker>
+      <marker id="infl" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
+        <path d="M1,1 L10,5.5 L1,10" fill="none" stroke="#444" stroke-width="1.3"/>
+      </marker>
+      <marker id="assoc" markerWidth="2" markerHeight="2" refX="1" refY="1"><circle cx="1" cy="1" r="0"/></marker>
+    </defs>
+
+    <!-- banda de capa -->
+    <rect x="8" y="8" width="1064" height="196" fill="#F7F7FF" stroke="#DDDDF2"/>
+    <text x="20" y="27" font-size="11" font-weight="700" fill="#6A5ACD" letter-spacing="1">CAPA DE MOTIVACIÓN</text>
+    <rect x="8" y="216" width="1064" height="150" fill="#FFFBF0" stroke="#F0E3C4"/>
+    <text x="20" y="235" font-size="11" font-weight="700" fill="#B8860B" letter-spacing="1">CAPA DE ESTRATEGIA</text>
+    <rect x="8" y="378" width="1064" height="170" fill="#FFFFF7" stroke="#EDEDCF"/>
+    <text x="20" y="397" font-size="11" font-weight="700" fill="#9A9A2E" letter-spacing="1">CAPA DE NEGOCIO (contexto)</text>
+
+    <!-- stakeholders -->
+    <g>
+      <path d="M40,46 h150 l14,14 v46 l-14,14 h-150 l-14,-14 v-46 Z" fill="var(--motiv)" stroke="var(--motiv-b)"/>
+      <text x="115" y="72" text-anchor="middle" font-size="12.5" font-weight="600">Dirección General</text>
+      <text x="115" y="90" text-anchor="middle" font-size="10.5" fill="#555">stakeholder</text>
+      <circle cx="192" cy="56" r="5" fill="none" stroke="var(--motiv-b)"/><circle cx="192" cy="56" r="1.6" fill="var(--motiv-b)"/>
+    </g>
+    <g>
+      <path d="M40,132 h150 l14,14 v34 l-14,14 h-150 l-14,-14 v-34 Z" fill="var(--motiv)" stroke="var(--motiv-b)"/>
+      <text x="115" y="158" text-anchor="middle" font-size="12.5" font-weight="600">Secretaría de Salud</text>
+      <text x="115" y="174" text-anchor="middle" font-size="10.5" fill="#555">stakeholder</text>
+    </g>
+
+    <!-- driver + assessment -->
+    <g>
+      <path d="M262,46 h170 l14,14 v46 l-14,14 h-170 l-14,-14 v-46 Z" fill="var(--motiv)" stroke="var(--motiv-b)"/>
+      <text x="347" y="70" text-anchor="middle" font-size="12.5" font-weight="600">Promesa pública de</text>
+      <text x="347" y="86" text-anchor="middle" font-size="12.5" font-weight="600">historia clínica única</text>
+      <text x="347" y="103" text-anchor="middle" font-size="10.5" fill="#555">driver</text>
+    </g>
+    <g>
+      <path d="M262,132 h170 l14,14 v34 l-14,14 h-170 l-14,-14 v-34 Z" fill="var(--motiv)" stroke="var(--motiv-b)"/>
+      <text x="347" y="156" text-anchor="middle" font-size="12" font-weight="600">6 sedes operan con otro HIS</text>
+      <text x="347" y="174" text-anchor="middle" font-size="10.5" fill="#555">assessment</text>
+    </g>
+
+    <!-- goal + outcome -->
+    <g>
+      <path d="M504,46 h170 l14,14 v46 l-14,14 h-170 l-14,-14 v-46 Z" fill="var(--motiv)" stroke="var(--motiv-b)"/>
+      <text x="589" y="70" text-anchor="middle" font-size="12.5" font-weight="600">Historia completa del</text>
+      <text x="589" y="86" text-anchor="middle" font-size="12.5" font-weight="600">paciente en ≤ 5 min</text>
+      <text x="589" y="103" text-anchor="middle" font-size="10.5" fill="#555">goal</text>
+    </g>
+    <g>
+      <path d="M504,132 h170 l14,14 v34 l-14,14 h-170 l-14,-14 v-34 Z" fill="var(--motiv)" stroke="var(--motiv-b)"/>
+      <text x="589" y="156" text-anchor="middle" font-size="12" font-weight="600">Cero duplicados de paciente</text>
+      <text x="589" y="174" text-anchor="middle" font-size="10.5" fill="#555">outcome</text>
+    </g>
+
+    <!-- principle + requirement -->
+    <g>
+      <path d="M760,46 h170 l14,14 v46 l-14,14 h-170 l-14,-14 v-46 Z" fill="var(--motiv)" stroke="var(--motiv-b)"/>
+      <text x="845" y="70" text-anchor="middle" font-size="12.5" font-weight="600">Interoperar antes</text>
+      <text x="845" y="86" text-anchor="middle" font-size="12.5" font-weight="600">que consolidar</text>
+      <text x="845" y="103" text-anchor="middle" font-size="10.5" fill="#555">principle</text>
+    </g>
+    <g>
+      <path d="M760,132 h170 l14,14 v34 l-14,14 h-170 l-14,-14 v-34 Z" fill="var(--motiv)" stroke="var(--motiv-b)"/>
+      <text x="845" y="156" text-anchor="middle" font-size="12" font-weight="600">Identidad única de paciente</text>
+      <text x="845" y="174" text-anchor="middle" font-size="10.5" fill="#555">requirement</text>
+    </g>
+
+    <!-- relaciones motivación -->
+    <line x1="204" y1="76" x2="248" y2="76" stroke="#444" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#infl)"/>
+    <line x1="204" y1="160" x2="248" y2="160" stroke="#444" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#infl)"/>
+    <line x1="446" y1="76" x2="490" y2="76" stroke="#444" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#infl)"/>
+    <line x1="446" y1="160" x2="490" y2="160" stroke="#444" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#infl)"/>
+    <line x1="688" y1="76" x2="746" y2="76" stroke="#444" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#infl)"/>
+    <line x1="688" y1="160" x2="746" y2="160" stroke="#444" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#infl)"/>
+
+    <!-- capacidades -->
+    <g>
+      <rect x="150" y="256" width="230" height="78" fill="var(--estr)" stroke="var(--estr-b)" rx="2"/>
+      <text x="265" y="286" text-anchor="middle" font-size="13" font-weight="600">Gestión de identidad</text>
+      <text x="265" y="304" text-anchor="middle" font-size="13" font-weight="600">del paciente</text>
+      <text x="265" y="322" text-anchor="middle" font-size="10.5" fill="#6b5a1f">capability · madurez 1 de 5</text>
+      <rect x="358" y="262" width="14" height="10" fill="none" stroke="var(--estr-b)"/>
+      <rect x="358" y="262" width="7" height="5" fill="var(--estr-b)"/>
+    </g>
+    <g>
+      <rect x="425" y="256" width="230" height="78" fill="var(--estr)" stroke="var(--estr-b)" rx="2"/>
+      <text x="540" y="286" text-anchor="middle" font-size="13" font-weight="600">Atención clínica</text>
+      <text x="540" y="304" text-anchor="middle" font-size="13" font-weight="600">ambulatoria</text>
+      <text x="540" y="322" text-anchor="middle" font-size="10.5" fill="#6b5a1f">capability · madurez 3 de 5</text>
+      <rect x="633" y="262" width="14" height="10" fill="none" stroke="var(--estr-b)"/>
+      <rect x="633" y="262" width="7" height="5" fill="var(--estr-b)"/>
+    </g>
+    <g>
+      <rect x="700" y="256" width="230" height="78" fill="var(--estr)" stroke="var(--estr-b)" rx="2"/>
+      <text x="815" y="286" text-anchor="middle" font-size="13" font-weight="600">Facturación de</text>
+      <text x="815" y="304" text-anchor="middle" font-size="13" font-weight="600">servicios</text>
+      <text x="815" y="322" text-anchor="middle" font-size="10.5" fill="#6b5a1f">capability · madurez 3 de 5</text>
+      <rect x="908" y="262" width="14" height="10" fill="none" stroke="var(--estr-b)"/>
+      <rect x="908" y="262" width="7" height="5" fill="var(--estr-b)"/>
+    </g>
+
+    <!-- realización capacidad -> requisito/meta -->
+    <line x1="265" y1="256" x2="265" y2="200" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz)"/>
+    <text x="272" y="228" font-size="10.5" fill="#666">realiza</text>
+    <line x1="845" y1="200" x2="845" y2="230" stroke="#444" stroke-width="1.3" stroke-dasharray="4,3"/>
+    <line x1="845" y1="230" x2="300" y2="230" stroke="#444" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#infl)"/>
+    <text x="560" y="224" font-size="10.5" fill="#666">el requisito exige esta capacidad</text>
+
+    <!-- servicio de negocio -->
+    <g>
+      <rect x="425" y="416" width="230" height="66" rx="30" fill="var(--biz)" stroke="var(--biz-b)"/>
+      <text x="540" y="445" text-anchor="middle" font-size="12.5" font-weight="600">Consulta de historia</text>
+      <text x="540" y="462" text-anchor="middle" font-size="12.5" font-weight="600">clínica unificada</text>
+    </g>
+    <line x1="540" y1="416" x2="540" y2="340" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz)"/>
+    <text x="548" y="382" font-size="10.5" fill="#666">realiza</text>
+
+    <text x="700" y="450" font-size="11.5" fill="#6b7a8c">Este servicio de negocio es el que se</text>
+    <text x="700" y="468" font-size="11.5" fill="#6b7a8c">rompe hoy: se detalla en la Vista 2.</text>
+
+    <text x="30" y="512" font-size="11" fill="#8894a6">La capacidad en rojo del heat map de la U1 (madurez 1) es la que entra al alcance. Las otras dos se muestran para dar contexto y no se detallan.</text>
+  </svg>
+  </div>
+
+  <div class="legend">
+    <span><i class="sw" style="background:var(--motiv);border-color:var(--motiv-b)"></i>Motivación</span>
+    <span><i class="sw" style="background:var(--estr);border-color:var(--estr-b)"></i>Estrategia</span>
+    <span><i class="sw" style="background:var(--biz);border-color:var(--biz-b)"></i>Negocio</span>
+    <span>▷ línea punteada + triángulo hueco = <b>realización</b></span>
+    <span>⇢ línea punteada + punta abierta = <b>influencia</b></span>
+  </div>
+
+  <div class="reading">
+    <h4>Cómo se lee esta vista</h4>
+    <ul>
+      <li>De izquierda a derecha, la cadena de la capa de motivación: <b>quién</b> tiene el interés → <b>qué</b> lo impulsa → <b>qué evaluación</b> se hizo → <b>qué meta</b> se persigue → <b>qué principio</b> restringe la solución.</li>
+      <li>El principio «interoperar antes que consolidar» no es decorativo: es el que descarta la alternativa de consolidación en la Fase E. Un principio que no descarta nada no era un principio.</li>
+      <li>Las capacidades vienen del mapa de la Unidad 1. Solo se detalla la que está en rojo; las demás dan contexto.</li>
+      <li>El servicio de negocio del pie es el enganche con la Vista 2. Las vistas se encadenan; no son cuatro dibujos sueltos.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ VISTA 2 ══════════════════════════════════ -->
+<div class="view">
+  <div class="band">
+    <div class="grid">
+      <div><div class="k">Stakeholder</div><div class="v">Dirección médica</div></div>
+      <div><div class="k">Concern</div><div class="v">En qué punto de la atención se rompe la historia única</div></div>
+      <div><div class="k">Punto de vista</div><div class="v">Proceso de negocio con actores, roles y objetos</div></div>
+      <div><div class="k">Fase del ADM</div><div class="v">B · Business Architecture</div></div>
+      <div><div class="k">Decisión que habilita</div><div class="v">Dónde se interviene: admisión o consulta</div></div>
+    </div>
+    <div class="sup"><b>Supuesto declarado:</b> se asume que el laboratorio B2B no consume la historia clínica. No fue posible verificarlo con el área comercial (F-12, fila 5).</div>
+  </div>
+
+  <div class="canvas">
+  <svg viewBox="0 0 1080 480" role="img" aria-label="Vista de negocio">
+    <defs>
+      <marker id="trig" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
+        <path d="M1,1 L10,5.5 L1,10 Z" fill="#444"/>
+      </marker>
+      <marker id="serv" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
+        <path d="M1,1 L10,5.5 L1,10" fill="none" stroke="#444" stroke-width="1.3"/>
+      </marker>
+      <marker id="asgs" markerWidth="8" markerHeight="8" refX="4" refY="4"><circle cx="4" cy="4" r="3" fill="#444"/></marker>
+      <marker id="asge" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
+        <path d="M1,1 L10,5.5 L1,10 Z" fill="#444"/>
+      </marker>
+      <marker id="realz2" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto">
+        <path d="M1,1 L11,6 L1,11 Z" fill="#fff" stroke="#444" stroke-width="1.2"/>
+      </marker>
+    </defs>
+
+    <rect x="8" y="8" width="1064" height="462" fill="#FFFFF7" stroke="#EDEDCF"/>
+    <text x="20" y="27" font-size="11" font-weight="700" fill="#9A9A2E" letter-spacing="1">CAPA DE NEGOCIO</text>
+
+    <!-- actores y roles -->
+    <g>
+      <rect x="34" y="48" width="150" height="58" fill="var(--biz)" stroke="var(--biz-b)"/>
+      <text x="109" y="74" text-anchor="middle" font-size="12.5" font-weight="600">Paciente</text>
+      <text x="109" y="92" text-anchor="middle" font-size="10.5" fill="#555">business actor</text>
+      <circle cx="170" cy="58" r="4" fill="none" stroke="var(--biz-b)"/>
+      <path d="M170,62 v7 M166,65 h8 M170,69 l-3,5 M170,69 l3,5" stroke="var(--biz-b)" fill="none" stroke-width="1"/>
+    </g>
+    <g>
+      <rect x="34" y="128" width="150" height="58" fill="var(--biz)" stroke="var(--biz-b)"/>
+      <text x="109" y="154" text-anchor="middle" font-size="12.5" font-weight="600">Auxiliar de admisiones</text>
+      <text x="109" y="172" text-anchor="middle" font-size="10.5" fill="#555">business role</text>
+    </g>
+    <g>
+      <rect x="34" y="208" width="150" height="58" fill="var(--biz)" stroke="var(--biz-b)"/>
+      <text x="109" y="234" text-anchor="middle" font-size="12.5" font-weight="600">Médico tratante</text>
+      <text x="109" y="252" text-anchor="middle" font-size="10.5" fill="#555">business role</text>
+    </g>
+
+    <!-- proceso: 4 pasos -->
+    <g>
+      <rect x="248" y="126" width="168" height="62" fill="var(--biz)" stroke="var(--biz-b)"/>
+      <text x="332" y="153" text-anchor="middle" font-size="12.5" font-weight="600">Identificar</text>
+      <text x="332" y="170" text-anchor="middle" font-size="12.5" font-weight="600">al paciente</text>
+      <path d="M396,132 h12 l6,6 -6,6 h-12 z" fill="none" stroke="var(--biz-b)" stroke-width="1"/>
+    </g>
+    <g>
+      <rect x="448" y="126" width="168" height="62" fill="var(--biz)" stroke="var(--biz-b)"/>
+      <text x="532" y="153" text-anchor="middle" font-size="12.5" font-weight="600">Recuperar</text>
+      <text x="532" y="170" text-anchor="middle" font-size="12.5" font-weight="600">historia previa</text>
+      <path d="M596,132 h12 l6,6 -6,6 h-12 z" fill="none" stroke="var(--biz-b)" stroke-width="1"/>
+    </g>
+    <g>
+      <rect x="648" y="126" width="168" height="62" fill="var(--biz)" stroke="var(--biz-b)"/>
+      <text x="732" y="153" text-anchor="middle" font-size="12.5" font-weight="600">Atender</text>
+      <text x="732" y="170" text-anchor="middle" font-size="12.5" font-weight="600">consulta</text>
+      <path d="M796,132 h12 l6,6 -6,6 h-12 z" fill="none" stroke="var(--biz-b)" stroke-width="1"/>
+    </g>
+    <g>
+      <rect x="848" y="126" width="168" height="62" fill="var(--biz)" stroke="var(--biz-b)"/>
+      <text x="932" y="153" text-anchor="middle" font-size="12.5" font-weight="600">Registrar</text>
+      <text x="932" y="170" text-anchor="middle" font-size="12.5" font-weight="600">y facturar</text>
+      <path d="M996,132 h12 l6,6 -6,6 h-12 z" fill="none" stroke="var(--biz-b)" stroke-width="1"/>
+    </g>
+
+    <line x1="416" y1="157" x2="444" y2="157" stroke="#444" stroke-width="1.4" marker-end="url(#trig)"/>
+    <line x1="616" y1="157" x2="644" y2="157" stroke="#444" stroke-width="1.4" marker-end="url(#trig)"/>
+    <line x1="816" y1="157" x2="844" y2="157" stroke="#444" stroke-width="1.4" marker-end="url(#trig)"/>
+
+    <!-- asignaciones -->
+    <line x1="184" y1="157" x2="244" y2="157" stroke="#444" stroke-width="1.4" marker-start="url(#asgs)" marker-end="url(#asge)"/>
+    <line x1="184" y1="237" x2="212" y2="237" stroke="#444" stroke-width="1.4" marker-start="url(#asgs)"/>
+    <path d="M212,237 V108 H732 V122" fill="none" stroke="#444" stroke-width="1.4" marker-end="url(#asge)"/>
+    <text x="470" y="102" font-size="10.5" fill="#666">asignación: el médico ejecuta la consulta</text>
+
+    <!-- PUNTO DE RUPTURA -->
+    <rect x="440" y="112" width="184" height="90" fill="none" stroke="var(--coral)" stroke-width="2.5" stroke-dasharray="7,4" rx="4"/>
+    <text x="532" y="58" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--coral)">AQUÍ SE ROMPE</text>
+    <text x="532" y="76" text-anchor="middle" font-size="11.5" fill="var(--coral)">El paso devuelve solo la historia de la sede actual</text>
+
+    <!-- objetos de negocio -->
+    <g>
+      <rect x="242" y="288" width="180" height="62" fill="var(--biz)" stroke="var(--biz-b)"/>
+      <rect x="242" y="288" width="180" height="12" fill="#F2F2C9" stroke="var(--biz-b)"/>
+      <text x="332" y="322" text-anchor="middle" font-size="12.5" font-weight="600">Identidad del paciente</text>
+      <text x="332" y="339" text-anchor="middle" font-size="10.5" fill="#555">business object</text>
+    </g>
+    <g>
+      <rect x="442" y="288" width="180" height="62" fill="var(--biz)" stroke="var(--biz-b)"/>
+      <rect x="442" y="288" width="180" height="12" fill="#F2F2C9" stroke="var(--biz-b)"/>
+      <text x="532" y="322" text-anchor="middle" font-size="12.5" font-weight="600">Historia clínica</text>
+      <text x="532" y="339" text-anchor="middle" font-size="10.5" fill="#555">business object</text>
+    </g>
+    <line x1="332" y1="288" x2="332" y2="190" stroke="#777" stroke-width="1.2"/>
+    <line x1="532" y1="288" x2="532" y2="204" stroke="#777" stroke-width="1.2"/>
+    <text x="660" y="312" font-size="11" fill="#6b7a8c">Los objetos de negocio son «de qué habla»</text>
+    <text x="660" y="329" font-size="11" fill="#6b7a8c">el negocio, no dónde se guardan.</text>
+
+    <!-- servicio de negocio -->
+    <g>
+      <rect x="552" y="392" width="410" height="56" rx="26" fill="var(--biz)" stroke="var(--biz-b)"/>
+      <text x="757" y="425" text-anchor="middle" font-size="12.5" font-weight="600">Servicio: consulta de historia clínica unificada</text>
+    </g>
+    <line x1="732" y1="392" x2="732" y2="194" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz2)"/>
+    <text x="740" y="372" font-size="10.5" fill="#666">realiza</text>
+    <path d="M552,420 H24 V77 H28" fill="none" stroke="#444" stroke-width="1.4" marker-end="url(#serv)"/>
+    <text x="118" y="410" font-size="10.5" fill="#666">sirve al paciente</text>
+  </svg>
+  </div>
+
+  <div class="legend">
+    <span>● — ▶ = <b>asignación</b> (un rol ejecuta un proceso)</span>
+    <span>— ▶ = <b>disparo</b> (un paso lleva al siguiente)</span>
+    <span>— ▷ = <b>servicio</b> (algo sirve a alguien)</span>
+    <span>línea simple = <b>asociación</b></span>
+  </div>
+
+  <div class="reading">
+    <h4>Cómo se lee esta vista</h4>
+    <ul>
+      <li>El proceso se lee de izquierda a derecha con relaciones de <b>disparo</b>. Cuatro pasos, no catorce: si el proceso no cabe en una línea, la vista está mirando demasiado.</li>
+      <li>El recuadro coral marca <b>dónde duele</b>, y esa marca es lo que convierte un diagrama en un argumento. Sin ella, esta vista sería documentación.</li>
+      <li>«Paciente» es un <b>actor</b>; «médico tratante» y «auxiliar de admisiones» son <b>roles</b>. La misma persona puede cumplir dos roles distintos.</li>
+      <li>Los objetos de negocio están abajo porque son pasivos: se actúa sobre ellos. En la Vista 3 van a aparecer <b>realizados</b> por objetos de datos.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ VISTA 3 ══════════════════════════════════ -->
+<div class="view">
+  <div class="band">
+    <div class="grid">
+      <div><div class="k">Stakeholder</div><div class="v">Equipo de arquitectura y comité de inversión</div></div>
+      <div><div class="k">Concern</div><div class="v">Qué sistemas tendrían que hablarse, y por dónde</div></div>
+      <div><div class="k">Punto de vista</div><div class="v">Aplicación con su sustrato tecnológico</div></div>
+      <div><div class="k">Fase del ADM</div><div class="v">C y D · Sistemas de información y tecnología</div></div>
+      <div><div class="k">Decisión que habilita</div><div class="v">Qué se pone en la costura: la decisión de la Fase E</div></div>
+    </div>
+    <div class="sup"><b>Supuesto declarado:</b> se asume que el HIS adquirido expone una API de consulta. Si solo permitiera acceso a base de datos, el adaptador cambia de naturaleza y el esfuerzo se duplica (F-12, fila 7).</div>
+  </div>
+
+  <div class="canvas">
+  <svg viewBox="0 0 1080 540" role="img" aria-label="Vista de aplicación y tecnología">
+    <defs>
+      <marker id="serv3" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
+        <path d="M1,1 L10,5.5 L1,10" fill="none" stroke="#444" stroke-width="1.3"/>
+      </marker>
+      <marker id="realz3" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto">
+        <path d="M1,1 L11,6 L1,11 Z" fill="#fff" stroke="#444" stroke-width="1.2"/>
+      </marker>
+      <marker id="flow3" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
+        <path d="M1,1 L10,5.5 L1,10 Z" fill="#444"/>
+      </marker>
+    </defs>
+
+    <rect x="8" y="8" width="1064" height="316" fill="#F2FEFE" stroke="#CDECEC"/>
+    <text x="20" y="27" font-size="11" font-weight="700" fill="#2E8B8B" letter-spacing="1">CAPA DE APLICACIÓN</text>
+    <rect x="8" y="336" width="1064" height="196" fill="#F6FCF3" stroke="#D9EDD0"/>
+    <text x="1058" y="355" text-anchor="end" font-size="11" font-weight="700" fill="#4E8C3A" letter-spacing="1">CAPA DE TECNOLOGÍA</text>
+
+    <!-- servicio de aplicación -->
+    <g>
+      <rect x="380" y="44" width="320" height="50" rx="24" fill="var(--app)" stroke="var(--app-b)"/>
+      <text x="540" y="74" text-anchor="middle" font-size="12.5" font-weight="600">Servicio: consulta unificada de historia</text>
+    </g>
+    <text x="716" y="74" font-size="11" fill="#6b7a8c">realiza el servicio de negocio de la Vista 2</text>
+
+    <!-- HIS A -->
+    <g>
+      <rect x="44" y="150" width="216" height="92" fill="var(--app)" stroke="var(--app-b)"/>
+      <text x="152" y="182" text-anchor="middle" font-size="13" font-weight="600">HIS corporativo</text>
+      <text x="152" y="202" text-anchor="middle" font-size="11.5" fill="#33606b">18 sedes</text>
+      <text x="152" y="224" text-anchor="middle" font-size="10.5" fill="#555">application component</text>
+      <rect x="236" y="158" width="16" height="12" fill="none" stroke="var(--app-b)"/>
+      <rect x="232" y="160" width="6" height="3.5" fill="var(--app)" stroke="var(--app-b)"/>
+      <rect x="232" y="165.5" width="6" height="3.5" fill="var(--app)" stroke="var(--app-b)"/>
+    </g>
+
+    <!-- HIS B -->
+    <g>
+      <rect x="820" y="150" width="216" height="92" fill="var(--app)" stroke="var(--app-b)"/>
+      <text x="928" y="182" text-anchor="middle" font-size="13" font-weight="600">HIS adquirido</text>
+      <text x="928" y="202" text-anchor="middle" font-size="11.5" fill="#33606b">6 sedes</text>
+      <text x="928" y="224" text-anchor="middle" font-size="10.5" fill="#555">application component</text>
+      <rect x="1012" y="158" width="16" height="12" fill="none" stroke="var(--app-b)"/>
+      <rect x="1008" y="160" width="6" height="3.5" fill="var(--app)" stroke="var(--app-b)"/>
+      <rect x="1008" y="165.5" width="6" height="3.5" fill="var(--app)" stroke="var(--app-b)"/>
+    </g>
+
+    <!-- LA COSTURA -->
+    <rect x="332" y="118" width="416" height="180" fill="none" stroke="var(--coral)" stroke-width="2.5" stroke-dasharray="8,5" rx="6"/>
+    <rect x="332" y="118" width="128" height="22" fill="var(--coral)"/>
+    <text x="396" y="134" text-anchor="middle" font-size="11.5" font-weight="700" fill="#fff">LA COSTURA</text>
+
+    <g>
+      <rect x="360" y="152" width="200" height="86" fill="#FFF3EC" stroke="var(--coral)" stroke-width="1.6"/>
+      <text x="460" y="182" text-anchor="middle" font-size="12.5" font-weight="600">Índice maestro</text>
+      <text x="460" y="200" text-anchor="middle" font-size="12.5" font-weight="600">de pacientes (MPI)</text>
+      <text x="460" y="222" text-anchor="middle" font-size="10.5" fill="#8a5a3a">ABB · no un producto</text>
+    </g>
+    <g>
+      <rect x="586" y="152" width="140" height="86" fill="#FFF3EC" stroke="var(--coral)" stroke-width="1.6"/>
+      <text x="656" y="188" text-anchor="middle" font-size="12.5" font-weight="600">Adaptador</text>
+      <text x="656" y="206" text-anchor="middle" font-size="12.5" font-weight="600">de integración</text>
+    </g>
+    <text x="60" y="318" font-size="11.5" fill="var(--coral)">Aquí difieren las dos alternativas: la B elimina este recuadro completo.</text>
+
+    <!-- objeto de datos -->
+    <g>
+      <rect x="360" y="252" width="200" height="34" fill="var(--app)" stroke="var(--app-b)"/>
+      <rect x="360" y="252" width="200" height="9" fill="#9EE8E8" stroke="var(--app-b)"/>
+      <text x="460" y="277" text-anchor="middle" font-size="11.5">Registro de identidad · data object</text>
+    </g>
+
+    <!-- conexiones -->
+    <line x1="260" y1="196" x2="356" y2="196" stroke="#444" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#flow3)"/>
+    <line x1="726" y1="196" x2="816" y2="196" stroke="#444" stroke-width="1.4" stroke-dasharray="5,4" marker-start="url(#flow3)"/>
+    <line x1="560" y1="190" x2="582" y2="190" stroke="#444" stroke-width="1.4" marker-end="url(#serv3)"/>
+    <line x1="540" y1="118" x2="540" y2="98" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz3)"/>
+
+    <!-- tecnología -->
+    <g>
+      <rect x="44" y="388" width="216" height="80" fill="var(--tec)" stroke="var(--tec-b)"/>
+      <text x="152" y="422" text-anchor="middle" font-size="12.5" font-weight="600">Servidor de aplicaciones</text>
+      <text x="152" y="440" text-anchor="middle" font-size="12.5" font-weight="600">sede central</text>
+      <text x="152" y="458" text-anchor="middle" font-size="10.5" fill="#3d6b2d">node</text>
+    </g>
+    <g>
+      <rect x="432" y="388" width="216" height="80" fill="var(--tec)" stroke="var(--tec-b)"/>
+      <text x="540" y="422" text-anchor="middle" font-size="12.5" font-weight="600">Clúster de contenedores</text>
+      <text x="540" y="440" text-anchor="middle" font-size="12.5" font-weight="600">(nube privada)</text>
+      <text x="540" y="458" text-anchor="middle" font-size="10.5" fill="#3d6b2d">node</text>
+    </g>
+    <g>
+      <rect x="820" y="388" width="216" height="80" fill="var(--tec)" stroke="var(--tec-b)"/>
+      <text x="928" y="422" text-anchor="middle" font-size="12.5" font-weight="600">Servidor de la</text>
+      <text x="928" y="440" text-anchor="middle" font-size="12.5" font-weight="600">sede adquirida</text>
+      <text x="928" y="458" text-anchor="middle" font-size="10.5" fill="#3d6b2d">node</text>
+    </g>
+
+    <line x1="152" y1="388" x2="152" y2="246" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz3)"/>
+    <line x1="540" y1="388" x2="540" y2="292" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz3)"/>
+    <line x1="928" y1="388" x2="928" y2="246" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz3)"/>
+
+    <text x="30" y="502" font-size="11" fill="#8894a6">El límite de esta vista es el nodo y el servicio de tecnología. Cuántas réplicas tiene el clúster no es una decisión de arquitectura empresarial.</text>
+  </svg>
+  </div>
+
+  <div class="reading">
+    <h4>Cómo se lee esta vista</h4>
+    <ul>
+      <li><b>La costura está en lo nuevo, no en el legado.</b> Los dos HIS existen y siguen existiendo; lo que se decide es qué se construye entre ellos.</li>
+      <li>Los elementos de la costura se nombran como <b>ABB</b> —«índice maestro de pacientes»—, nunca con un nombre comercial. El producto es una decisión posterior.</li>
+      <li>El objeto de datos «registro de identidad» <b>realiza</b> el objeto de negocio «identidad del paciente» de la Vista 2. Esa es la trazabilidad entre capas que la rúbrica evalúa.</li>
+      <li>Se dibujó la capa de tecnología en la misma vista porque sin ella no se ve que el HIS adquirido corre en otro servidor, en otra sede, con otra ventana de mantenimiento. Eso importa para el escenario de disponibilidad.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ VISTA 4 ══════════════════════════════════ -->
+<div class="view">
+  <div class="band">
+    <div class="grid">
+      <div><div class="k">Stakeholder</div><div class="v">Comité de inversión</div></div>
+      <div><div class="k">Concern</div><div class="v">En qué orden se hace, y qué deja de existir</div></div>
+      <div><div class="k">Punto de vista</div><div class="v">Implementación y migración: plateaus y brechas</div></div>
+      <div><div class="k">Fase del ADM</div><div class="v">E · Opportunities &amp; Solutions</div></div>
+      <div><div class="k">Decisión que habilita</div><div class="v">Aprobación por tramos, con puntos de corte</div></div>
+    </div>
+    <div class="sup"><b>Supuesto declarado:</b> la convivencia se presupuestó a 18 meses. Ese número es el punto de sensibilidad de toda la decisión: a 30 meses, la alternativa descartada sería la mejor.</div>
+  </div>
+
+  <div class="canvas">
+  <svg viewBox="0 0 1080 430" role="img" aria-label="Vista de implementación y migración">
+    <defs>
+      <marker id="trig4" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
+        <path d="M1,1 L10,5.5 L1,10 Z" fill="#444"/>
+      </marker>
+      <marker id="realz4" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto">
+        <path d="M1,1 L11,6 L1,11 Z" fill="#fff" stroke="#444" stroke-width="1.2"/>
+      </marker>
+    </defs>
+
+    <rect x="8" y="8" width="1064" height="414" fill="#FFF8F8" stroke="#F2DDDD"/>
+    <text x="20" y="27" font-size="11" font-weight="700" fill="#B5615F" letter-spacing="1">CAPA DE IMPLEMENTACIÓN Y MIGRACIÓN</text>
+
+    <!-- plateaus -->
+    <g>
+      <rect x="40" y="52" width="300" height="64" fill="var(--impl)" stroke="var(--impl-b)"/>
+      <text x="190" y="80" text-anchor="middle" font-size="13" font-weight="700">T+0 · Estado actual</text>
+      <text x="190" y="100" text-anchor="middle" font-size="11.5" fill="#7a4442">Dos HIS. Conciliación manual.</text>
+    </g>
+    <g>
+      <rect x="390" y="52" width="300" height="64" fill="var(--impl)" stroke="var(--impl-b)"/>
+      <text x="540" y="80" text-anchor="middle" font-size="13" font-weight="700">T+1 · Identidad única</text>
+      <text x="540" y="100" text-anchor="middle" font-size="11.5" fill="#7a4442">MPI en producción. 2 sedes piloto.</text>
+    </g>
+    <g>
+      <rect x="740" y="52" width="300" height="64" fill="var(--impl)" stroke="var(--impl-b)"/>
+      <text x="890" y="80" text-anchor="middle" font-size="13" font-weight="700">T+2 · Historia unificada</text>
+      <text x="890" y="100" text-anchor="middle" font-size="11.5" fill="#7a4442">6 sedes integradas. Conciliación automática.</text>
+    </g>
+    <line x1="340" y1="84" x2="386" y2="84" stroke="#444" stroke-width="1.5" marker-end="url(#trig4)"/>
+    <line x1="690" y1="84" x2="736" y2="84" stroke="#444" stroke-width="1.5" marker-end="url(#trig4)"/>
+
+    <!-- gaps -->
+    <g>
+      <rect x="390" y="140" width="300" height="40" fill="#fff" stroke="var(--impl-b)" stroke-dasharray="5,3"/>
+      <text x="540" y="165" text-anchor="middle" font-size="11.5" fill="#7a4442">GAP: no existe fuente única de identidad</text>
+    </g>
+    <g>
+      <rect x="740" y="140" width="300" height="40" fill="#fff" stroke="var(--impl-b)" stroke-dasharray="5,3"/>
+      <text x="890" y="165" text-anchor="middle" font-size="11.5" fill="#7a4442">GAP: 6 HIS sin contrato de integración</text>
+    </g>
+
+    <!-- work packages -->
+    <g>
+      <rect x="390" y="208" width="140" height="66" fill="var(--impl)" stroke="var(--impl-b)"/>
+      <text x="460" y="238" text-anchor="middle" font-size="12" font-weight="600">Construir</text>
+      <text x="460" y="255" text-anchor="middle" font-size="12" font-weight="600">el MPI</text>
+    </g>
+    <g>
+      <rect x="550" y="208" width="140" height="66" fill="var(--impl)" stroke="var(--impl-b)"/>
+      <text x="620" y="238" text-anchor="middle" font-size="12" font-weight="600">Depurar</text>
+      <text x="620" y="255" text-anchor="middle" font-size="12" font-weight="600">duplicados</text>
+    </g>
+    <g>
+      <rect x="740" y="208" width="140" height="66" fill="var(--impl)" stroke="var(--impl-b)"/>
+      <text x="810" y="238" text-anchor="middle" font-size="12" font-weight="600">Adaptador</text>
+      <text x="810" y="255" text-anchor="middle" font-size="12" font-weight="600">por sede</text>
+    </g>
+    <g>
+      <rect x="900" y="208" width="140" height="66" fill="var(--impl)" stroke="var(--impl-b)"/>
+      <text x="970" y="238" text-anchor="middle" font-size="12" font-weight="600">Apagar</text>
+      <text x="970" y="255" text-anchor="middle" font-size="12" font-weight="600">conciliación manual</text>
+    </g>
+    <line x1="460" y1="208" x2="460" y2="184" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz4)"/>
+    <line x1="810" y1="208" x2="810" y2="184" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz4)"/>
+
+    <!-- lo que deja de existir -->
+    <rect x="40" y="208" width="300" height="66" fill="#fff" stroke="var(--coral)" stroke-width="2"/>
+    <text x="190" y="232" text-anchor="middle" font-size="12" font-weight="700" fill="var(--coral)">DEJA DE EXISTIR</text>
+    <text x="190" y="252" text-anchor="middle" font-size="11.5" fill="var(--coral)">La conciliación manual de admisiones</text>
+    <text x="190" y="268" text-anchor="middle" font-size="11.5" fill="var(--coral)">(120 horas-persona al mes)</text>
+
+    <!-- deuda viva -->
+    <rect x="40" y="310" width="1000" height="60" fill="#FFFDF0" stroke="#E4D9A8"/>
+    <text x="62" y="334" font-size="12.5" font-weight="700" fill="#7a6a28">Deuda que queda viva después de T+2</text>
+    <text x="62" y="356" font-size="12" fill="#7a6a28">Los 6 HIS siguen operando. Principal: dos plataformas clínicas. Interés: dos contratos de soporte y doble auditoría. Estrategia: refinanciar, aislando detrás del adaptador.</text>
+
+    <text x="30" y="400" font-size="11" fill="#8894a6">Un comité de inversión no aprueba un «después»: aprueba un camino con puntos de corte. Por eso esta vista es obligatoria y no opcional.</text>
+  </svg>
+  </div>
+
+  <div class="reading">
+    <h4>Cómo se lee esta vista</h4>
+    <ul>
+      <li>Los <b>plateaus</b> son estados estables, no fechas. Cada uno tiene que poder sostenerse solo: si el proyecto se detiene en T+1, la organización tiene que quedar funcionando.</li>
+      <li>Los <b>gaps</b> van entre plateaus: son lo que falta para pasar del uno al otro. Vienen del análisis de brechas, no de una lluvia de ideas.</li>
+      <li>Los <b>paquetes de trabajo</b> realizan los gaps. Uno por gap, como mínimo.</li>
+      <li>El recuadro «deja de existir» es el que casi nadie dibuja y el que más le interesa al comité: una transformación que solo suma cosas no es una transformación, es una ampliación de presupuesto.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ CONTRAEJEMPLOS ══════════════════════════════════ -->
+<div class="view">
+  <h3 class="sec">Contraejemplo 1 · La vista que es un inventario</h3>
+  <div class="band bad">
+    <div class="grid">
+      <div><div class="k">Stakeholder</div><div class="v" style="color:#B0392B">—</div></div>
+      <div><div class="k">Concern</div><div class="v" style="color:#B0392B">— (ninguno declarado)</div></div>
+      <div><div class="k">Punto de vista</div><div class="v" style="color:#B0392B">—</div></div>
+      <div><div class="k">Fase del ADM</div><div class="v" style="color:#B0392B">—</div></div>
+      <div><div class="k">Decisión que habilita</div><div class="v" style="color:#B0392B">—</div></div>
+    </div>
+  </div>
+  <div class="canvas">
+  <svg viewBox="0 0 1080 300" role="img" aria-label="Contraejemplo: inventario de aplicaciones">
+    <rect x="8" y="8" width="1064" height="284" fill="#F2FEFE" stroke="#CDECEC"/>
+    <text x="20" y="27" font-size="11" font-weight="700" fill="#2E8B8B" letter-spacing="1">«VISTA DE APLICACIONES»</text>
+    <g id="inv"></g>
+    <script>
+    </script>
+  </svg>
+  </div>
+  <div class="diag">
+    <b>Diagnóstico:</b> veinticuatro elementos del mismo tipo, sin jerarquía y sin relaciones que digan algo. Está dibujada con cuidado y no ayuda a decidir nada.
+    <br><b>La prueba:</b> si al agregarle una caja más la vista no cambia de significado, es un inventario. Una vista de arquitectura pierde sentido cuando le quitan un elemento; un inventario no.
+  </div>
+
+  <h3 class="sec">Contraejemplo 2 · La costura en el lugar equivocado</h3>
+  <div class="canvas">
+  <svg viewBox="0 0 1080 260" role="img" aria-label="Contraejemplo: costura sobre el legado">
+    <defs>
+      <marker id="flowx" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto">
+        <path d="M1,1 L10,5.5 L1,10 Z" fill="#444"/>
+      </marker>
+    </defs>
+    <rect x="8" y="8" width="1064" height="244" fill="#F2FEFE" stroke="#CDECEC"/>
+    <g>
+      <rect x="120" y="86" width="216" height="86" fill="var(--app)" stroke="var(--app-b)"/>
+      <text x="228" y="122" text-anchor="middle" font-size="13" font-weight="600">HIS corporativo</text>
+      <text x="228" y="142" text-anchor="middle" font-size="11.5" fill="#33606b">18 sedes</text>
+    </g>
+    <g>
+      <rect x="744" y="86" width="216" height="86" fill="var(--app)" stroke="var(--app-b)"/>
+      <text x="852" y="122" text-anchor="middle" font-size="13" font-weight="600">HIS adquirido</text>
+      <text x="852" y="142" text-anchor="middle" font-size="11.5" fill="#33606b">6 sedes</text>
+    </g>
+    <rect x="732" y="70" width="240" height="118" fill="none" stroke="var(--coral)" stroke-width="2.5" stroke-dasharray="8,5" rx="6"/>
+    <rect x="732" y="70" width="128" height="22" fill="var(--coral)"/>
+    <text x="796" y="86" text-anchor="middle" font-size="11.5" font-weight="700" fill="#fff">LA COSTURA</text>
+    <line x1="336" y1="129" x2="728" y2="129" stroke="#444" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#flowx)"/>
+    <text x="532" y="118" text-anchor="middle" font-size="11.5" fill="#6b7a8c">«integración»</text>
+    <text x="532" y="212" text-anchor="middle" font-size="12" fill="var(--coral)">La costura quedó encima del sistema que no se va a tocar.</text>
+  </svg>
+  </div>
+  <div class="diag">
+    <b>Diagnóstico:</b> la decisión no está en el sistema heredado. El presupuesto de esta fase no permite reescribirlo y hay que convivir con él dieciocho meses como mínimo.
+    <br><b>Dónde va:</b> en la capa que se construye alrededor. Si es un adaptador, si es un índice maestro, si es un bus de eventos, o si no es nada. Marcar la costura sobre el legado hace que las dos alternativas se vean iguales, y entonces no hay nada que comparar.
+  </div>
+
+  <h3 class="sec">Contraejemplo 3 · Modelar productos en vez de bloques de arquitectura</h3>
+  <div class="canvas">
+  <svg viewBox="0 0 1080 150" role="img" aria-label="Contraejemplo: nombres de producto">
+    <rect x="8" y="8" width="1064" height="134" fill="#FFF3F1" stroke="#F2D5CE"/>
+    <g>
+      <rect x="120" y="42" width="330" height="66" fill="#fff" stroke="var(--coral)" stroke-width="1.8"/>
+      <text x="285" y="72" text-anchor="middle" font-size="13" font-weight="600" fill="#B0392B">IntegraSuite 4.4 · licencia enterprise</text>
+      <text x="285" y="92" text-anchor="middle" font-size="11.5" fill="#B0392B">así no</text>
+    </g>
+    <text x="500" y="82" font-size="22" fill="#B0392B">→</text>
+    <g>
+      <rect x="560" y="42" width="330" height="66" fill="#fff" stroke="#2E8B57" stroke-width="1.8"/>
+      <text x="725" y="72" text-anchor="middle" font-size="13" font-weight="600" fill="#2E6B4F">Motor de reglas de identidad</text>
+      <text x="725" y="92" text-anchor="middle" font-size="11.5" fill="#2E6B4F">así sí</text>
+    </g>
+  </svg>
+  </div>
+  <div class="diag">
+    <b>Diagnóstico:</b> elegir el producto es una decisión de la Fase E, y se toma después de comparar alternativas. Si el modelo ya trae el nombre comercial, la decisión estaba tomada antes de evaluar, y el modelo se convirtió en la justificación.
+    <br><b>La regla:</b> en las vistas se nombran <b>ABB</b>, bloques de arquitectura independientes de producto. Los <b>SBB</b>, con nombre comercial, aparecen solo en la comparación de alternativas.
+  </div>
+</div>
+
+<div class="foot">
+  Ejemplo trabajado del caso de respaldo Red Salud Andina · Los cuatro encabezados usan el vocabulario normativo de TOGAF 10: stakeholder, concern, punto de vista y fase del ADM.
+</div>
+
+</div>
+
+<script>
+function show(i, el){
+  document.querySelectorAll('.view').forEach((v,k)=>v.classList.toggle('active',k===i));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+// Contraejemplo 1: se genera la retícula de 24 cajas iguales
+(function(){
+  var g = document.getElementById('inv');
+  if(!g) return;
+  var names = ['Admisiones','Agendamiento','Historia clínica','Laboratorio','Imágenes','Farmacia',
+               'Facturación','Cartera','Nómina','Inventarios','Compras','Contabilidad',
+               'Portal paciente','App móvil','Call center','CRM','Tesorería','Activos',
+               'Autorizaciones','Referencia','Auditoría','Indicadores','Correo','Directorio'];
+  var x0=40, y0=48, w=158, h=44, gx=12, gy=10, cols=6;
+  names.forEach(function(n,i){
+    var cx = x0 + (i%cols)*(w+gx), cy = y0 + Math.floor(i/cols)*(h+gy);
+    var r = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    r.setAttribute('x',cx); r.setAttribute('y',cy); r.setAttribute('width',w); r.setAttribute('height',h);
+    r.setAttribute('fill','#B5FFFF'); r.setAttribute('stroke','#2E8B8B');
+    g.appendChild(r);
+    var t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',cx+w/2); t.setAttribute('y',cy+27); t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size','11.5'); t.textContent = n;
+    g.appendChild(t);
+  });
+})();
+</script>

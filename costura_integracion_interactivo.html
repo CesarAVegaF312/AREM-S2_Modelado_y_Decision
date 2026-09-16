@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Costura de Integración Interactivo — Arquitectura Empresarial</title>
+<style>
+:root {
+  --azul: #002060; --medio: #00387D; --claro: #EEF3FA;
+  --pale: #D9E1EF; --slate: #93AAC9; --tinta: #1a1a2e; --gris: #44506a;
+  --verde: #137333; --rojo: #B42318;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #F0F4FB; color: var(--tinta); line-height: 1.5; }
+
+.header { background: var(--azul); color: #fff; padding: 16px 28px; }
+.header h1 { font-size: 18px; font-weight: 700; }
+.header p  { font-size: 13px; color: var(--slate); margin-top: 2px; }
+.frame { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.frame .ph { background: #fff; color: var(--azul); font-weight: 800; font-size: 13px; border-radius: 6px; padding: 3px 10px; }
+.frame .fx { font-size: 14px; color: #fff; }
+.frame .fx b { color: #fff; }
+
+.wrap { max-width: 1240px; margin: 22px auto 40px; padding: 0 16px; }
+
+.intro { background: #fff; border-radius: 14px; padding: 16px 22px; box-shadow: 0 2px 16px rgba(0,32,96,.08);
+         margin-bottom: 18px; font-size: 15px; color: #2b3550; }
+.intro strong { color: var(--azul); }
+
+h2.sec { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--medio); font-weight: 800; margin: 0 0 10px; }
+
+/* ── TARJETAS ── */
+.cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 8px; }
+.card {
+  font: inherit; text-align: left; color: var(--tinta); cursor: pointer;
+  background: #fff; border: 2px solid var(--pale); border-radius: 14px; padding: 16px 16px 14px;
+  box-shadow: 0 2px 12px rgba(0,32,96,.06);
+  display: flex; flex-direction: column; gap: 6px;
+  transition: transform .15s, box-shadow .15s, border-color .15s, background .15s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,32,96,.16); border-color: var(--slate); }
+.card:focus-visible { outline: 3px solid #F2A900; outline-offset: 3px; }
+.card[aria-pressed="true"] { border-color: var(--medio); background: var(--claro); box-shadow: 0 0 0 3px var(--medio); }
+.card .top { display: flex; align-items: center; gap: 10px; }
+.letter { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%; background: var(--azul); color: #fff;
+          display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
+.card[aria-pressed="true"] .letter { background: var(--medio); }
+.card .name { font-size: 17px; font-weight: 800; color: var(--azul); line-height: 1.25; }
+.card .desc { font-size: 14px; color: #3a4560; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.chip { font-size: 12px; font-weight: 600; color: var(--azul); background: var(--claro); border: 1px solid var(--pale);
+        border-radius: 20px; padding: 2px 10px; }
+.card[aria-pressed="true"] .chip { background: #fff; }
+.card .eye { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--medio); }
+.req { list-style: none; }
+.req li { display: grid; grid-template-columns: 200px 104px minmax(0, 1fr); gap: 4px 12px; padding: 5px 0; border-top: 1px dashed var(--pale); align-items: start; }
+.req li:first-child { border-top: none; }
+.req .rq { font-size: 13px; font-weight: 700; color: var(--azul); padding-top: 2px; }
+.req .rj { font-size: 14.5px; color: #26304a; }
+.st { font-size: 12px; font-weight: 800; border-radius: 12px; padding: 2px 8px; text-align: center; justify-self: start; white-space: nowrap; margin-top: 1px; }
+.st-S { background: #E6F4EA; color: #0B5A26; border: 1px solid #A7D7B4; }
+.st-R { background: #FBEAEA; color: #9B1C14; border: 1px solid #F0B8B3; }
+.st-C { background: #FFF4DC; color: #7A4B00; border: 1px solid #F2D08A; }
+.cmp-col .req li { grid-template-columns: minmax(0, 1fr); gap: 2px; padding: 6px 0; }
+.cmp-col .req .rj { font-size: 13.5px; }
+.note { font-size: 13px; color: var(--gris); margin: 6px 2px 18px; }
+
+/* ── FICHA + PANEL ── */
+.detail-area { display: grid; grid-template-columns: minmax(0, 1fr) 480px; gap: 18px; align-items: start; margin-bottom: 26px; }
+.box { background: #fff; border-radius: 14px; box-shadow: 0 2px 16px rgba(0,32,96,.08); }
+.placeholder { padding: 34px 24px; text-align: center; color: var(--gris); font-size: 15px; border: 2px dashed var(--pale); background: #fff; border-radius: 14px; }
+
+.ficha-head { padding: 18px 24px 14px; border-bottom: 2px solid var(--pale); display: flex; gap: 14px; align-items: center; }
+.ficha-head .letter { width: 46px; height: 46px; font-size: 22px; }
+.ficha-head h3 { font-size: 20px; color: var(--azul); font-weight: 800; line-height: 1.25; }
+.ficha-head p { font-size: 14px; color: #3a4560; }
+.field { padding: 14px 24px 16px; border-bottom: 1px solid var(--pale); }
+.field:last-child { border-bottom: none; }
+.field h4 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--medio); font-weight: 800;
+            display: flex; gap: 8px; align-items: baseline; margin-bottom: 6px; }
+.field h4 .n { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; background: var(--claro); color: var(--azul);
+               align-items: center; justify-content: center; font-size: 12px; flex: 0 0 auto; }
+.field p, .field dd { font-size: 14.5px; color: #26304a; }
+.field p + p { margin-top: 6px; }
+.kv { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 4px 14px; }
+.kv dt { font-size: 13px; font-weight: 700; color: var(--azul); padding-top: 2px; }
+.caso { display: inline; font-weight: 700; color: var(--medio); }
+code { font-family: Consolas, 'Courier New', monospace; font-size: .92em; background: var(--claro); padding: 0 4px; border-radius: 4px; color: var(--azul); }
+
+.panel { position: sticky; top: 14px; overflow: hidden; }
+.panel-head { background: var(--azul); color: #fff; padding: 12px 18px; }
+.panel-head .t { font-size: 15px; font-weight: 700; }
+.panel-head .s { font-size: 13px; color: var(--pale); }
+.panel-body { padding: 12px 14px 14px; }
+.panel svg { display: block; width: 100%; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--gris); margin: 8px 4px 8px; align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.ln { display: inline-block; width: 28px; border-top: 2px solid var(--medio); }
+.ln.dash { border-top-style: dashed; }
+.dot { display: inline-flex; width: 18px; height: 18px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 800; align-items: center; justify-content: center; }
+.dot.ok { background: var(--verde); } .dot.ko { background: var(--rojo); }
+.gl { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 6px 8px; font-size: 13.5px; color: #26304a;
+      background: var(--claro); border-radius: 8px; padding: 10px 12px; }
+.gl .dot { margin-top: 1px; }
+
+/* SVG */
+.dg text { font-family: 'Segoe UI', Arial, sans-serif; }
+.dg .tm { font-size: 15px; font-weight: 700; fill: #002060; }
+.dg .ts { font-size: 13px; fill: #3a4560; }
+.dg .tw { font-size: 15px; font-weight: 700; fill: #fff; }
+.dg .tws { font-size: 13px; fill: #D9E1EF; }
+.dg .tl { font-size: 13px; fill: #00387D; font-weight: 600; }
+.dg .mono { font-family: Consolas, 'Courier New', monospace; font-size: 13px; }
+.dg .bx { fill: #EEF3FA; stroke: #00387D; stroke-width: 1.5; }
+.dg .bw { fill: #fff; stroke: #00387D; stroke-width: 1.5; }
+.dg .bd { fill: #002060; stroke: #002060; stroke-width: 1.5; }
+.dg .sy { stroke: #00387D; stroke-width: 2; fill: none; }
+.dg .as { stroke: #00387D; stroke-width: 2; fill: none; stroke-dasharray: 7 5; }
+.dg .dt { stroke: #93AAC9; stroke-width: 2; fill: none; stroke-dasharray: 2 4; }
+
+/* ── ERROR ── */
+.error { padding: 20px 24px; margin-bottom: 26px; border-left: 6px solid var(--medio); }
+.error h2 { font-size: 20px; color: var(--azul); margin-bottom: 10px; }
+.quote { font-size: 17px; font-weight: 600; color: var(--azul); background: var(--claro); border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; }
+.error p { font-size: 15px; color: #26304a; }
+.caso-line { margin: 12px 0 8px; font-size: 15px; }
+.tag-caso { display: inline-block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; background: var(--azul); color: #fff; border-radius: 6px; padding: 2px 8px; margin-right: 8px; }
+.error ol { margin: 6px 0 0 22px; }
+.error li { font-size: 15px; color: #26304a; margin-bottom: 6px; padding-left: 4px; }
+
+/* ── CAMPO POR CAMPO ── */
+.cmp { padding: 18px 20px 20px; margin-bottom: 26px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.tab { font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; color: var(--azul); background: var(--claro);
+       border: 1px solid var(--pale); border-radius: 20px; padding: 6px 14px; }
+.tab:hover { border-color: var(--slate); }
+.tab:focus-visible { outline: 3px solid #F2A900; outline-offset: 2px; }
+.tab[aria-selected="true"] { background: var(--azul); color: #fff; border-color: var(--azul); }
+.cmp-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.cmp-col { border: 1px solid var(--pale); border-radius: 10px; padding: 12px 14px; }
+.cmp-col h5 { font-size: 15px; color: var(--azul); display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.cmp-col h5 .letter { width: 26px; height: 26px; font-size: 13px; }
+.cmp-col p, .cmp-col dd { font-size: 13.5px; color: #26304a; }
+.cmp-col p + p { margin-top: 6px; }
+.cmp-col .kv { grid-template-columns: minmax(0, 1fr); gap: 0; }
+.cmp-col .kv dd { margin-bottom: 6px; }
+
+/* ── F-17 ── */
+.f17 { padding: 18px 22px 20px; }
+.f17 p.lead { font-size: 14px; color: var(--gris); margin-bottom: 10px; }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--pale); }
+th { background: var(--azul); color: #fff; font-size: 13px; }
+td:first-child { font-weight: 700; color: var(--azul); width: 34%; }
+
+.footer { text-align: center; font-size: 12px; color: var(--slate); margin-top: 18px; }
+
+@media (max-width: 1100px) {
+  .detail-area { grid-template-columns: minmax(0, 1fr); }
+  .panel { position: static; }
+  .panel-body svg { max-width: 520px; margin: 0 auto; }
+}
+@media (max-width: 1000px) {
+  .cards, .cmp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .cards, .cmp-grid { grid-template-columns: minmax(0, 1fr); }
+  .kv { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .kv dd { margin-bottom: 6px; }
+  .req li { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .header { padding: 14px 16px; }
+  .ficha-head, .field { padding-left: 16px; padding-right: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Costura de integración — cuatro formas de resolverla (Interactivo)</h1>
+  <p>Maestría en Arquitectura Empresarial · Universidad de La Sabana · Seleccionen una opción para desplegar su ficha y su flujo</p>
+  <div class="frame"><span class="ph">Fase E · Opportunities &amp; Solutions · ADM de TOGAF 10</span>
+    <span class="fx">Las cuatro opciones son <b>Solution Building Blocks (SBB) candidatos</b>; se comparan por los <b>requisitos de interoperabilidad</b> que cada uno satisface o rompe.</span></div>
+</div>
+
+<div class="wrap">
+
+  <div class="intro">
+    Una <strong>costura de integración</strong> es el punto donde dos sistemas —o un sistema y un agente— tienen que ponerse de acuerdo sobre un dato o una acción.
+    Después del Gap Analysis de las fases B a D, la costura queda especificada como un <strong>Architecture Building Block (ABB)</strong>; en la Fase E, al consolidar y conciliar los requisitos de interoperabilidad,
+    se comparan los SBB candidatos que podrían realizarlo. Cada uno deja un <strong>acoplamiento distinto</strong>: temporal, de disponibilidad, de esquema y de destino.
+    Las cuatro fichas tienen los mismos siete campos, en el mismo orden, para que se comparen campo por campo.
+  </div>
+
+  <h2 class="sec">Los cuatro SBB candidatos</h2>
+  <div class="cards" id="cards"></div>
+  <p class="note">Ninguno de los cuatro es correcto en abstracto: cada uno satisface unos requisitos de interoperabilidad, rompe otros y sostiene un escenario de calidad distinto. La elección depende de los escenarios que ustedes declararon.</p>
+
+  <div class="detail-area">
+    <div id="ficha">
+      <div class="placeholder">Seleccionen uno de los cuatro SBB candidatos para desplegar su ficha completa.</div>
+    </div>
+
+    <aside class="box panel" id="panel" aria-live="polite">
+      <div class="panel-head">
+        <div class="t" id="pTitle">Flujo de la costura</div>
+        <div class="s" id="pSub">El diagrama aparece al seleccionar una opción</div>
+      </div>
+      <div class="panel-body">
+        <div class="placeholder" id="pEmpty" style="border:none;padding:40px 10px">Sin opción seleccionada.</div>
+
+        <!-- ═══ Diagrama A ═══ -->
+        <svg class="dg" id="svgA" viewBox="0 0 460 400" role="img" aria-labelledby="svgAt" hidden>
+          <title id="svgAt">Flujo síncrono de un pago en Banco Colombia Digital con API Gateway Central, Idempotency Guard y T24</title>
+          <defs>
+            <marker id="mA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00387D"/></marker>
+          </defs>
+          <rect class="bx" x="20" y="20" width="250" height="56" rx="8"/>
+          <text class="tm" x="145" y="44" text-anchor="middle">App móvil del banco</text>
+          <text class="ts" x="145" y="64" text-anchor="middle">POST /v1/pagos</text>
+          <line class="sy" x1="145" y1="80" x2="145" y2="116" marker-start="url(#mA)" marker-end="url(#mA)"/>
+          <text class="tl" x="157" y="103">Idempotency-Key</text>
+
+          <rect class="bd" x="20" y="120" width="250" height="56" rx="8"/>
+          <text class="tw" x="145" y="144" text-anchor="middle">API Gateway Central</text>
+          <text class="tws" x="145" y="164" text-anchor="middle">autentica · limita · enruta /v1</text>
+          <line class="sy" x1="145" y1="180" x2="145" y2="216" marker-start="url(#mA)" marker-end="url(#mA)"/>
+
+          <rect class="bx" x="20" y="220" width="250" height="56" rx="8"/>
+          <text class="tm" x="145" y="244" text-anchor="middle">Servicio de pagos</text>
+          <text class="ts" x="145" y="264" text-anchor="middle">Spring Boot en Azure AKS</text>
+
+          <line class="sy" x1="274" y1="248" x2="306" y2="248" marker-start="url(#mA)" marker-end="url(#mA)"/>
+          <rect class="bw" x="310" y="208" width="140" height="80" rx="8"/>
+          <text class="tm" x="380" y="232" text-anchor="middle">Idempotency</text>
+          <text class="tm" x="380" y="250" text-anchor="middle">Guard</text>
+          <text class="ts" x="380" y="272" text-anchor="middle">clave → respuesta</text>
+          <circle cx="446" cy="212" r="11" fill="#137333"/><text x="446" y="217" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">✓</text>
+
+          <line class="sy" x1="145" y1="280" x2="145" y2="316" marker-start="url(#mA)" marker-end="url(#mA)"/>
+          <text class="tl" x="157" y="303">tiempo de espera: 2 s</text>
+
+          <rect class="bx" x="20" y="320" width="250" height="56" rx="8"/>
+          <text class="tm" x="145" y="344" text-anchor="middle">Core bancario T24</text>
+          <text class="ts" x="145" y="364" text-anchor="middle">Temenos · débito en cuenta</text>
+          <circle cx="266" cy="324" r="11" fill="#B42318"/><text x="266" y="329" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">✕</text>
+        </svg>
+
+        <!-- ═══ Diagrama B ═══ -->
+        <svg class="dg" id="svgB" viewBox="0 0 460 540" role="img" aria-labelledby="svgBt" hidden>
+          <title id="svgBt">Mensajería punto a punto con outbox transaccional en una sede adquirida de Red Salud Andina</title>
+          <defs>
+            <marker id="mB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00387D"/></marker>
+          </defs>
+          <rect class="bx" x="20" y="20" width="250" height="56" rx="8"/>
+          <text class="tm" x="145" y="44" text-anchor="middle">Admisión en sede adquirida</text>
+          <text class="ts" x="145" y="64" text-anchor="middle">modo degradado: HIS-NORTE caído</text>
+          <line class="sy" x1="145" y1="76" x2="145" y2="110" marker-end="url(#mB)"/>
+
+          <rect class="bw" x="20" y="114" width="250" height="124" rx="8"/>
+          <text class="tm" x="145" y="136" text-anchor="middle" style="font-size:14px">Base local de la sede</text>
+          <rect class="bx" x="34" y="148" width="106" height="50" rx="6"/>
+          <text class="tm" x="87" y="178" text-anchor="middle" style="font-size:14px">atención</text>
+          <rect class="bx" x="150" y="148" width="106" height="50" rx="6"/>
+          <text class="tm" x="203" y="178" text-anchor="middle" style="font-size:14px">outbox</text>
+          <text class="ts" x="145" y="224" text-anchor="middle">una sola transacción</text>
+          <circle cx="266" cy="118" r="11" fill="#137333"/><text x="266" y="123" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">✓</text>
+          <line class="as" x1="145" y1="238" x2="145" y2="276" marker-end="url(#mB)"/>
+
+          <rect class="bx" x="20" y="280" width="250" height="50" rx="8"/>
+          <text class="tm" x="145" y="301" text-anchor="middle">Relé del outbox</text>
+          <text class="ts" x="145" y="320" text-anchor="middle">publica y marca enviado</text>
+          <line class="as" x1="145" y1="330" x2="145" y2="366" marker-end="url(#mB)"/>
+
+          <rect class="bd" x="20" y="370" width="250" height="56" rx="8"/>
+          <text class="tw" x="145" y="394" text-anchor="middle">Cola atenciones-norte</text>
+          <text class="tws" x="145" y="414" text-anchor="middle">entrega al menos una vez</text>
+          <line class="as" x1="270" y1="398" x2="306" y2="398" marker-end="url(#mB)"/>
+          <rect class="bw" x="310" y="370" width="140" height="56" rx="8"/>
+          <text class="tm" x="380" y="394" text-anchor="middle">DLQ</text>
+          <text class="ts" x="380" y="414" text-anchor="middle">tras 5 intentos</text>
+          <line class="as" x1="145" y1="426" x2="145" y2="464" marker-end="url(#mB)"/>
+
+          <rect class="bx" x="20" y="468" width="250" height="56" rx="8"/>
+          <text class="tm" x="145" y="492" text-anchor="middle">Consumidor HIS-NORTE</text>
+          <text class="ts" x="145" y="512" text-anchor="middle">aplica si la clave es nueva</text>
+          <circle cx="266" cy="472" r="11" fill="#B42318"/><text x="266" y="477" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">✕</text>
+        </svg>
+
+        <!-- ═══ Diagrama C ═══ -->
+        <svg class="dg" id="svgC" viewBox="0 0 460 446" role="img" aria-labelledby="svgCt" hidden>
+          <title id="svgCt">Event streaming del evento de atención cerrada en Red Salud Andina con registro de esquemas y particiones por paciente</title>
+          <defs>
+            <marker id="mC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00387D"/></marker>
+          </defs>
+          <rect class="bx" x="20" y="20" width="190" height="56" rx="8"/>
+          <text class="tm" x="115" y="44" text-anchor="middle">HIS-CORE</text>
+          <text class="ts" x="115" y="64" text-anchor="middle">adaptador + outbox</text>
+          <rect class="bx" x="250" y="20" width="190" height="56" rx="8"/>
+          <text class="tm" x="345" y="44" text-anchor="middle">HIS-NORTE</text>
+          <text class="ts" x="345" y="64" text-anchor="middle">adaptador + CDC</text>
+
+          <line class="as" x1="115" y1="76" x2="115" y2="176" marker-end="url(#mC)"/>
+          <line class="as" x1="345" y1="76" x2="345" y2="176" marker-end="url(#mC)"/>
+          <line class="dt" x1="115" y1="128" x2="150" y2="128"/>
+          <line class="dt" x1="310" y1="128" x2="345" y2="128"/>
+          <rect class="bw" x="150" y="94" width="160" height="68" rx="8"/>
+          <text class="tm" x="230" y="116" text-anchor="middle" style="font-size:14px">Registro</text>
+          <text class="tm" x="230" y="133" text-anchor="middle" style="font-size:14px">de esquemas</text>
+          <text class="ts" x="230" y="152" text-anchor="middle">valida compatibilidad</text>
+
+          <rect class="bd" x="20" y="180" width="420" height="140" rx="8"/>
+          <text class="tw" x="230" y="203" text-anchor="middle">Kafka · tópico atencion-cerrada</text>
+          <text class="tws" x="230" y="222" text-anchor="middle">clave de partición = id MPI del paciente</text>
+          <rect x="36" y="234" width="388" height="24" rx="4" fill="#00387D" stroke="#93AAC9"/>
+          <text class="tws" x="48" y="251">P0 · paciente 17: e1 → e2 → e3</text>
+          <rect x="36" y="264" width="388" height="24" rx="4" fill="#00387D" stroke="#93AAC9"/>
+          <text class="tws" x="48" y="281">P1 · paciente 42: e1 → e2</text>
+          <rect x="36" y="294" width="388" height="24" rx="4" fill="#00387D" stroke="#93AAC9"/>
+          <text class="tws" x="48" y="311">P2 · paciente 08: e1 → e2 → e3 → e4</text>
+          <circle cx="436" cy="184" r="11" fill="#137333"/><text x="436" y="189" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">✓</text>
+
+          <line class="as" x1="85" y1="322" x2="85" y2="366" marker-end="url(#mC)"/>
+          <line class="as" x1="230" y1="322" x2="230" y2="366" marker-end="url(#mC)"/>
+          <line class="as" x1="375" y1="322" x2="375" y2="366" marker-end="url(#mC)"/>
+
+          <rect class="bx" x="20" y="370" width="130" height="56" rx="8"/>
+          <text class="tm" x="85" y="394" text-anchor="middle" style="font-size:14px">FACT-SALUD</text>
+          <text class="ts" x="85" y="414" text-anchor="middle">retraso: 1.240</text>
+          <circle cx="146" cy="374" r="11" fill="#B42318"/><text x="146" y="379" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">✕</text>
+          <rect class="bx" x="165" y="370" width="130" height="56" rx="8"/>
+          <text class="tm" x="230" y="394" text-anchor="middle" style="font-size:14px">Historia única</text>
+          <text class="ts" x="230" y="414" text-anchor="middle">retraso: 0</text>
+          <rect class="bx" x="310" y="370" width="130" height="56" rx="8"/>
+          <text class="tm" x="375" y="394" text-anchor="middle" style="font-size:14px">BI-ANDINA</text>
+          <text class="ts" x="375" y="414" text-anchor="middle">retraso: 0</text>
+        </svg>
+
+        <!-- ═══ Diagrama D ═══ -->
+        <svg class="dg" id="svgD" viewBox="0 0 460 496" role="img" aria-labelledby="svgDt" hidden>
+          <title id="svgDt">Capa de agentes con servidor MCP, límite de autoridad y bitácora en Banco Colombia Digital</title>
+          <defs>
+            <marker id="mD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00387D"/></marker>
+          </defs>
+          <rect class="bx" x="20" y="20" width="250" height="56" rx="8"/>
+          <text class="tm" x="145" y="44" text-anchor="middle">Cliente en la app</text>
+          <text class="ts" x="145" y="64" text-anchor="middle">pregunta en lenguaje natural</text>
+          <line class="sy" x1="145" y1="80" x2="145" y2="110" marker-start="url(#mD)" marker-end="url(#mD)"/>
+
+          <rect class="bx" x="20" y="114" width="250" height="56" rx="8"/>
+          <text class="tm" x="145" y="138" text-anchor="middle">Agente de atención</text>
+          <text class="ts" x="145" y="158" text-anchor="middle">elige qué herramienta invocar</text>
+          <line class="sy" x1="274" y1="142" x2="306" y2="142" marker-start="url(#mD)" marker-end="url(#mD)"/>
+          <rect class="bw" x="310" y="114" width="140" height="56" rx="8"/>
+          <text class="tm" x="380" y="138" text-anchor="middle">Modelo</text>
+          <text class="ts" x="380" y="158" text-anchor="middle">proveedor externo</text>
+          <circle cx="446" cy="118" r="11" fill="#B42318"/><text x="446" y="123" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">✕</text>
+
+          <line class="sy" x1="145" y1="174" x2="145" y2="210" marker-start="url(#mD)" marker-end="url(#mD)"/>
+          <text class="tl" x="157" y="197">MCP · JSON-RPC</text>
+
+          <rect class="bd" x="20" y="214" width="420" height="164" rx="8"/>
+          <text class="tw" x="230" y="238" text-anchor="middle">Servidor MCP · límite de autoridad</text>
+          <circle cx="436" cy="218" r="11" fill="#137333"/><text x="436" y="223" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">✓</text>
+          <rect x="36" y="252" width="388" height="32" rx="5" fill="#fff"/>
+          <text class="mono" x="48" y="273" fill="#002060">consultar_movimientos</text>
+          <text x="412" y="273" text-anchor="end" font-size="13" fill="#137333" font-weight="600">permitida · solo lectura</text>
+          <rect x="36" y="292" width="388" height="32" rx="5" fill="#fff"/>
+          <text class="mono" x="48" y="313" fill="#002060">bloquear_tarjeta</text>
+          <text x="412" y="313" text-anchor="end" font-size="13" fill="#00387D" font-weight="600">exige confirmación</text>
+          <rect x="36" y="332" width="388" height="32" rx="5" fill="#FBEAEA"/>
+          <text class="mono" x="48" y="353" fill="#B42318" text-decoration="line-through">transferir</text>
+          <text x="412" y="353" text-anchor="end" font-size="13" fill="#B42318" font-weight="600">no expuesta al agente</text>
+
+          <line class="sy" x1="145" y1="382" x2="145" y2="416" marker-start="url(#mD)" marker-end="url(#mD)"/>
+          <rect class="bx" x="20" y="420" width="250" height="56" rx="8"/>
+          <text class="tm" x="145" y="444" text-anchor="middle">API Gateway Central</text>
+          <text class="ts" x="145" y="464" text-anchor="middle">con la identidad del cliente</text>
+          <line class="as" x1="380" y1="378" x2="380" y2="416" marker-end="url(#mD)"/>
+          <rect class="bw" x="310" y="420" width="140" height="56" rx="8"/>
+          <text class="tm" x="380" y="444" text-anchor="middle">Bitácora</text>
+          <text class="ts" x="380" y="464" text-anchor="middle">cada invocación</text>
+        </svg>
+
+        <div id="pLegend" hidden>
+          <div class="legend">
+            <span><i class="ln"></i>síncrono (petición y respuesta)</span>
+            <span><i class="ln dash"></i>asíncrono</span>
+            <span><i class="dot ok">✓</i>dónde vive la garantía</span>
+            <span><i class="dot ko">✕</i>punto de falla</span>
+          </div>
+          <div class="gl">
+            <i class="dot ok">✓</i><span id="pOk"></span>
+            <i class="dot ko">✕</i><span id="pKo"></span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ═══ EL ERROR QUE SE REPITE ═══ -->
+  <section class="box error" aria-labelledby="errT">
+    <h2 id="errT">El error que se repite</h2>
+    <div class="quote">«No se elige el patrón más moderno, se elige el que sostiene los escenarios de calidad que uno declaró. Quien no declaró escenarios está eligiendo por moda.»</div>
+    <p>El error: elegir la opción que suena más actual en lugar de la que sostiene los escenarios de calidad que el grupo declaró. Se ve con un caso donde la opción C es la peor elección.</p>
+    <p class="caso-line"><span class="tag-caso">Caso · Red Salud Andina</span>Para que el médico de consulta externa vea la historia unificada de un paciente atendido en 6 sedes, el grupo propone event streaming con Kafka «porque es lo moderno».</p>
+    <p><strong>Por qué C es la peor elección para esa costura:</strong></p>
+    <ol>
+      <li>El escenario declarado es de pregunta y respuesta (p95 ≤ 1,5 s con 300 consultas concurrentes) y C no responde preguntas: propaga hechos a una vista consistente solo eventualmente, y el antecedente registrado hace minutos en HIS-NORTE puede no estar en la consulta, que es justo el concern de la dirección médica.</li>
+      <li>HIS-NORTE es un producto propietario que quizá no expone servicios, y operar Kafka con registro de esquemas exige un equipo de plataforma que un área de 38 personas, sin crecer y con medio presupuesto, no tiene: el costo sube y el escenario de esta costura no mejora.</li>
+      <li>C sí tiene lugar en otra costura de la misma red —la atención cerrada que consumen FACT-SALUD, BI-ANDINA y la historia única, donde sostiene evolubilidad—; la consulta del médico la sostiene A, con tiempo de espera por fuente y degradación a historia parcial.</li>
+    </ol>
+  </section>
+
+  <!-- ═══ CAMPO POR CAMPO ═══ -->
+  <section class="box cmp" aria-labelledby="cmpT">
+    <h2 class="sec" id="cmpT">Vista campo por campo · las cuatro opciones lado a lado</h2>
+    <div class="tabs" role="tablist" id="tabs" aria-label="Campo de la ficha"></div>
+    <div class="cmp-grid" id="cmpGrid" role="tabpanel"></div>
+  </section>
+
+  <!-- ═══ F-17 ═══ -->
+  <section class="box f17" aria-labelledby="f17T">
+    <h2 class="sec" id="f17T">De esta herramienta a la ficha F-17</h2>
+    <p class="lead">La F-17 documenta una costura. Esto es lo que la herramienta aporta a cada campo y lo que tienen que completar ustedes.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Campo de la F-17</th><th>De dónde sale</th></tr></thead>
+        <tbody>
+          <tr><td>Nivel de zoom C4 donde vive la decisión</td><td>Lo declaran ustedes. Una costura entre sistemas suele decidirse en el nivel de contenedores (C2); si solo cambia el interior de un contenedor, no es una costura.</td></tr>
+          <tr><td>Patrón elegido entre los cuatro</td><td>Las tarjetas A, B, C y D.</td></tr>
+          <tr><td>Contrato y su versionado</td><td>OpenAPI (A) · AsyncAPI 3.x, que describe colas y tópicos (B y C), con registro de esquemas en C · esquema de la herramienta MCP (D).</td></tr>
+          <tr><td>Garantías: idempotencia, orden, entrega</td><td>Campo «Qué garantiza»; el campo «Requisitos de interoperabilidad» dice cuáles de esas garantías cubren lo que la costura exige.</td></tr>
+          <tr><td>Acoplamiento resultante</td><td>Campo «Acoplamiento resultante», en sus cuatro dimensiones.</td></tr>
+          <tr><td>Quién falla cuando falla</td><td>Campo «Quién falla cuando falla» y el punto marcado con ✕ en el diagrama.</td></tr>
+          <tr><td>Posición evolutiva de cada componente (Wardley)</td><td>No la da esta herramienta: ubiquen en el mapa cada pieza que la opción obliga a montar (gateway, broker, registro de esquemas, servidor MCP).</td></tr>
+          <tr><td>Construir o consumir</td><td>Se decide con esa posición: lo que ya es producto o servicio se consume; se construye solo lo que diferencia.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="footer">Maestría en Arquitectura Empresarial · Universidad de La Sabana · Red Salud Andina es una organización simulada</p>
+</div>
+
+<script>
+var FIELDS = [
+  { k: 'garantiza',    n: 1, label: 'Qué garantiza' },
+  { k: 'interop',      n: 2, label: 'Requisitos de interoperabilidad que satisface, y los que rompe' },
+  { k: 'acoplamiento', n: 3, label: 'Acoplamiento resultante' },
+  { k: 'falla',        n: 4, label: 'Quién falla cuando falla, y qué ve el usuario final' },
+  { k: 'costo',        n: 5, label: 'Costo de operar' },
+  { k: 'escenario',    n: 6, label: 'Qué escenario de calidad sostiene mejor que las otras tres' },
+  { k: 'contexto',     n: 7, label: 'Qué hay que saber del contexto para elegirla, y qué la descarta' }
+];
+
+/* Mismos seis requisitos, en el mismo orden, para los cuatro SBB */
+var REQS = [
+  'Semántica compartida: identidad del paciente vía MPI',
+  'Sincronía de la respuesta',
+  'Tolerancia a indisponibilidad del proveedor',
+  'Evolución del contrato sin despliegues coordinados',
+  'Trazabilidad y auditoría',
+  'Un mismo hecho para varios consumidores'
+];
+var ST = { S: 'Satisface', R: 'Rompe', C: 'Condicionado' };
+
+var OPTS = {
+  A: {
+    name: 'API síncrona',
+    desc: 'Contrato OpenAPI versionado e idempotencia por clave.',
+    chips: ['Síncrona', 'Conoce al proveedor', 'Consume un sistema'],
+    diagram: { t: 'Flujo · A · API síncrona', s: 'Ejemplo: Banco Colombia Digital · pago desde la app',
+      ok: 'Idempotency Guard: un reintento con la misma clave devuelve la respuesta guardada; T24 no debita dos veces.',
+      ko: 'T24 no responde en 2 s: el pago queda «sin confirmar» y el reintento con la misma clave consulta su estado en lugar de debitar de nuevo.' },
+    garantiza: [
+      'Una respuesta confirmada dentro del mismo intercambio: el llamador sabe en ese momento si la operación se aceptó, con petición y respuesta validadas contra el contrato OpenAPI 3.1 de la versión que invoca. Con la cabecera <code>Idempotency-Key</code>, un reintento tras un tiempo de espera no repite el efecto mientras la clave esté retenida. No garantiza que la operación ocurra si el proveedor no está: no ocurre, y el llamador decide.',
+      '[BCD] la app reintenta un pago con la misma clave y el Idempotency Guard devuelve la respuesta guardada; T24 no debita dos veces.'
+    ],
+    interop: [
+      ['S', 'Resuelve el id MPI en línea, dentro de la misma petición.'],
+      ['S', 'El consumidor recibe la respuesta en la misma interacción.'],
+      ['R', 'Si el proveedor cae, la operación no ocurre.'],
+      ['C', 'Las versiones mayores conviven solo mientras <code>/v1</code> no se retire.'],
+      ['C', 'El gateway registra cada llamada; la traza completa exige propagar W3C Trace Context.'],
+      ['R', 'Cada consumidor llama por su cuenta, o el proveedor llama a cada uno.']
+    ],
+    acoplamiento: [
+      ['Temporal', 'Total. Llamador y proveedor deben estar activos en el mismo instante.'],
+      ['De disponibilidad', 'Multiplicativo. La cadena está disponible solo si todos lo están: tres servicios al 99,5 % dan cerca de 98,5 %.'],
+      ['De esquema', 'Explícito en el contrato. Un cambio incompatible exige versión mayor (<code>/v2</code>) y convivir con <code>/v1</code> hasta retirarla.'],
+      ['De destino', 'El llamador conoce al proveedor, o al API Gateway Central que lo enruta.']
+    ],
+    falla: [
+      ['Quién falla', 'El llamador, de inmediato; el error sube por la cadena si no se corta con tiempo de espera y disyuntor (circuit breaker).'],
+      ['Qué ve el usuario', 'Un error o una espera en su propia pantalla. [RSA] si HIS-NORTE no responde, el médico ve la historia sin los antecedentes de las sedes adquiridas y un aviso, o un error si nadie diseñó esa degradación.']
+    ],
+    costo: [
+      ['Qué hay que montar', 'API Gateway Central, almacén de claves de idempotencia con expiración (en el banco, PostgreSQL), pruebas de contrato en la tubería y una política de retiro de versiones.'],
+      ['Qué vigilar para siempre', 'Latencia p95 y p99 por dependencia, tasa de errores 5xx y de tiempos de espera, disyuntores abiertos, tráfico que sigue llegando a versiones que se iban a retirar y la expiración de las claves frente a la ventana real de reintentos.']
+    ],
+    escenario: [
+      '<strong>Rendimiento:</strong> historia unificada con 6 sedes, p95 ≤ 1,5 s con 300 consultas concurrentes.',
+      'Es la única de las cuatro que responde con el dato vigente en la fuente dentro de la misma petición: el servicio consulta en paralelo el MPI, HIS-CORE y HIS-NORTE con un tiempo de espera por fuente, y el p95 queda acotado por ese presupuesto, no por un retraso de propagación. Condición: cada fuente debe cumplir su propio p95, y hay que medirlo antes de prometerlo.'
+    ],
+    contexto: [
+      ['Qué hay que saber', 'Si el consumidor necesita la respuesta para continuar (autorizar, validar, consultar); el p95 y la disponibilidad real de cada proveedor, y si el proveedor puede exponer una API: el dossier no dice si HIS-NORTE puede, así que es un supuesto que el grupo debe declarar.'],
+      ['Qué la descarta', 'Un proveedor menos disponible de lo que exige el escenario (HIS-CORE: 31 horas de indisponibilidad no planeada en 12 meses, más la ventana dominical), o una operación que puede completarse después sin que nadie espere.']
+    ]
+  },
+
+  B: {
+    name: 'Mensajería punto a punto',
+    desc: 'Cola con patrón outbox transaccional.',
+    chips: ['Asíncrona', 'Conoce la cola', 'Consume un sistema'],
+    diagram: { t: 'Flujo · B · Mensajería punto a punto', s: 'Ejemplo: Red Salud Andina · admisión con HIS-NORTE caído',
+      ok: 'Base local: la atención y su mensaje se escriben en una sola transacción; no hay atención confirmada sin mensaje.',
+      ko: 'HIS-NORTE caído: la cola crece; los 15 minutos de conciliación corren desde que vuelve hasta que la cola queda vacía.' },
+    garantiza: [
+      'Que el mensaje ni se pierde ni se inventa: el cambio de negocio y el mensaje se escriben en la misma transacción de base de datos (tabla outbox) y un relé lo publica después en la cola. Si la transacción se revierte, no hay mensaje; si confirma, se publicará aunque el broker esté caído en ese momento. Así se elimina la escritura dual. La cola entrega al menos una vez, y cada mensaje a un único consumidor.',
+      '[RSA] la admisión en una sede adquirida confirma aunque HIS-NORTE esté caído, y la atención queda en el outbox esperando.'
+    ],
+    interop: [
+      ['C', 'El id MPI viaja en el mensaje solo si el emisor lo resolvió antes.'],
+      ['R', 'El emisor solo sabe que el mensaje quedó en la cola.'],
+      ['S', 'El emisor confirma; la cola espera a que el receptor vuelva.'],
+      ['C', 'El mensaje puede versionarse en AsyncAPI, pero nada bloquea un cambio incompatible.'],
+      ['C', 'El outbox registra lo emitido; la traza se corta si no viaja el id de correlación.'],
+      ['R', 'Cada consumidor nuevo exige otra cola y tocar el emisor.']
+    ],
+    acoplamiento: [
+      ['Temporal', 'Eliminado. El emisor confirma aunque el receptor esté detenido.'],
+      ['De disponibilidad', 'El emisor depende solo de su propia base de datos; si el broker cae, el relé reintenta sin afectar la transacción.'],
+      ['De esquema', 'Implícito entre dos extremos. Sin registro de esquemas, un cambio de formato exige coordinar emisor y receptor.'],
+      ['De destino', 'Alto. El emisor escribe en una cola concreta para un receptor concreto; un segundo consumidor exige otra cola o tocar el emisor.']
+    ],
+    falla: [
+      ['Quién falla', 'El receptor, en diferido, y el emisor no se entera. Tras N intentos el mensaje pasa a la cola de mensajes muertos (DLQ), que alguien tiene que atender.'],
+      ['Qué ve el usuario', 'Nada en el momento; ve el efecto tarde. [BCD] si el Notification Publisher cae, los pagos se confirman en T24 y el cliente recibe la notificación con retraso, o nunca, si nadie revisa la DLQ.']
+    ],
+    costo: [
+      ['Qué hay que montar', 'Broker de colas (por ejemplo, Azure Service Bus o RabbitMQ), tabla outbox y relé por sondeo o por captura de cambios (CDC), política de reintentos, DLQ y consumidores idempotentes, porque el relé puede publicar dos veces.'],
+      ['Qué vigilar para siempre', 'Profundidad de la cola y edad del mensaje más antiguo, retraso del relé, crecimiento de la DLQ y purga de la tabla outbox, que crece con cada transacción.']
+    ],
+    escenario: [
+      '<strong>Disponibilidad:</strong> el HIS de una sede adquirida cae en consulta externa; cero atenciones perdidas, modo degradado y conciliación ≤ 15 min.',
+      'La atención se registra localmente con su mensaje en la misma transacción, así que no existe atención confirmada sin mensaje. Cuando HIS-NORTE vuelve, la cola drena y la conciliación se mide como el tiempo hasta que la cola queda vacía. De las cuatro, es la que lo logra con menos piezas: un emisor, una cola y un receptor.'
+    ],
+    contexto: [
+      ['Qué hay que saber', 'Cuántos consumidores tendrá el dato hoy y en 2029; si el emisor tiene una base transaccional propia donde poner el outbox (en un producto cerrado como HIS-NORTE puede no ser posible, y el outbox tendría que vivir en un adaptador), y cuánto retraso tolera el negocio.'],
+      ['Qué la descarta', 'Que el consumidor necesite la respuesta para seguir, o que el mismo hecho deba llegar a varios consumidores (FACT-SALUD, BI-ANDINA, la historia única): cada uno sería otra cola, y el emisor terminaría conociéndolos a todos.']
+    ]
+  },
+
+  C: {
+    name: 'Event streaming',
+    desc: 'Contrato AsyncAPI 3.x, esquema en registro, orden por partición y consumidores idempotentes.',
+    chips: ['Asíncrona', 'No conoce consumidores', 'Consumen N sistemas'],
+    diagram: { t: 'Flujo · C · Event streaming', s: 'Ejemplo: Red Salud Andina · evento de atención cerrada',
+      ok: 'Tópico particionado por id MPI: orden por paciente. El registro de esquemas rechaza en la tubería los cambios incompatibles.',
+      ko: 'FACT-SALUD detenido: su retraso crece y deja de ver atenciones; los otros consumidores siguen al día.' },
+    garantiza: [
+      'Que cada hecho publicado queda en un registro durable que se puede releer durante la retención, y que cualquier número de consumidores lo lee a su ritmo, con su propio desplazamiento (offset). El orden está garantizado solo dentro de una partición: con la clave igual al identificador MPI, los eventos de un paciente llegan en orden; entre pacientes, no. La entrega es al menos una vez; por eso los consumidores son idempotentes.',
+      '[BCD] el evento de pago confirmado en Kafka lo consumen antifraude, contabilidad y el Notification Publisher sin que el servicio de pagos sepa que existen.'
+    ],
+    interop: [
+      ['C', 'El id MPI es la clave de partición: sin él no hay orden por paciente.'],
+      ['R', 'El productor no recibe respuesta; nadie le contesta.'],
+      ['C', 'Tolera la caída de productores o consumidores, no la del clúster.'],
+      ['S', 'El registro rechaza los cambios incompatibles antes de publicar.'],
+      ['C', 'El tópico se puede releer, pero la traza cruza N consumidores asíncronos.'],
+      ['S', 'Cada consumidor lee con su propio offset; el productor no cambia.']
+    ],
+    acoplamiento: [
+      ['Temporal', 'Eliminado, incluso a largo plazo: un consumidor nuevo puede reprocesar lo que siga retenido.'],
+      ['De disponibilidad', 'Productores y consumidores dependen del clúster Kafka, que se vuelve una dependencia crítica compartida.'],
+      ['De esquema', 'Desplazado al registro de esquemas: cada parte acuerda con el registro, no con las demás. El significado del evento (qué es «atención cerrada») no lo valida nadie.'],
+      ['De destino', 'Nulo. El productor no sabe quién consume ni cuántos son.']
+    ],
+    falla: [
+      ['Quién falla', 'Cada consumidor por separado, y el productor no se entera. Un evento que no se puede procesar detiene su partición hasta que se desvíe a un tópico de errores.'],
+      ['Qué ve el usuario', 'Datos desactualizados, no errores. [RSA] si el consumidor de facturación se detiene, su retraso crece y FACT-SALUD deja de ver atenciones; se descubre días después, como atenciones sin facturar.']
+    ],
+    costo: [
+      ['Qué hay que montar', 'Clúster Kafka replicado (en el banco, sobre Azure AKS), registro de esquemas con modo de compatibilidad, contratos AsyncAPI 3.x validados en la tubería, estrategia de claves y particiones, outbox o CDC en cada productor y tópico de errores.'],
+      ['Qué vigilar para siempre', 'Retraso por grupo de consumidores, particiones con réplicas desincronizadas, retención y almacenamiento, rebalanceos, particiones calientes y cambios de esquema. Es un costo de talento: exige un equipo de plataforma.']
+    ],
+    escenario: [
+      '<strong>Evolubilidad:</strong> una sede nueva cambia el esquema de su evento de atención y ningún consumidor requiere despliegue.',
+      'El registro rechaza, en la tubería del productor, cualquier cambio que no sea compatible hacia atrás para los consumidores existentes, y el contrato AsyncAPI 3.x documenta canal y versión. Ninguna de las otras tres protege a N consumidores del cambio de un productor sin coordinarlos. Precisión: en el registro eso es el modo FORWARD o FULL; el modo BACKWARD protege a quien actualiza primero al consumidor.'
+    ],
+    contexto: [
+      ['Qué hay que saber', 'Cuántos consumidores tiene y tendrá el hecho (facturación, historia única, BI-ANDINA, telemedicina); si hace falta reprocesar historia; si el orden que importa cabe en una clave de partición, y si hay quién opere la plataforma.'],
+      ['Qué la descarta', 'Una interacción de pregunta y respuesta, un único consumidor o un área sin equipo de plataforma: [RSA0] tiene 38 personas en TI, 7 de ellas en infraestructura, y un presupuesto que cubre la mitad de lo estimado.']
+    ]
+  },
+
+  D: {
+    name: 'Capa de agentes',
+    desc: 'Herramientas expuestas como contratos (MCP), límite de autoridad y auditoría.',
+    chips: ['Síncrona por invocación', 'Conoce herramientas', 'Consume un agente'],
+    diagram: { t: 'Flujo · D · Capa de agentes', s: 'Ejemplo: Banco Colombia Digital · asistente de atención',
+      ok: 'Servidor MCP: solo herramientas declaradas, autorizadas con la identidad del cliente y registradas en la bitácora.',
+      ko: 'El modelo no responde: la app ofrece la consulta de movimientos sin asistente y un aviso, y la bitácora muestra hasta qué invocación llegó.' },
+    garantiza: [
+      'Que el agente solo actúa mediante herramientas declaradas en un servidor MCP (Model Context Protocol), cada una con nombre, descripción y esquema JSON de entrada; que cada invocación se autoriza contra un límite de autoridad explícito (qué herramientas, sobre qué datos, con la identidad de quién), y que queda auditada: quién pidió, qué se invocó, con qué argumentos y qué devolvió. No garantiza que el agente elija bien ni que acierte: eso se mide aparte.',
+      '[BCD] el asistente puede consultar movimientos; transferir no está expuesto como herramienta.'
+    ],
+    interop: [
+      ['C', 'Solo si la herramienta exige el id MPI y no acepta nombres en texto libre.'],
+      ['C', 'Síncrona en cada paso, pero el número de pasos no se conoce de antemano.'],
+      ['R', 'Sin modelo no hay agente: solo queda degradar.'],
+      ['C', 'Las herramientas se descubren en ejecución; cambiar su descripción altera el comportamiento.'],
+      ['S', 'La bitácora registra cada invocación con identidad, argumentos y resultado.'],
+      ['R', 'El agente consulta para sí mismo; no difunde hechos a otros consumidores.']
+    ],
+    acoplamiento: [
+      ['Temporal', 'Síncrono en cada paso: la latencia es la del modelo más la de cada herramienta, multiplicada por el número de pasos.'],
+      ['De disponibilidad', 'Suma dos dependencias, el proveedor del modelo y el servidor MCP, además de los sistemas que cada herramienta envuelve.'],
+      ['De esquema', 'Al esquema y a la descripción de la herramienta. Cambiar solo la descripción cambia qué invoca el agente, sin tocar código.'],
+      ['De destino', 'El agente conoce herramientas, no sistemas; la misma petición puede producir otra secuencia de invocaciones.']
+    ],
+    falla: [
+      ['Quién falla', 'El agente, a veces sin error visible: una herramienta caída se detecta, pero una herramienta mal elegida o un resumen incompleto parecen respuestas correctas.'],
+      ['Qué ve el usuario', '[RSA] si el modelo no responde, el médico ve la historia sin resumen y un aviso; si el agente intenta modificar una orden, el servidor MCP lo rechaza y la bitácora lo registra.']
+    ],
+    costo: [
+      ['Qué hay que montar', 'Servidor MCP con herramientas finas y de solo lectura por defecto, autorización OAuth con la identidad del usuario (no una cuenta de servicio con todos los permisos), bitácora inmutable, conjunto de evaluación versionado y tope de costo por consulta.'],
+      ['Qué vigilar para siempre', 'Exactitud contra el conjunto de evaluación en cada cambio de modelo o de descripción, costo por consulta, latencia p95 por paso, invocaciones rechazadas por el límite de autoridad y cambios del proveedor del modelo.']
+    ],
+    escenario: [
+      '<strong>Componente de IA:</strong> resumen de la historia con p95 ≤ 3 s, exactitud ≥ 85 % contra un conjunto versionado y degradación a historia sin resumen.',
+      'Es la única de las cuatro cuyo consumidor interpreta y decide: las herramientas acotan qué lee el agente (solo la historia del paciente en contexto, vía MPI), la bitácora permite rastrear de dónde salió cada afirmación y la degradación se diseña en el borde. Las otras tres mueven datos; no limitan lo que hace quien los interpreta.'
+    ],
+    contexto: [
+      ['Qué hay que saber', 'Si el consumidor es de verdad un agente que decide qué invocar o un flujo fijo que llama a un modelo (entonces basta A); qué acciones tendrá y qué stakeholder responde por ellas, y si se permite enviar datos clínicos al proveedor del modelo: el dossier no declara ese apetito de riesgo.'],
+      ['Qué la descarta', 'Una integración entre sistemas con reglas fijas (un agente entre HIS-NORTE y FACT-SALUD añade no determinismo donde se exige exactitud contable), o no poder acotar la autoridad ni auditar cada invocación.']
+    ]
+  }
+};
+
+var KEYS = ['A', 'B', 'C', 'D'];
+var active = null;
+var activeField = 'garantiza';
+
+function casos(s) {
+  return s
+    .replace(/\[BCD\]/g, '<span class="caso">Banco Colombia Digital:</span>')
+    .replace(/\[RSA\]/g, '<span class="caso">Red Salud Andina:</span>')
+    .replace(/\[RSA0\]/g, '<span class="caso">Red Salud Andina</span>');
+}
+
+function renderField(o, k) {
+  var v = o[k];
+  if (k === 'interop') {
+    return '<ul class="req">' + v.map(function (r, i) {
+      return '<li><span class="rq">' + REQS[i] + '</span><span class="st st-' + r[0] + '">' + ST[r[0]] + '</span><span class="rj">' + casos(r[1]) + '</span></li>';
+    }).join('') + '</ul>';
+  }
+  if (typeof v[0] === 'string') {
+    return v.map(function (p) { return '<p>' + casos(p) + '</p>'; }).join('');
+  }
+  return '<dl class="kv">' + v.map(function (r) {
+    return '<dt>' + r[0] + '</dt><dd>' + casos(r[1]) + '</dd>';
+  }).join('') + '</dl>';
+}
+
+function buildCards() {
+  var html = KEYS.map(function (k) {
+    var o = OPTS[k];
+    return '<button type="button" class="card" id="card-' + k + '" data-k="' + k + '" aria-pressed="false" aria-controls="ficha panel">' +
+      '<span class="eye">SBB candidato ' + k + '</span>' +
+      '<span class="top"><span class="letter" aria-hidden="true">' + k + '</span><span class="name">' + o.name + '</span></span>' +
+      '<span class="desc">' + o.desc + '</span>' +
+      '<span class="chips">' + o.chips.map(function (c) { return '<span class="chip">' + c + '</span>'; }).join('') + '</span>' +
+      '</button>';
+  }).join('');
+  var cont = document.getElementById('cards');
+  cont.innerHTML = html;
+  cont.addEventListener('click', function (e) {
+    var b = e.target.closest('.card');
+    if (b) select(b.getAttribute('data-k'), true);
+  });
+  cont.addEventListener('keydown', function (e) {
+    var b = e.target.closest('.card');
+    if (!b) return;
+    var i = KEYS.indexOf(b.getAttribute('data-k'));
+    var j = -1;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % 4;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i + 3) % 4;
+    if (j >= 0) { e.preventDefault(); document.getElementById('card-' + KEYS[j]).focus(); }
+  });
+}
+
+function select(k, fromUser) {
+  if (!OPTS[k]) return;
+  active = k;
+  var o = OPTS[k];
+  KEYS.forEach(function (x) {
+    document.getElementById('card-' + x).setAttribute('aria-pressed', x === k ? 'true' : 'false');
+    /* los elementos SVG no tienen la propiedad .hidden: se usa el atributo */
+    var svg = document.getElementById('svg' + x);
+    if (x === k) svg.removeAttribute('hidden'); else svg.setAttribute('hidden', '');
+  });
+
+  var f = '<article class="box" aria-labelledby="fichaT">' +
+    '<div class="ficha-head"><span class="letter" aria-hidden="true">' + k + '</span><div>' +
+    '<h3 id="fichaT">SBB candidato ' + k + ' · ' + o.name + '</h3><p>' + o.desc + '</p></div></div>' +
+    FIELDS.map(function (fd) {
+      return '<div class="field"><h4><span class="n">' + fd.n + '</span>' + fd.label + '</h4>' + renderField(o, fd.k) + '</div>';
+    }).join('') + '</article>';
+  document.getElementById('ficha').innerHTML = f;
+
+  document.getElementById('pTitle').textContent = o.diagram.t;
+  document.getElementById('pSub').textContent = o.diagram.s;
+  document.getElementById('pOk').textContent = o.diagram.ok;
+  document.getElementById('pKo').textContent = o.diagram.ko;
+  document.getElementById('pEmpty').hidden = true;
+  document.getElementById('pLegend').hidden = false;
+
+  try { history.replaceState(null, '', '#' + k); } catch (err) { /* file:// en algunos navegadores */ }
+
+  if (fromUser) {
+    var el = document.getElementById('ficha');
+    var r = el.getBoundingClientRect();
+    if (r.top > window.innerHeight * 0.75 || r.top < 0) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function buildTabs() {
+  var tabs = document.getElementById('tabs');
+  tabs.innerHTML = FIELDS.map(function (fd) {
+    return '<button type="button" role="tab" class="tab" id="tab-' + fd.k + '" data-f="' + fd.k + '" aria-selected="false" tabindex="-1">' + fd.n + ' · ' + fd.label + '</button>';
+  }).join('');
+  tabs.addEventListener('click', function (e) {
+    var b = e.target.closest('.tab');
+    if (b) showField(b.getAttribute('data-f'));
+  });
+  tabs.addEventListener('keydown', function (e) {
+    var b = e.target.closest('.tab');
+    if (!b) return;
+    var ks = FIELDS.map(function (f) { return f.k; });
+    var i = ks.indexOf(b.getAttribute('data-f'));
+    var j = -1;
+    if (e.key === 'ArrowRight') j = (i + 1) % ks.length;
+    if (e.key === 'ArrowLeft') j = (i + ks.length - 1) % ks.length;
+    if (e.key === 'Home') j = 0;
+    if (e.key === 'End') j = ks.length - 1;
+    if (j >= 0) { e.preventDefault(); showField(ks[j]); document.getElementById('tab-' + ks[j]).focus(); }
+  });
+}
+
+function showField(k) {
+  activeField = k;
+  FIELDS.forEach(function (fd) {
+    var t = document.getElementById('tab-' + fd.k);
+    var on = fd.k === k;
+    t.setAttribute('aria-selected', on ? 'true' : 'false');
+    t.tabIndex = on ? 0 : -1;
+  });
+  var grid = document.getElementById('cmpGrid');
+  grid.setAttribute('aria-labelledby', 'tab-' + k);
+  grid.innerHTML = KEYS.map(function (x) {
+    var o = OPTS[x];
+    return '<div class="cmp-col"><h5><span class="letter" aria-hidden="true">' + x + '</span>' + o.name + '</h5>' + renderField(o, k) + '</div>';
+  }).join('');
+}
+
+function fromHash() {
+  var h = (location.hash || '').replace('#', '').toUpperCase();
+  if (OPTS[h]) select(h, false);
+}
+
+buildCards();
+buildTabs();
+showField(activeField);
+fromHash();
+window.addEventListener('hashchange', fromHash);
+</script>
+</body>
+</html>

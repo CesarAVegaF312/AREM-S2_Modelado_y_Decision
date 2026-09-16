@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>C4 Model Interactivo — Arquitectura Empresarial</title>
+<style>
+:root {
+  --azul:#002060; --medio:#00387D; --claro:#EEF3FA; --pale:#D9E1EF; --slate:#93AAC9;
+  --person:#08519C; --system:#00387D; --ext:#546E7A; --container-app:#1565C0;
+  --container-db:#2E7D32; --container-msg:#6A1B9A; --container-web:#00695C;
+  --comp:#1976D2; --green:#137333; --red:#B91C1C; --orange:#B45309;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;min-height:100vh;}
+
+.header{background:var(--azul);color:white;padding:13px 28px;display:flex;align-items:center;gap:16px;}
+.header h1{font-size:15px;font-weight:700;}
+.header p{font-size:11px;color:var(--slate);margin-top:2px;}
+
+/* NAV BAR */
+.navbar{background:white;border-bottom:2px solid var(--pale);padding:10px 28px;display:flex;align-items:center;gap:0;}
+.crumb{font-size:12px;color:var(--slate);cursor:default;}
+.crumb.active{color:var(--azul);font-weight:700;cursor:default;}
+.crumb.clickable{color:var(--medio);font-weight:600;cursor:pointer;text-decoration:underline;}
+.crumb.clickable:hover{color:var(--azul);}
+.sep{color:var(--slate);margin:0 8px;font-size:12px;}
+
+/* LEGEND ROW */
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:10px 28px;background:white;border-bottom:1px solid var(--pale);}
+.leg{display:flex;align-items:center;gap:6px;font-size:11px;color:#444;}
+.leg-box{width:14px;height:14px;border-radius:3px;}
+
+/* MAIN CANVAS */
+.canvas{padding:24px 28px;min-height:calc(100vh - 160px);}
+.view{display:none;}
+.view.active{display:block;}
+
+.view-title{font-size:13px;font-weight:800;color:var(--azul);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;}
+.view-subtitle{font-size:12px;color:#666;margin-bottom:24px;}
+
+/* ── CONTEXT VIEW (Level 1) ── */
+.ctx-grid{display:flex;flex-direction:column;align-items:center;gap:24px;}
+.ctx-row{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;}
+
+.c4-box{border-radius:12px;padding:18px 20px;cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;text-align:center;width:180px;}
+.c4-box:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,32,96,.18);}
+.c4-box .box-icon{font-size:26px;margin-bottom:6px;}
+.c4-box .box-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.c4-box .box-title{font-size:13px;font-weight:700;margin-bottom:4px;}
+.c4-box .box-desc{font-size:10px;line-height:1.5;opacity:.85;}
+.c4-box .drill-hint{font-size:9px;background:rgba(255,255,255,.25);border-radius:10px;padding:2px 8px;margin-top:8px;display:inline-block;}
+
+.box-person{background:#1565C0;color:white;}
+.box-system{background:var(--medio);color:white;border:3px solid #001a4d;}
+.box-external{background:#455A64;color:white;}
+
+/* relation lines as CSS — simple */
+.rel-row{display:flex;align-items:center;gap:0;justify-content:center;flex-wrap:wrap;margin:-8px 0;}
+.rel-line{display:flex;align-items:center;gap:6px;font-size:10px;color:#666;background:rgba(255,255,255,.7);border:1px dashed var(--pale);border-radius:20px;padding:3px 10px;margin:4px;}
+.rel-arrow{color:var(--slate);}
+
+/* ── CONTAINER VIEW (Level 2) ── */
+.cnt-layout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;max-width:900px;margin:0 auto;}
+
+.cnt-box{border-radius:12px;padding:16px 18px;cursor:pointer;transition:transform .15s,box-shadow .15s;color:white;position:relative;}
+.cnt-box:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,32,96,.2);}
+.cnt-box .box-icon{font-size:22px;margin-bottom:6px;}
+.cnt-box .box-type{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;opacity:.8;}
+.cnt-box .box-title{font-size:13px;font-weight:700;margin:3px 0;}
+.cnt-box .box-tech{font-size:10px;opacity:.85;margin-bottom:5px;}
+.cnt-box .box-desc{font-size:10px;line-height:1.5;opacity:.9;}
+.cnt-box .drill-hint{font-size:9px;background:rgba(255,255,255,.2);border-radius:10px;padding:2px 8px;margin-top:8px;display:inline-block;}
+
+.cnt-app{background:var(--container-app);}
+.cnt-db{background:var(--container-db);}
+.cnt-msg{background:var(--container-msg);}
+.cnt-web{background:var(--container-web);}
+.cnt-ext{background:#546E7A;}
+.cnt-span2{grid-column:span 2;}
+
+/* ── COMPONENT PANEL (Level 3) ── */
+.comp-panel{background:white;border-radius:14px;box-shadow:0 2px 18px rgba(0,32,96,.08);overflow:hidden;}
+.comp-header{padding:18px 24px 14px;background:var(--claro);border-bottom:2px solid var(--pale);display:flex;align-items:center;gap:14px;}
+.comp-header .ch-icon{font-size:28px;}
+.comp-header h2{font-size:16px;font-weight:800;color:var(--azul);}
+.comp-header p{font-size:12px;color:#555;margin-top:3px;}
+.comp-header .ch-tech{font-size:11px;background:var(--azul);color:white;border-radius:10px;padding:2px 10px;margin-top:5px;display:inline-block;}
+
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.comp-col{padding:18px 24px;}
+.comp-col:first-child{border-right:1px solid var(--pale);}
+.comp-col h3{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--slate);font-weight:700;margin-bottom:12px;}
+
+.comp-item{background:var(--claro);border-radius:8px;padding:11px 13px;margin-bottom:10px;border-left:4px solid var(--medio);}
+.comp-item .ci-title{font-size:12px;font-weight:700;color:var(--azul);margin-bottom:3px;}
+.comp-item .ci-tech{font-size:10px;color:var(--slate);margin-bottom:4px;}
+.comp-item .ci-desc{font-size:11px;color:#444;line-height:1.6;}
+
+.info-box{border-radius:8px;padding:11px 13px;margin-bottom:10px;font-size:11px;line-height:1.7;}
+.info-box.green{background:#E6F4EA;border-left:4px solid var(--green);color:#1a3a1a;}
+.info-box.blue{background:var(--claro);border-left:4px solid var(--medio);color:#1a1a3a;}
+.info-box.purple{background:#F3E8FD;border-left:4px solid #7C3AED;color:#2a0a3a;}
+
+.comp-col .label{font-size:10px;font-weight:800;text-transform:uppercase;color:var(--slate);margin-bottom:6px;display:block;}
+
+.back-btn{display:block;text-align:center;margin:14px 24px 18px;padding:9px;background:var(--claro);border:1px solid var(--pale);border-radius:8px;cursor:pointer;font-size:12px;color:var(--medio);font-weight:700;}
+.back-btn:hover{background:var(--pale);}
+
+@media(max-width:700px){
+  .cnt-layout{grid-template-columns:1fr;}
+  .cnt-span2{grid-column:span 1;}
+  .comp-grid{grid-template-columns:1fr;}
+  .comp-col:first-child{border-right:none;border-bottom:1px solid var(--pale);}
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>C4 Model — Diagrama Interactivo de Arquitectura de Software</h1>
+    <p>Maestría en Arquitectura Empresarial · Universidad de La Sabana · Haz clic para hacer zoom-in en cada nivel</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="navbar" id="navbar">
+  <span class="crumb active" id="crumb1">📐 Nivel 1: Contexto</span>
+</div>
+
+<!-- LEGEND -->
+<div class="legend" id="legendBar">
+  <div class="leg"><div class="leg-box" style="background:#1565C0"></div>Persona / Usuario</div>
+  <div class="leg"><div class="leg-box" style="background:var(--medio);border:2px solid #001a4d"></div>Sistema bajo diseño</div>
+  <div class="leg"><div class="leg-box" style="background:#455A64"></div>Sistema externo</div>
+  <div class="leg" id="leg-app" style="display:none"><div class="leg-box" style="background:var(--container-app)"></div>App / Microservicio</div>
+  <div class="leg" id="leg-db" style="display:none"><div class="leg-box" style="background:var(--container-db)"></div>Base de datos</div>
+  <div class="leg" id="leg-msg" style="display:none"><div class="leg-box" style="background:var(--container-msg)"></div>Mensajería</div>
+  <div class="leg" id="leg-web" style="display:none"><div class="leg-box" style="background:var(--container-web)"></div>Frontend / Canal</div>
+</div>
+
+<div class="canvas">
+
+<!-- ════════════ LEVEL 1: CONTEXT ════════════ -->
+<div class="view active" id="view1">
+  <div class="view-title">Nivel 1 — Diagrama de Contexto del Sistema</div>
+  <div class="view-subtitle">¿Quién usa el sistema y con qué sistemas externos interactúa? — Haz clic en el sistema central para ver los contenedores (Nivel 2)</div>
+
+  <div class="ctx-grid">
+    <!-- Usuarios externos -->
+    <div class="ctx-row">
+      <div class="c4-box box-person">
+        <div class="box-icon">👤</div>
+        <div class="box-label">Person</div>
+        <div class="box-title">Cliente Persona Natural</div>
+        <div class="box-desc">Accede por App móvil y portal web para consultas, pagos y créditos</div>
+      </div>
+      <div class="c4-box box-person">
+        <div class="box-icon">🏢</div>
+        <div class="box-label">Person</div>
+        <div class="box-title">Cliente Empresarial</div>
+        <div class="box-desc">Maneja nóminas, pagos masivos y crédito PYME desde el portal corporativo</div>
+      </div>
+      <div class="c4-box box-person">
+        <div class="box-icon">👨‍💼</div>
+        <div class="box-label">Person</div>
+        <div class="box-title">Asesor Comercial</div>
+        <div class="box-desc">Gestiona clientes, solicitudes y seguimiento de portafolio desde el CRM interno</div>
+      </div>
+    </div>
+
+    <!-- Relaciones hacia el sistema -->
+    <div class="rel-row">
+      <span class="rel-line">📱 App móvil <span class="rel-arrow">→</span> HTTPS/REST</span>
+      <span class="rel-line">🌐 Portal web <span class="rel-arrow">→</span> HTTPS/REST</span>
+      <span class="rel-line">💻 CRM interno <span class="rel-arrow">→</span> VPN + HTTPS</span>
+    </div>
+
+    <!-- SISTEMA CENTRAL (clickable) -->
+    <div class="c4-box box-system" onclick="goLevel2()" style="width:260px;padding:22px 24px;">
+      <div class="box-icon">🏦</div>
+      <div class="box-label">Software System — Bajo Diseño</div>
+      <div class="box-title">Plataforma Digital Bancaria</div>
+      <div class="box-desc">Core bancario, banca digital, gestión de crédito, pagos y cumplimiento regulatorio para el mercado colombiano</div>
+      <div class="drill-hint">🔍 Clic → ver contenedores (Nivel 2)</div>
+    </div>
+
+    <!-- Relaciones hacia sistemas externos -->
+    <div class="rel-row">
+      <span class="rel-line">HTTPS/REST <span class="rel-arrow">→</span> 📊 Buró</span>
+      <span class="rel-line">ISO 8583 <span class="rel-arrow">↔</span> 💳 Redes de pago</span>
+      <span class="rel-line">SFTP/XML <span class="rel-arrow">→</span> 🏛 Reguladores</span>
+      <span class="rel-line">API <span class="rel-arrow">↔</span> 💱 ACH Colombia</span>
+    </div>
+
+    <!-- Sistemas externos -->
+    <div class="ctx-row">
+      <div class="c4-box box-external">
+        <div class="box-icon">📊</div>
+        <div class="box-label">External System</div>
+        <div class="box-title">Buró de Crédito</div>
+        <div class="box-desc">TransUnion / DataCrédito — consulta de scoring e historial crediticio</div>
+      </div>
+      <div class="c4-box box-external">
+        <div class="box-icon">💳</div>
+        <div class="box-label">External System</div>
+        <div class="box-title">Redes de Pago</div>
+        <div class="box-desc">VISA, Mastercard, PSE (ACH Colombia) — autorización de transacciones</div>
+      </div>
+      <div class="c4-box box-external">
+        <div class="box-icon">🏛</div>
+        <div class="box-label">External System</div>
+        <div class="box-title">Entes Reguladores</div>
+        <div class="box-desc">SFC, UIAF, DIAN, Banco de la República — reportes y cumplimiento</div>
+      </div>
+      <div class="c4-box box-external">
+        <div class="box-icon">💱</div>
+        <div class="box-label">External System</div>
+        <div class="box-title">ACH Colombia</div>
+        <div class="box-desc">Cámara de Compensación — transferencias interbancarias y nómina</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ LEVEL 2: CONTAINERS ════════════ -->
+<div class="view" id="view2">
+  <div class="view-title">Nivel 2 — Diagrama de Contenedores</div>
+  <div class="view-subtitle">¿Qué aplicaciones y servicios forman el sistema? — Haz clic en cualquier contenedor para ver sus componentes internos (Nivel 3)</div>
+
+  <div class="cnt-layout">
+
+    <div class="cnt-box cnt-web" onclick="goLevel3('mobile')">
+      <div class="box-icon">📱</div>
+      <div class="box-type">Mobile App</div>
+      <div class="box-title">App Móvil Bancaria</div>
+      <div class="box-tech">React Native · iOS & Android</div>
+      <div class="box-desc">Canal digital principal para clientes personas naturales. Consultas, pagos, créditos y notificaciones push</div>
+      <div class="drill-hint">🔍 Ver componentes</div>
+    </div>
+
+    <div class="cnt-box cnt-web" onclick="goLevel3('portal')">
+      <div class="box-icon">🌐</div>
+      <div class="box-type">Web Application</div>
+      <div class="box-title">Portal Empresarial</div>
+      <div class="box-tech">Next.js · TypeScript</div>
+      <div class="box-desc">Portal para clientes empresariales: nóminas, pagos masivos, reportes y gestión de cuentas corporativas</div>
+      <div class="drill-hint">🔍 Ver componentes</div>
+    </div>
+
+    <div class="cnt-box cnt-app" onclick="goLevel3('gateway')">
+      <div class="box-icon">🔀</div>
+      <div class="box-type">API Gateway</div>
+      <div class="box-title">API Gateway Central</div>
+      <div class="box-tech">Kong · OAuth 2.0 / OpenID Connect</div>
+      <div class="box-desc">Punto de entrada único: autenticación, rate limiting, routing, logging y throttling de todas las APIs</div>
+      <div class="drill-hint">🔍 Ver componentes</div>
+    </div>
+
+    <div class="cnt-box cnt-app" onclick="goLevel3('credito')">
+      <div class="box-icon">💰</div>
+      <div class="box-type">Microservice</div>
+      <div class="box-title">Servicio de Crédito</div>
+      <div class="box-tech">Spring Boot 3 · Java 21</div>
+      <div class="box-desc">Gestión del ciclo completo de crédito: solicitud, scoring, aprobación, desembolso y seguimiento de cartera</div>
+      <div class="drill-hint">🔍 Ver componentes</div>
+    </div>
+
+    <div class="cnt-box cnt-app" onclick="goLevel3('pagos')">
+      <div class="box-icon">💳</div>
+      <div class="box-type">Microservice</div>
+      <div class="box-title">Servicio de Pagos</div>
+      <div class="box-tech">Spring Boot 3 · Saga Pattern</div>
+      <div class="box-desc">Procesamiento de pagos PSE, transferencias ACH, pagos de servicios y nómina empresarial</div>
+      <div class="drill-hint">🔍 Ver componentes</div>
+    </div>
+
+    <div class="cnt-box cnt-app" onclick="goLevel3('core')">
+      <div class="box-icon">🏦</div>
+      <div class="box-type">Core Banking</div>
+      <div class="box-title">Core Bancario</div>
+      <div class="box-tech">Temenos T24 · COBOL + Java Adapter</div>
+      <div class="box-desc">Sistema legado de registro contable, saldos y productos financieros. Expuesto vía adapter REST para desacoplamiento</div>
+      <div class="drill-hint">🔍 Ver componentes</div>
+    </div>
+
+    <div class="cnt-box cnt-msg" onclick="goLevel3('events')">
+      <div class="box-icon">📨</div>
+      <div class="box-type">Message Broker</div>
+      <div class="box-title">Bus de Eventos</div>
+      <div class="box-tech">Apache Kafka · Schema Registry</div>
+      <div class="box-desc">Mensajería asíncrona entre microservicios: eventos de transacciones, alertas de fraude y notificaciones</div>
+      <div class="drill-hint">🔍 Ver componentes</div>
+    </div>
+
+    <div class="cnt-box cnt-db" onclick="goLevel3('datos')">
+      <div class="box-icon">🗄</div>
+      <div class="box-type">Databases</div>
+      <div class="box-title">Capa de Datos</div>
+      <div class="box-tech">PostgreSQL · Redis · MongoDB</div>
+      <div class="box-desc">Almacenamiento polígono: relacional para transacciones, caché para consultas frecuentes y documental para perfiles</div>
+      <div class="drill-hint">🔍 Ver componentes</div>
+    </div>
+
+    <div class="cnt-box cnt-app" onclick="goLevel3('fraude')">
+      <div class="box-icon">🛡</div>
+      <div class="box-type">Microservice</div>
+      <div class="box-title">Motor Antifraude</div>
+      <div class="box-tech">Python · ML · Drools Rules</div>
+      <div class="box-desc">Detección de fraude en tiempo real: modelo ML + reglas de negocio. Consume eventos Kafka, responde en &lt;500ms</div>
+      <div class="drill-hint">🔍 Ver componentes</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════ LEVEL 3: COMPONENT PANEL ════════════ -->
+<div class="view" id="view3">
+  <div class="comp-panel" id="compPanel">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+</div><!-- /canvas -->
+
+<script>
+// ── DATA ──
+const containers = {
+  mobile:{
+    icon:'📱', title:'App Móvil Bancaria', tech:'React Native · iOS & Android',
+    desc:'Canal digital principal para clientes personas naturales',
+    components:[
+      {title:'Auth Module',tech:'Keycloak SDK + Biometría nativa',desc:'Gestiona el flujo de login: OIDC, biometría (FaceID/huella), PIN de respaldo y renovación de tokens JWT cada 15 minutos.'},
+      {title:'Payments Screen',tech:'React Native + Redux',desc:'UI de pagos y transferencias. Validaciones locales antes de llamar la API, confirmación con segundo factor (OTP SMS/TOTP) para montos >$500K.'},
+      {title:'Credit Journey',tech:'React Native + React Hook Form',desc:'Flujo de solicitud de crédito digital: captura de datos, carga de documentos (OCR nativo), progreso de solicitud en tiempo real via WebSockets.'},
+      {title:'Push Notification Handler',tech:'Firebase Cloud Messaging',desc:'Recibe y muestra notificaciones de transacciones, alertas de seguridad y actualizaciones de productos. Lógica de navegación al tocar la notificación.'},
+    ],
+    why:'La app es el canal de mayor crecimiento: 62% de los clientes son digitales activos. Su arquitectura modular (feature slices) permite que equipos independientes trabajen en Auth, Pagos y Crédito sin conflictos.',
+    rel:'En C4: el componente Auth se integra con el API Gateway (OAuth2). En Team Topologies: cada módulo es responsabilidad de un equipo stream-aligned. Los eventos de navegación se publican al data lake para analítica de UX.',
+    c4note:'En el C4 Model, la App Móvil es un Contenedor que agrupa los Componentes de React Native. La granularidad del Nivel 3 llega hasta estos módulos; el Nivel 4 (código) sería la estructura de carpetas y clases individuales.'
+  },
+  portal:{
+    icon:'🌐', title:'Portal Empresarial', tech:'Next.js · TypeScript',
+    desc:'Portal para clientes empresariales y gestión corporativa',
+    components:[
+      {title:'SSO Integration',tech:'SAML 2.0 + Azure AD',desc:'Integración con el directorio activo del cliente empresarial. Un gerente de empresa accede al portal con las mismas credenciales corporativas sin crear cuenta nueva.'},
+      {title:'Bulk Payments Module',tech:'React + Dropzone + Papa Parse',desc:'Carga masiva de nóminas: el cliente sube un archivo CSV, el módulo lo valida localmente (formato, límites, duplicados) antes de enviarlo. Soporte hasta 50.000 registros.'},
+      {title:'Reports Dashboard',tech:'Recharts + React Query',desc:'Dashboard de reportes: extractos, comprobantes de pagos masivos y reportes de cumplimiento descargables en PDF. Datos actualizados cada hora via polling.'},
+      {title:'Admin Panel',tech:'React Admin',desc:'Gestión de usuarios autorizados de la empresa: el administrador empresa puede crear usuarios, asignar límites de aprobación y configurar flujos de doble autorización.'},
+    ],
+    why:'El portal empresarial mueve el 78% del volumen de pagos del banco por monto, aunque solo el 4% de clientes. Su disponibilidad 99.9% en ventanas de compensación ACH es un SLA crítico contractual.',
+    rel:'En Zachman Fila 5: el SSO module implementa el artefacto de Arquitectura de Presentación. En Team Topologies: el equipo de Pagos Empresariales es stream-aligned sobre este contenedor. En compliance SFC: el panel de administrador debe generar audit trail inmutable.',
+    c4note:'El Portal es un Contenedor separado de la App Móvil porque tiene usuarios distintos, requisitos de seguridad diferentes (SSO corporativo vs. biometría) y un ciclo de despliegue independiente.'
+  },
+  gateway:{
+    icon:'🔀', title:'API Gateway Central', tech:'Kong · OAuth 2.0 / OpenID Connect',
+    desc:'Punto de entrada único para todos los consumidores internos y externos',
+    components:[
+      {title:'Auth Plugin',tech:'Kong OAuth2 + Keycloak',desc:'Valida los JWT de todos los requests entrantes. Verifica firma, expiración, audience y scopes. Rechaza el request antes de que llegue a cualquier microservicio.'},
+      {title:'Rate Limiter',tech:'Kong Rate Limiting Advanced',desc:'Limita peticiones por cliente/IP/endpoint. Clientes estándar: 100 req/min en pagos. Empresas premium: 1.000 req/min. Límites configurables sin redeploy.'},
+      {title:'Router',tech:'Kong Route Matching',desc:'Enruta cada request al microservicio correcto según el path, método y headers. Las rutas se gestionan via Deck (GitOps), versionadas en el repositorio.'},
+      {title:'Observability Plugin',tech:'Prometheus + OpenTelemetry',desc:'Emite métricas de latencia, tasa de error y throughput por endpoint. Distribuye trace IDs para trazabilidad end-to-end a través de todos los microservicios.'},
+    ],
+    why:'El API Gateway es el único punto donde se aplican las políticas de seguridad horizontales. Sin él, cada microservicio implementaría autenticación de forma inconsistente, creando brechas de seguridad. Es el artefacto que habilita la separación entre preocupaciones transversales y lógica de negocio.',
+    rel:'En Zachman Fila 4: implementa el artefacto de Arquitectura de Presentación (acceso técnico). En TOGAF Fase C: es el API Management Layer de la Arquitectura de Aplicaciones. En Zero Trust: verifica identidad en cada request, nunca confía implícitamente.',
+    c4note:'El API Gateway es un Contenedor de infraestructura, no de negocio. En el C4 Model es válido omitirlo en el diagrama de Contexto (Nivel 1) y mostrarlo solo en Contenedores (Nivel 2) porque es un detalle de implementación, no una frontera de negocio.'
+  },
+  credito:{
+    icon:'💰', title:'Servicio de Crédito', tech:'Spring Boot 3 · Java 21',
+    desc:'Ciclo completo de crédito: solicitud → aprobación → desembolso → cartera',
+    components:[
+      {title:'Application Controller',tech:'Spring MVC · OpenAPI 3.1',desc:'REST API documentada: recibe solicitudes de crédito, valida el request contra el esquema, invoca el flujo de evaluación y retorna el estado. Contrato de API versionado.'},
+      {title:'Scoring Engine',tech:'Spring + Feign Client',desc:'Orquesta la consulta al buró externo (DataCrédito/TransUnion), combina el score externo con el score interno del banco y produce la decisión preliminar siguiendo las reglas de Drools.'},
+      {title:'Approval Workflow',tech:'Camunda BPM',desc:'Motor de flujo para aprobaciones: casos automáticos (<500ms), casos que escalan a comité humano (dashboard de analistas), flujos de contra-oferta y notificación al cliente.'},
+      {title:'Portfolio Repository',tech:'Spring Data JPA · PostgreSQL',desc:'Repositorio de toda la cartera activa: saldos, cuotas, estado de mora, historial de pagos. Publica eventos "PagoRecibido" y "MoraDetectada" al bus Kafka.'},
+    ],
+    why:'El Servicio de Crédito encapsula las reglas de negocio más complejas y reguladas del banco. Separarlo del core bancario permite iterar la política crediticia (Drools) sin tocar el sistema contable, reduciendo el riesgo de cambios regulatorios.',
+    rel:'En DDD: este microservicio es un Bounded Context "Crédito" con su propio modelo de dominio. La interfaz con el Core Bancario pasa por un Anti-Corruption Layer (ACL). En TOGAF Fase C: corresponde al Application Component "Gestión de Crédito".',
+    c4note:'Los cuatro componentes internos del servicio se comunican en proceso (in-process calls), no por red. Esta es una distinción clave del C4 Model: los Componentes son unidades lógicas dentro de un Contenedor, no microservicios separados.'
+  },
+  pagos:{
+    icon:'💳', title:'Servicio de Pagos', tech:'Spring Boot 3 · Patrón Saga',
+    desc:'Pagos PSE, transferencias ACH, nómina y pagos de servicios',
+    components:[
+      {title:'Payment Orchestrator',tech:'Spring + Saga Orchestration',desc:'Coordina la transacción distribuida: debita la cuenta origen (Core), invoca la red de pago (VISA/PSE), acredita destino. Si falla, ejecuta la secuencia de compensación (rollback).'},
+      {title:'ACH Adapter',tech:'ISO 20022 · SFTP',desc:'Adaptador para ACH Colombia: transforma los pagos internos al formato ISO 20022, gestiona las ventanas de compensación (8am/12pm/4pm/8pm) y reconcilia las respuestas del clearing.'},
+      {title:'Notification Publisher',tech:'Kafka Producer · Avro Schema',desc:'Publica eventos al bus: "TransaccionAprobada", "TransaccionRechazada", "PagoNomina­Completado". Los consumidores (notificaciones, antifraude, contabilidad) reaccionan de forma asíncrona.'},
+      {title:'Idempotency Guard',tech:'Redis · UUID v4',desc:'Garantiza que un pago no se procese dos veces si el cliente reintenta: almacena el ID de transacción en Redis (TTL 24h). Devuelve el resultado original si el request ya fue procesado.'},
+    ],
+    why:'El Idempotency Guard es uno de los componentes más críticos del sistema financiero: sin él, un retry del cliente ante un timeout puede generar un doble cobro. El patrón Saga maneja la consistencia eventual en una transacción que involucra 4 sistemas diferentes.',
+    rel:'En arquitectura de microservicios: este servicio demuestra por qué el patrón Saga (orquestado) es preferible a las transacciones distribuidas 2PC para sistemas financieros de alta disponibilidad. En EDA: los eventos publicados son la fuente de verdad para el Motor Antifraude.',
+    c4note:'El Servicio de Pagos se comunica con el Core Bancario (síncrono, crítico) y con Kafka (asíncrono, para notificaciones). En el diagrama de Contenedores, estas son dos líneas de relación distintas con tecnologías y características de resiliencia diferentes.'
+  },
+  core:{
+    icon:'🏦', title:'Core Bancario (T24)', tech:'Temenos T24 · COBOL + Java Adapter',
+    desc:'Sistema legado de registro contable, saldos y productos financieros',
+    components:[
+      {title:'T24 Adapter API',tech:'Java 17 · REST · Spring Boot',desc:'Capa anti-corrupción: traduce los contratos modernos de REST/JSON a los comandos propietarios de T24. Aísla a todos los microservicios de los detalles del sistema legado.'},
+      {title:'Account Module (T24)',tech:'COBOL · T24 OFS Commands',desc:'Motor de cuentas nativo de T24: débitos, créditos, saldos disponibles, bloqueos y contabilización. Procesamiento serial, consistente, con 18 años de historial intacto.'},
+      {title:'Product Catalog (T24)',tech:'T24 Product Condition',desc:'Catálogo de productos financieros configurados en T24: tipos de cuenta (ahorros, corriente, CDT), tasas de interés, comisiones y condiciones por segmento.'},
+      {title:'EOD Batch (T24)',tech:'T24 Batch · Job Scheduler',desc:'Proceso de cierre diario: cálculo de intereses, actualización de estados de mora, generación de extractos y cuadre contable. Ventana: 5:30pm–7:30pm. Bloquea operaciones de escritura.'},
+    ],
+    why:'El Core bancario es el "strangler fig" candidato: se está envolviendo progresivamente con microservicios modernos (crédito, pagos, notificaciones) sin tocarlo directamente. El adapter API es el patrón que hace posible la modernización incremental sin riesgo de migración big-bang.',
+    rel:'En patrones de modernización: el T24 Adapter implementa el patrón Strangler Fig (Fowler, 2004) y Anti-Corruption Layer (Evans, 2003). En Zachman Fila 4: el sistema legado es el artefacto de "Diseño Físico de Datos" más crítico. En TOGAF Fase H: candidato a migración en el roadmap AS-IS → TO-BE.',
+    c4note:'En el C4 Model, T24 se muestra como un Contenedor separado (aunque sea un monolito legado) porque tiene su propio ciclo de despliegue, base de código y equipo responsable. Los otros microservicios solo se comunican con él a través del Adapter, nunca directamente.'
+  },
+  events:{
+    icon:'📨', title:'Bus de Eventos (Kafka)', tech:'Apache Kafka 3.6 · Confluent Schema Registry',
+    desc:'Mensajería asíncrona — columna vertebral del sistema orientado a eventos',
+    components:[
+      {title:'Topic: transacciones',tech:'Partitions: 24 · Replication: 3',desc:'"TransaccionAprobada", "TransaccionRechazada": publicado por Pagos, consumido por Antifraude, Notificaciones y Contabilidad. Retención 7 días. Schema Avro validado en Schema Registry.'},
+      {title:'Topic: credito-eventos',tech:'Partitions: 12 · Replication: 3',desc:'"SolicitudRecibida", "CreditoAprobado", "CreditoRechazado", "PagoRecibido": pub/sub entre el Servicio de Crédito, Notificaciones y el Data Lake para analítica.'},
+      {title:'Topic: alertas-fraude',tech:'Partitions: 6 · Replication: 3',desc:'"TransaccionSospechosa", "CuentaBloqueada": publicado por Antifraude, consumido por el Servicio de Pagos (para bloquear) y por el CRM (para alertar al asesor).'},
+      {title:'Schema Registry',tech:'Confluent Schema Registry · Avro',desc:'Repositorio central de esquemas de eventos: garantiza compatibilidad backward entre versiones. Antes de publicar, el producer valida el mensaje contra el schema registrado.'},
+    ],
+    why:'Kafka desacopla los servicios en tiempo: el Servicio de Pagos no necesita esperar a que Antifraude procese la transacción — la publica al topic y continúa. Esto reduce la latencia del camino crítico de 800ms a 350ms. El Schema Registry previene que un cambio de schema rompa silenciosamente a los consumidores.',
+    rel:'En EDA (Event-Driven Architecture): Kafka implementa el patrón Event Streaming. El "TransaccionAprobada" event es el Domain Event del Bounded Context de Pagos. En Zachman Fila 3: define el Catálogo de Eventos de la Arquitectura Lógica. En CQRS: Kafka separa el lado de escritura (commands) del lado de lectura (queries proyectadas).',
+    c4note:'En el C4 Model, Kafka es un Contenedor de infraestructura compartido. Las líneas de relación en el Nivel 2 deben indicar el nombre del topic y la dirección (pub/sub), no solo "usa Kafka", para que el diagrama sea informativo y no genérico.'
+  },
+  datos:{
+    icon:'🗄', title:'Capa de Datos', tech:'PostgreSQL · Redis · MongoDB · S3',
+    desc:'Almacenamiento políglota: cada servicio elige la base de datos correcta para su caso de uso',
+    components:[
+      {title:'PostgreSQL 15 — Transaccional',tech:'Azure Database for PostgreSQL Flexible',desc:'Base de datos principal para transacciones y cartera: ACID, particionamiento mensual, cifrado AES-256 en columnas sensibles. Réplica de lectura para reportes. Retención 7 años (regulación SFC).'},
+      {title:'Redis 7 — Caché & Sessions',tech:'Azure Cache for Redis · Cluster mode',desc:'Caché de consultas frecuentes (saldos, límites): TTL 300s. Almacenamiento de sesiones de usuario y tokens de idempotencia. 99.99% disponibilidad. Failover automático <30s.'},
+      {title:'MongoDB — Perfiles & Documentos',tech:'MongoDB Atlas · M40 cluster',desc:'Documentos de perfiles de cliente enriquecidos (historial de interacciones, preferencias, scoring de propensión). Esquema flexible para atributos que varían por segmento.'},
+      {title:'S3 / Data Lake — Histórico',tech:'Azure Data Lake Storage Gen2',desc:'Archivo de transacciones históricas (>2 años), documentos de crédito, logs de auditoría inmutables. Insumo para analítica con Azure Synapse. Costo 90% menor que PostgreSQL para datos fríos.'},
+    ],
+    why:'La persistencia políglota asigna cada tipo de dato a la tecnología óptima para su patrón de acceso: Redis para lecturas de alta frecuencia (<1ms), PostgreSQL para consistencia transaccional, MongoDB para documentos variables y S3 para volumen histórico a bajo costo. Una sola base de datos no puede optimizar simultáneamente todos estos trade-offs.',
+    rel:'En Zachman Fila 4: este componente es el Modelo Físico de Datos. En el patrón Database-per-Service: cada microservicio posee su base de datos (no la comparte). En el CAP Theorem: PostgreSQL prioriza CP (consistencia + partición), Redis AP (disponibilidad + partición). En TOGAF Fase C: corresponde al Data Architecture.',
+    c4note:'En el C4 Model, las bases de datos se muestran como Contenedores (con un ícono de cilindro). Cada microservicio debe tener su propia base de datos — compartir la base de datos entre microservicios es un anti-patrón que crea acoplamiento implícito.'
+  },
+  fraude:{
+    icon:'🛡', title:'Motor Antifraude', tech:'Python 3.12 · scikit-learn · Drools',
+    desc:'Detección de fraude en tiempo real: ML + reglas configurables de negocio',
+    components:[
+      {title:'Event Consumer',tech:'Kafka Consumer · Python',desc:'Consume el topic "transacciones" en tiempo real. Deserializa el evento Avro y lo envía al pipeline de evaluación. Procesamiento: <100ms por evento. Consumer group con 6 partitions.'},
+      {title:'ML Inference Engine',tech:'scikit-learn · ONNX Runtime',desc:'Modelo de detección de anomalías (Isolation Forest + Random Forest): evalúa 47 features (monto, canal, hora, geolocalización, patrón histórico). Score de fraude 0-100. Modelo actualizado semanalmente.'},
+      {title:'Rules Engine (Drools)',tech:'Drools 8 · KieServer',desc:'340 reglas de negocio configurables: "Si monto >$5M en madrugada desde país no habitual → bloquear". Las reglas son ajustables por analistas de riesgo sin código. Complementan y explican el modelo ML.'},
+      {title:'Action Publisher',tech:'Kafka Producer · REST',desc:'Publica "AlertaFraude" o "TransaccionLimpia" al bus. En casos de alta confianza de fraude (score >85), envía REST síncrono al Servicio de Pagos para bloqueo inmediato antes de confirmar la transacción.'},
+    ],
+    why:'La combinación ML + reglas resuelve dos problemas complementarios: el modelo ML detecta patrones anómalos que las reglas no anticipan (fraude novedoso), mientras las reglas explican y auditan las decisiones del modelo (requisito de la SFC para decisiones automatizadas que afecten al cliente). Drools hace las decisiones explicables y ajustables sin reentrenar el modelo.',
+    rel:'En arquitecturas de IA Agentica: este servicio es un agente de detección que percibe eventos, razona sobre ellos (ML + reglas) y actúa (bloqueo/alerta). En MLOps: el modelo tiene su propio ciclo de vida (datos → entrenamiento → validación → despliegue ONNX) independiente del ciclo de la aplicación. En Circular 007 SFC: los sistemas de decisión automatizada deben ser auditables.',
+    c4note:'El Motor Antifraude es un Contenedor separado porque tiene un stack tecnológico diferente (Python vs Java), un ciclo de despliegue independiente (el modelo ML puede actualizarse sin afectar la app) y un equipo propio (Data Science + Riesgo). Esta separación es una decisión de diseño que el C4 Model hace visible.'
+  }
+};
+
+// ── NAVIGATION ──
+let history = ['view1'];
+
+function goLevel2() {
+  showLegendExtras(true);
+  updateCrumbs(['Nivel 1: Contexto'], ['Nivel 2: Contenedores']);
+  switchView('view1', 'view2');
+}
+
+function goLevel3(key) {
+  const d = containers[key];
+  if (!d) return;
+
+  const panel = document.getElementById('compPanel');
+  panel.innerHTML = `
+    <div class="comp-header">
+      <div class="ch-icon">${d.icon}</div>
+      <div>
+        <h2>${d.title}</h2>
+        <p>${d.desc}</p>
+        <span class="ch-tech">${d.tech}</span>
+      </div>
+    </div>
+    <div class="comp-grid">
+      <div class="comp-col">
+        <h3>⚙️ Componentes internos (Nivel 3)</h3>
+        ${d.components.map(c => `
+          <div class="comp-item">
+            <div class="ci-title">${c.title}</div>
+            <div class="ci-tech">${c.tech}</div>
+            <div class="ci-desc">${c.desc}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="comp-col">
+        <h3>💡 Por qué esta arquitectura</h3>
+        <div class="info-box green">${d.why}</div>
+        <h3 style="margin-top:12px">🔗 Relación con otros marcos</h3>
+        <div class="info-box blue">${d.rel}</div>
+        <h3 style="margin-top:12px">📐 Nota C4 Model</h3>
+        <div class="info-box purple">${d.c4note}</div>
+      </div>
+    </div>
+    <div class="back-btn" onclick="backToLevel2()">← Volver a Contenedores (Nivel 2)</div>
+  `;
+
+  updateCrumbs(['Nivel 1: Contexto', 'Nivel 2: Contenedores'], [`Nivel 3: ${d.title}`]);
+  switchView('view2', 'view3');
+}
+
+function backToLevel2() {
+  updateCrumbs(['Nivel 1: Contexto'], ['Nivel 2: Contenedores']);
+  switchView('view3', 'view2');
+}
+
+function switchView(from, to) {
+  document.getElementById(from).classList.remove('active');
+  document.getElementById(to).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function showLegendExtras(show) {
+  ['leg-app','leg-db','leg-msg','leg-web'].forEach(id => {
+    document.getElementById(id).style.display = show ? 'flex' : 'none';
+  });
+}
+
+function updateCrumbs(clickable, active) {
+  const nb = document.getElementById('navbar');
+  nb.innerHTML = '';
+  clickable.forEach((c, i) => {
+    const fn = i === 0 ? 'backToLevel1()' : 'backToLevel2()';
+    const span = document.createElement('span');
+    span.className = 'crumb clickable';
+    span.textContent = c;
+    span.setAttribute('onclick', fn);
+    nb.appendChild(span);
+    const sep = document.createElement('span');
+    sep.className = 'sep';
+    sep.textContent = '›';
+    nb.appendChild(sep);
+  });
+  active.forEach(a => {
+    const span = document.createElement('span');
+    span.className = 'crumb active';
+    span.textContent = a;
+    nb.appendChild(span);
+  });
+}
+
+function backToLevel1() {
+  showLegendExtras(false);
+  document.getElementById('navbar').innerHTML = '<span class="crumb active">📐 Nivel 1: Contexto</span>';
+  ['view2','view3'].forEach(v => document.getElementById(v).classList.remove('active'));
+  document.getElementById('view1').classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
