@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Las Cuatro Vistas — Red Salud Andina</title>
 <style>
 :root{
@@ -59,6 +64,8 @@ svg{display:block;max-width:100%;height:auto;}
 h3.sec{font-size:15px;color:var(--azul);margin:26px 0 10px;}
 .foot{margin-top:26px;font-size:12px;color:#7C8DA8;border-top:1px solid var(--pale);padding-top:12px;}
 </style>
+</head>
+<body>
 
 <div class="header">
   <h1>Las cuatro vistas — Red Salud Andina</h1>
@@ -79,7 +86,7 @@ h3.sec{font-size:15px;color:var(--azul);margin:26px 0 10px;}
 <div class="view active">
   <div class="band">
     <div class="grid">
-      <div><div class="k">Stakeholder</div><div class="v">Dirección General y Secretaría de Salud</div></div>
+      <div><div class="k">Stakeholder</div><div class="v">Dirección General (Presidencia) y Superintendencia Nacional de Salud</div></div>
       <div><div class="k">Concern</div><div class="v">Que la promesa pública de historia clínica única sea sostenible</div></div>
       <div><div class="k">Punto de vista</div><div class="v">Motivación y capacidades. Sin aplicaciones ni nodos</div></div>
       <div><div class="k">Fase del ADM</div><div class="v">B · Business Architecture</div></div>
@@ -111,14 +118,16 @@ h3.sec{font-size:15px;color:var(--azul);margin:26px 0 10px;}
     <!-- stakeholders -->
     <g>
       <path d="M40,46 h150 l14,14 v46 l-14,14 h-150 l-14,-14 v-46 Z" fill="var(--motiv)" stroke="var(--motiv-b)"/>
-      <text x="115" y="72" text-anchor="middle" font-size="12.5" font-weight="600">Dirección General</text>
-      <text x="115" y="90" text-anchor="middle" font-size="10.5" fill="#555">stakeholder</text>
+      <text x="115" y="68" text-anchor="middle" font-size="12.5" font-weight="600">Dirección General</text>
+      <text x="115" y="84" text-anchor="middle" font-size="11" fill="#333">(Presidencia)</text>
+      <text x="115" y="101" text-anchor="middle" font-size="10.5" fill="#555">stakeholder</text>
       <circle cx="192" cy="56" r="5" fill="none" stroke="var(--motiv-b)"/><circle cx="192" cy="56" r="1.6" fill="var(--motiv-b)"/>
     </g>
     <g>
       <path d="M40,132 h150 l14,14 v34 l-14,14 h-150 l-14,-14 v-34 Z" fill="var(--motiv)" stroke="var(--motiv-b)"/>
-      <text x="115" y="158" text-anchor="middle" font-size="12.5" font-weight="600">Secretaría de Salud</text>
-      <text x="115" y="174" text-anchor="middle" font-size="10.5" fill="#555">stakeholder</text>
+      <text x="115" y="152" text-anchor="middle" font-size="12.5" font-weight="600">Superintendencia</text>
+      <text x="115" y="168" text-anchor="middle" font-size="12.5" font-weight="600">Nacional de Salud</text>
+      <text x="115" y="184" text-anchor="middle" font-size="10.5" fill="#555">stakeholder</text>
     </g>
 
     <!-- driver + assessment -->
@@ -194,12 +203,9 @@ h3.sec{font-size:15px;color:var(--azul);margin:26px 0 10px;}
       <rect x="908" y="262" width="7" height="5" fill="var(--estr-b)"/>
     </g>
 
-    <!-- realización capacidad -> requisito/meta -->
-    <line x1="265" y1="256" x2="265" y2="200" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz)"/>
-    <text x="272" y="228" font-size="10.5" fill="#666">realiza</text>
-    <line x1="845" y1="200" x2="845" y2="230" stroke="#444" stroke-width="1.3" stroke-dasharray="4,3"/>
-    <line x1="845" y1="230" x2="300" y2="230" stroke="#444" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#infl)"/>
-    <text x="560" y="224" font-size="10.5" fill="#666">el requisito exige esta capacidad</text>
+    <!-- realización: la capacidad realiza el requisito (Capability -Realization-> Requirement, válida en ArchiMate 3.2) -->
+    <polyline points="265,256 265,230 845,230 845,200" fill="none" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz)"/>
+    <text x="560" y="224" font-size="10.5" fill="#666">la capacidad realiza el requisito</text>
 
     <!-- servicio de negocio -->
     <g>
@@ -519,7 +525,7 @@ h3.sec{font-size:15px;color:var(--azul);margin:26px 0 10px;}
       <div><div class="k">Fase del ADM</div><div class="v">E · Opportunities &amp; Solutions</div></div>
       <div><div class="k">Decisión que habilita</div><div class="v">Aprobación por tramos, con puntos de corte</div></div>
     </div>
-    <div class="sup"><b>Supuesto declarado:</b> la convivencia se presupuestó a 18 meses. Ese número es el punto de sensibilidad de toda la decisión: a 30 meses, la alternativa descartada sería la mejor.</div>
+    <div class="sup"><b>Restricción del caso:</b> el contrato del HIS de las sedes adquiridas (HIS-NORTE) vence en 2027 y renovarlo antes tiene penalidad; esa fecha fija los puntos de corte. <b>Supuesto declarado:</b> la convivencia se presupuestó a 18 meses. Ese número es el punto de sensibilidad de toda la decisión: a 30 meses, la alternativa descartada sería la mejor.</div>
   </div>
 
   <div class="canvas">
@@ -562,7 +568,7 @@ h3.sec{font-size:15px;color:var(--azul);margin:26px 0 10px;}
     </g>
     <g>
       <rect x="740" y="140" width="300" height="40" fill="#fff" stroke="var(--impl-b)" stroke-dasharray="5,3"/>
-      <text x="890" y="165" text-anchor="middle" font-size="11.5" fill="#7a4442">GAP: 6 HIS sin contrato de integración</text>
+      <text x="890" y="165" text-anchor="middle" font-size="11.5" fill="#7a4442">GAP: 6 sedes sin contrato de integración</text>
     </g>
 
     <!-- work packages -->
@@ -586,19 +592,20 @@ h3.sec{font-size:15px;color:var(--azul);margin:26px 0 10px;}
       <text x="970" y="238" text-anchor="middle" font-size="12" font-weight="600">Apagar</text>
       <text x="970" y="255" text-anchor="middle" font-size="12" font-weight="600">conciliación manual</text>
     </g>
-    <line x1="460" y1="208" x2="460" y2="184" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz4)"/>
-    <line x1="810" y1="208" x2="810" y2="184" stroke="#444" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#realz4)"/>
+    <!-- asociación: en ArchiMate 3.2 un paquete de trabajo no realiza un gap; se asocia con el gap que cierra -->
+    <line x1="460" y1="208" x2="460" y2="180" stroke="#444" stroke-width="1.3"/>
+    <line x1="810" y1="208" x2="810" y2="180" stroke="#444" stroke-width="1.3"/>
 
     <!-- lo que deja de existir -->
     <rect x="40" y="208" width="300" height="66" fill="#fff" stroke="var(--coral)" stroke-width="2"/>
     <text x="190" y="232" text-anchor="middle" font-size="12" font-weight="700" fill="var(--coral)">DEJA DE EXISTIR</text>
     <text x="190" y="252" text-anchor="middle" font-size="11.5" fill="var(--coral)">La conciliación manual de admisiones</text>
-    <text x="190" y="268" text-anchor="middle" font-size="11.5" fill="var(--coral)">(120 horas-persona al mes)</text>
+    <text x="190" y="268" text-anchor="middle" font-size="11.5" fill="var(--coral)">(supuesto: 120 horas-persona al mes)</text>
 
     <!-- deuda viva -->
     <rect x="40" y="310" width="1000" height="60" fill="#FFFDF0" stroke="#E4D9A8"/>
     <text x="62" y="334" font-size="12.5" font-weight="700" fill="#7a6a28">Deuda que queda viva después de T+2</text>
-    <text x="62" y="356" font-size="12" fill="#7a6a28">Los 6 HIS siguen operando. Principal: dos plataformas clínicas. Interés: dos contratos de soporte y doble auditoría. Estrategia: refinanciar, aislando detrás del adaptador.</text>
+    <text x="62" y="356" font-size="12" fill="#7a6a28">Los dos HIS siguen operando. Principal: dos plataformas clínicas. Interés: dos contratos de soporte y doble auditoría. Estrategia: refinanciar, aislando detrás del adaptador.</text>
 
     <text x="30" y="400" font-size="11" fill="#8894a6">Un comité de inversión no aprueba un «después»: aprueba un camino con puntos de corte. Por eso esta vista es obligatoria y no opcional.</text>
   </svg>
@@ -609,8 +616,11 @@ h3.sec{font-size:15px;color:var(--azul);margin:26px 0 10px;}
     <ul>
       <li>Los <b>plateaus</b> son estados estables, no fechas. Cada uno tiene que poder sostenerse solo: si el proyecto se detiene en T+1, la organización tiene que quedar funcionando.</li>
       <li>Los <b>gaps</b> van entre plateaus: son lo que falta para pasar del uno al otro. Vienen del análisis de brechas, no de una lluvia de ideas.</li>
-      <li>Los <b>paquetes de trabajo</b> realizan los gaps. Uno por gap, como mínimo.</li>
+      <li>Los <b>paquetes de trabajo</b> se asocian con el gap que cierran: uno por gap, como mínimo. En ArchiMate 3.2 un paquete de trabajo no realiza un gap; realiza entregables, y los entregables realizan plateaus (así está en el modelo de Archi).</li>
+      <li>Esta vista se encadena con la de aplicación: en el modelo de Archi, el entregable «Índice maestro en producción» realiza el índice maestro de pacientes de la Vista 3. Cada vista del informe tiene que compartir al menos un elemento con otra.</li>
       <li>El recuadro «deja de existir» es el que casi nadie dibuja y el que más le interesa al comité: una transformación que solo suma cosas no es una transformación, es una ampliación de presupuesto.</li>
+      <li>Esta vista es donde se ve el dilema de la unidad: <b>reescribir o estrangular</b>. La alternativa B puede ejecutarse de una vez, migrando las 6 sedes en un solo corte, o <b>sede por sede detrás del adaptador</b>, que es el patrón <i>Strangler Fig</i> (Fowler, 2004): la fachada recibe el tráfico y el sistema heredado se va apagando por partes. La capa de integración de la alternativa A es precisamente esa fachada: con ella, la migración de B se puede hacer por partes; sin ella, solo queda el corte único.</li>
+      <li>Si el comité pregunta cuánto vale cada camino, esa comparación ya no es ATAM sino <b>CBAM</b> (Cost-Benefit Analysis Method; Bass, Clements y Kazman, 2003): valor esperado frente a costo de cada alternativa. ATAM dice qué escenarios sostiene cada una; CBAM dice cuál conviene pagar.</li>
     </ul>
   </div>
 </div>
@@ -669,7 +679,7 @@ h3.sec{font-size:15px;color:var(--azul);margin:26px 0 10px;}
   </svg>
   </div>
   <div class="diag">
-    <b>Diagnóstico:</b> la decisión no está en el sistema heredado. El presupuesto de esta fase no permite reescribirlo y hay que convivir con él dieciocho meses como mínimo.
+    <b>Diagnóstico:</b> la decisión no está en el sistema heredado. El presupuesto de esta fase no permite reescribirlo, y el supuesto declarado es convivir con él dieciocho meses.
     <br><b>Dónde va:</b> en la capa que se construye alrededor. Si es un adaptador, si es un índice maestro, si es un bus de eventos, o si no es nada. Marcar la costura sobre el legado hace que las dos alternativas se vean iguales, y entonces no hay nada que comparar.
   </div>
 
@@ -697,7 +707,7 @@ h3.sec{font-size:15px;color:var(--azul);margin:26px 0 10px;}
 </div>
 
 <div class="foot">
-  Ejemplo trabajado del caso de respaldo Red Salud Andina · Los cuatro encabezados usan el vocabulario normativo de TOGAF 10: stakeholder, concern, punto de vista y fase del ADM.
+  Ejemplo trabajado del caso de respaldo Red Salud Andina · Los cinco campos de cada franja usan el vocabulario normativo de TOGAF 10: stakeholder, concern, punto de vista, fase del ADM y decisión que habilita.
 </div>
 
 </div>
@@ -731,3 +741,5 @@ function show(i, el){
   });
 })();
 </script>
+</body>
+</html>

@@ -1,12 +1,5 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <archimate:model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:archimate="http://www.archimatetool.com/archimate" name="Red Salud Andina — Arquitectura Unidad 2" id="model-5a17d001" version="5.0.0">
-  <purpose>Modelo de ejemplo de la Unidad 2 del curso de Arquitectura Empresarial (Maestría en Ingeniería de Software, Universidad de La Sabana).
-
-Caso: Red Salud Andina, IPS de 24 sedes que creció por replicación, adquirió seis sedes que siguen operando con otro sistema de historia clínica, y prometió públicamente «historia clínica única».
-
-Contiene las cuatro vistas que exige la Actividad 2.2, cada una con su stakeholder, su concern y la decisión que habilita, en la documentación de la propia vista. Marco: TOGAF Standard, 10.ª edición. Lenguaje: ArchiMate 3.2.
-
-La costura —el punto donde las dos alternativas difieren— está marcada en la vista de aplicación y tecnología.</purpose>
   <folder name="Strategy" id="folder-5a17d002" type="strategy">
     <element xsi:type="archimate:Capability" name="Gestión de identidad del paciente" id="id-5a17d013">
       <documentation>Madurez 1 de 5 en el heat map de la Unidad 1. Es la única capacidad que entra al alcance de esta unidad.</documentation>
@@ -23,7 +16,7 @@ La costura —el punto donde las dos alternativas difieren— está marcada en l
       <documentation>Actor: existe en el mundo. No confundir con el rol que cumple.</documentation>
     </element>
     <element xsi:type="archimate:BusinessRole" name="Auxiliar de admisiones" id="id-5a17d017">
-      <documentation>Rol: la función, no la persona. Hoy hace la conciliación manual de identidades: 120 horas-persona al mes.</documentation>
+      <documentation>Rol: la función, no la persona. Hoy hace la conciliación manual de identidades. SUPUESTO DECLARADO: 120 horas-persona al mes; el dossier solo da el error estimado del 6 % en la conciliación.</documentation>
     </element>
     <element xsi:type="archimate:BusinessRole" name="Médico tratante" id="id-5a17d018"/>
     <element xsi:type="archimate:BusinessProcess" name="Identificar al paciente" id="id-5a17d019"/>
@@ -70,11 +63,11 @@ ESTE ES EL COMPONENTE DE LA COSTURA. La alternativa B lo elimina.</documentation
     </element>
   </folder>
   <folder name="Motivation" id="folder-5a17d006" type="motivation">
-    <element xsi:type="archimate:Stakeholder" name="Dirección General" id="id-5a17d00b">
-      <documentation>Responde ante la junta por la promesa pública. Su interés: que la promesa sea sostenible sin duplicar la plataforma clínica.</documentation>
+    <element xsi:type="archimate:Stakeholder" name="Dirección General (Presidencia)" id="id-5a17d00b">
+      <documentation>En el dossier del caso es la Presidencia. Responde ante el consejo directivo por la promesa pública. Su interés: que la promesa sea sostenible sin duplicar la plataforma clínica.</documentation>
     </element>
-    <element xsi:type="archimate:Stakeholder" name="Secretaría de Salud" id="id-5a17d00c">
-      <documentation>Regulador territorial. Exige trazabilidad de la atención.</documentation>
+    <element xsi:type="archimate:Stakeholder" name="Superintendencia Nacional de Salud" id="id-5a17d00c">
+      <documentation>Regulador nacional del sector. Vigila la calidad y la trazabilidad de la atención, y por eso le importa que la promesa de historia clínica única se cumpla.</documentation>
     </element>
     <element xsi:type="archimate:Driver" name="Promesa pública de historia clínica única" id="id-5a17d00d">
       <documentation>No es algo que la organización eligió técnicamente: es un compromiso declarado que restringe lo que se puede decidir.</documentation>
@@ -89,7 +82,7 @@ ESTE ES EL COMPONENTE DE LA COSTURA. La alternativa B lo elimina.</documentation
       <documentation>Resultado medible. A diferencia de la meta, este se puede verificar.</documentation>
     </element>
     <element xsi:type="archimate:Principle" name="Interoperar antes que consolidar" id="id-5a17d011">
-      <documentation>Un principio restringe. Este descarta la alternativa B —consolidar los seis HIS en uno— salvo que el contexto cambie. Un principio que no descarta ninguna alternativa no es un principio: es un eslogan.</documentation>
+      <documentation>Un principio restringe. Este descarta la alternativa B —migrar las 6 sedes adquiridas al HIS corporativo y apagar el suyo— salvo que el contexto cambie. Un principio que no descarta ninguna alternativa no es un principio: es un eslogan.</documentation>
     </element>
     <element xsi:type="archimate:Requirement" name="Identidad única de paciente" id="id-5a17d012">
       <documentation>Requisito que la capacidad de gestión de identidad debe realizar.</documentation>
@@ -105,10 +98,10 @@ ESTE ES EL COMPONENTE DE LA COSTURA. La alternativa B lo elimina.</documentation
     <element xsi:type="archimate:Plateau" name="T+2 · Historia unificada" id="id-5a17d02b">
       <documentation>Seis sedes integradas. Conciliación automática.
 
-DEJA DE EXISTIR: la conciliación manual de admisiones, 120 horas-persona al mes.</documentation>
+DEJA DE EXISTIR: la conciliación manual de admisiones (supuesto: 120 horas-persona al mes).</documentation>
     </element>
     <element xsi:type="archimate:Gap" name="No existe fuente única de identidad" id="id-5a17d02c"/>
-    <element xsi:type="archimate:Gap" name="6 HIS sin contrato de integración" id="id-5a17d02d"/>
+    <element xsi:type="archimate:Gap" name="HIS de las 6 sedes adquiridas sin contrato de integración" id="id-5a17d02d"/>
     <element xsi:type="archimate:WorkPackage" name="Construir el MPI" id="id-5a17d02e"/>
     <element xsi:type="archimate:WorkPackage" name="Depurar duplicados" id="id-5a17d02f"/>
     <element xsi:type="archimate:WorkPackage" name="Adaptador por sede" id="id-5a17d030"/>
@@ -145,9 +138,9 @@ DEJA DE EXISTIR: la conciliación manual de admisiones, 120 horas-persona al mes
     <element xsi:type="archimate:FlowRelationship" id="id-5a17d04a" source="id-5a17d021" target="id-5a17d023"/>
     <element xsi:type="archimate:AccessRelationship" id="id-5a17d04b" source="id-5a17d022" target="id-5a17d024"/>
     <element xsi:type="archimate:RealizationRelationship" id="id-5a17d04c" source="id-5a17d024" target="id-5a17d01e"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="id-5a17d04d" source="id-5a17d026" target="id-5a17d020"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="id-5a17d04e" source="id-5a17d027" target="id-5a17d022"/>
-    <element xsi:type="archimate:AssignmentRelationship" id="id-5a17d04f" source="id-5a17d028" target="id-5a17d021"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-5a17d04d" source="id-5a17d026" target="id-5a17d020"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-5a17d04e" source="id-5a17d027" target="id-5a17d022"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-5a17d04f" source="id-5a17d028" target="id-5a17d021"/>
     <element xsi:type="archimate:TriggeringRelationship" id="id-5a17d050" source="id-5a17d029" target="id-5a17d02a"/>
     <element xsi:type="archimate:TriggeringRelationship" id="id-5a17d051" source="id-5a17d02a" target="id-5a17d02b"/>
     <element xsi:type="archimate:AssociationRelationship" id="id-5a17d052" source="id-5a17d02c" target="id-5a17d02a"/>
@@ -158,16 +151,10 @@ DEJA DE EXISTIR: la conciliación manual de admisiones, 120 horas-persona al mes
     <element xsi:type="archimate:RealizationRelationship" id="id-5a17d057" source="id-5a17d031" target="id-5a17d033"/>
     <element xsi:type="archimate:RealizationRelationship" id="id-5a17d058" source="id-5a17d032" target="id-5a17d02a"/>
     <element xsi:type="archimate:RealizationRelationship" id="id-5a17d059" source="id-5a17d033" target="id-5a17d02b"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-5a17d0b0" source="id-5a17d032" target="id-5a17d022"/>
   </folder>
   <folder name="Views" id="folder-5a17d00a" type="diagrams">
     <element xsi:type="archimate:ArchimateDiagramModel" name="1 · Qué promesa hay que sostener y con qué capacidad" id="view-5a17d05a">
-      <documentation>STAKEHOLDER: Dirección General y Secretaría de Salud
-CONCERN: que la promesa pública de historia clínica única sea sostenible
-PUNTO DE VISTA: motivación y capacidades. Sin aplicaciones ni nodos
-FASE DEL ADM: B · Business Architecture
-DECISIÓN QUE HABILITA: cuál capacidad se interviene primero
-
-SUPUESTO DECLARADO: la meta de 5 minutos se infirió de la declaración pública de la Dirección; no está en ningún documento (F-12, fila 3).</documentation>
       <child xsi:type="archimate:DiagramObject" id="obj-5a17d05b" archimateElement="id-5a17d00b">
         <bounds x="24" y="60" width="160" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d067" source="obj-5a17d05b" target="obj-5a17d05d" archimateRelationship="id-5a17d034"/>
@@ -176,7 +163,7 @@ SUPUESTO DECLARADO: la meta de 5 minutos se infirió de la declaración pública
         <bounds x="24" y="150" width="160" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d068" source="obj-5a17d05c" target="obj-5a17d05d" archimateRelationship="id-5a17d035"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d05d" archimateElement="id-5a17d00d" targetConnections="conn-5a17d067 conn-5a17d068 conn-5a17d069">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d05d" targetConnections="conn-5a17d067 conn-5a17d068 conn-5a17d069" archimateElement="id-5a17d00d">
         <bounds x="240" y="60" width="180" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d06a" source="obj-5a17d05d" target="obj-5a17d05f" archimateRelationship="id-5a17d037"/>
       </child>
@@ -184,18 +171,18 @@ SUPUESTO DECLARADO: la meta de 5 minutos se infirió de la declaración pública
         <bounds x="240" y="150" width="180" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d069" source="obj-5a17d05e" target="obj-5a17d05d" archimateRelationship="id-5a17d036"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d05f" archimateElement="id-5a17d00f" targetConnections="conn-5a17d06a conn-5a17d06b conn-5a17d06c">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d05f" targetConnections="conn-5a17d06a conn-5a17d06b conn-5a17d06c" archimateElement="id-5a17d00f">
         <bounds x="480" y="60" width="180" height="61"/>
       </child>
       <child xsi:type="archimate:DiagramObject" id="obj-5a17d060" archimateElement="id-5a17d010">
         <bounds x="480" y="150" width="180" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d06b" source="obj-5a17d060" target="obj-5a17d05f" archimateRelationship="id-5a17d038"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d061" archimateElement="id-5a17d011" targetConnections="conn-5a17d06d">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d061" targetConnections="conn-5a17d06d" archimateElement="id-5a17d011">
         <bounds x="720" y="60" width="180" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d06c" source="obj-5a17d061" target="obj-5a17d05f" archimateRelationship="id-5a17d039"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d062" archimateElement="id-5a17d012" targetConnections="conn-5a17d06e">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d062" targetConnections="conn-5a17d06e" archimateElement="id-5a17d012">
         <bounds x="720" y="150" width="180" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d06d" source="obj-5a17d062" target="obj-5a17d061" archimateRelationship="id-5a17d03a"/>
       </child>
@@ -210,58 +197,58 @@ SUPUESTO DECLARADO: la meta de 5 minutos se infirió de la declaración pública
       <child xsi:type="archimate:DiagramObject" id="obj-5a17d065" archimateElement="id-5a17d015">
         <bounds x="720" y="290" width="200" height="70"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d066" archimateElement="id-5a17d01f" targetConnections="conn-5a17d06f">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d066" targetConnections="conn-5a17d06f" archimateElement="id-5a17d01f">
         <bounds x="480" y="410" width="200" height="61"/>
       </child>
       <child xsi:type="archimate:Note" id="note-5a17d070" textAlignment="1">
         <bounds x="24" y="290" width="190" height="90"/>
         <content>La capacidad en rojo del heat map de la U1 (madurez 1 de 5) es la única que entra al alcance. Las otras dos dan contexto y no se detallan.</content>
       </child>
+      <documentation>STAKEHOLDER: Dirección General (Presidencia) y Superintendencia Nacional de Salud
+CONCERN: que la promesa pública de historia clínica única sea sostenible
+PUNTO DE VISTA: motivación y capacidades. Sin aplicaciones ni nodos
+FASE DEL ADM: B · Business Architecture
+DECISIÓN QUE HABILITA: cuál capacidad se interviene primero
+
+SUPUESTO DECLARADO: la meta de 5 minutos se infirió de la declaración pública de la Dirección; no está en ningún documento (F-12, fila 3).</documentation>
     </element>
     <element xsi:type="archimate:ArchimateDiagramModel" name="2 · En qué punto de la atención se rompe la historia única" id="view-5a17d071">
-      <documentation>STAKEHOLDER: dirección médica
-CONCERN: en qué punto de la atención se rompe la historia única
-PUNTO DE VISTA: proceso de negocio con actores, roles y objetos
-FASE DEL ADM: B · Business Architecture
-DECISIÓN QUE HABILITA: dónde se interviene, si en admisión o en consulta
-
-SUPUESTO DECLARADO: se asume que el laboratorio B2B no consume la historia clínica. No fue posible verificarlo con el área comercial (F-12, fila 5).</documentation>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d072" archimateElement="id-5a17d016" targetConnections="conn-5a17d084">
-        <bounds x="24" y="40" width="160" height="61"/>
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d072" targetConnections="conn-5a17d084" archimateElement="id-5a17d016">
+        <bounds x="36" y="420" width="160" height="61"/>
       </child>
       <child xsi:type="archimate:DiagramObject" id="obj-5a17d073" archimateElement="id-5a17d017">
         <bounds x="24" y="140" width="160" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d07c" source="obj-5a17d073" target="obj-5a17d075" archimateRelationship="id-5a17d03d"/>
       </child>
       <child xsi:type="archimate:DiagramObject" id="obj-5a17d074" archimateElement="id-5a17d018">
-        <bounds x="24" y="230" width="160" height="61"/>
+        <bounds x="804" y="276" width="160" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d07d" source="obj-5a17d074" target="obj-5a17d077" archimateRelationship="id-5a17d03e"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d075" archimateElement="id-5a17d019" targetConnections="conn-5a17d07c">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d075" targetConnections="conn-5a17d07c" archimateElement="id-5a17d019">
         <bounds x="260" y="140" width="160" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d07e" source="obj-5a17d075" target="obj-5a17d076" archimateRelationship="id-5a17d03f"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d081" source="obj-5a17d075" target="obj-5a17d079" archimateRelationship="id-5a17d043"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d076" archimateElement="id-5a17d01a" targetConnections="conn-5a17d07e">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d076" targetConnections="conn-5a17d07e" archimateElement="id-5a17d01a">
         <bounds x="460" y="140" width="160" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d07f" source="obj-5a17d076" target="obj-5a17d077" archimateRelationship="id-5a17d040"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d082" source="obj-5a17d076" target="obj-5a17d07a" archimateRelationship="id-5a17d042"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d077" archimateElement="id-5a17d01b" targetConnections="conn-5a17d07d conn-5a17d07f">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d077" targetConnections="conn-5a17d07d conn-5a17d07f" archimateElement="id-5a17d01b">
         <bounds x="660" y="140" width="160" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d080" source="obj-5a17d077" target="obj-5a17d078" archimateRelationship="id-5a17d041"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d083" source="obj-5a17d077" target="obj-5a17d07b" archimateRelationship="id-5a17d044"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d078" archimateElement="id-5a17d01c" targetConnections="conn-5a17d080">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d078" targetConnections="conn-5a17d080" archimateElement="id-5a17d01c">
         <bounds x="860" y="140" width="160" height="61"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d079" archimateElement="id-5a17d01e" targetConnections="conn-5a17d081">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d079" targetConnections="conn-5a17d081" archimateElement="id-5a17d01e">
         <bounds x="260" y="300" width="160" height="61"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d07a" archimateElement="id-5a17d01d" targetConnections="conn-5a17d082">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d07a" targetConnections="conn-5a17d082" archimateElement="id-5a17d01d">
         <bounds x="460" y="300" width="160" height="61"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d07b" archimateElement="id-5a17d01f" targetConnections="conn-5a17d083">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d07b" targetConnections="conn-5a17d083" archimateElement="id-5a17d01f">
         <bounds x="560" y="410" width="220" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d084" source="obj-5a17d07b" target="obj-5a17d072" archimateRelationship="id-5a17d045"/>
       </child>
@@ -270,88 +257,99 @@ SUPUESTO DECLARADO: se asume que el laboratorio B2B no consume la historia clín
         <content>AQUÍ SE ROMPE
 El paso «Recuperar historia previa» devuelve solo la historia de la sede actual.</content>
       </child>
+      <documentation>STAKEHOLDER: dirección médica
+CONCERN: en qué punto de la atención se rompe la historia única
+PUNTO DE VISTA: proceso de negocio con actores, roles y objetos
+FASE DEL ADM: B · Business Architecture
+DECISIÓN QUE HABILITA: dónde se interviene, si en admisión o en consulta
+
+SUPUESTO DECLARADO: se asume que el laboratorio B2B no consume la historia clínica. No fue posible verificarlo con el área comercial (F-12, fila 5).</documentation>
     </element>
     <element xsi:type="archimate:ArchimateDiagramModel" name="3 · Qué sistemas tendrían que hablarse y por dónde" id="view-5a17d086">
-      <documentation>STAKEHOLDER: equipo de arquitectura y comité de inversión
-CONCERN: qué sistemas tendrían que hablarse, y por dónde
-PUNTO DE VISTA: aplicación con su sustrato tecnológico
-FASE DEL ADM: C y D · Sistemas de información y tecnología
-DECISIÓN QUE HABILITA: qué se pone en la costura. Es la decisión de la Fase E
-
-LA COSTURA está entre los dos HIS: el índice maestro y el adaptador. La alternativa B elimina ambos y consolida los seis HIS en uno.</documentation>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d087" archimateElement="id-5a17d025" targetConnections="conn-5a17d090">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d087" targetConnections="conn-5a17d090" archimateElement="id-5a17d025">
         <bounds x="400" y="40" width="220" height="61"/>
+        <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d0b1" source="obj-5a17d087" target="obj-5a17d0b2" archimateRelationship="id-5a17d047"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d088" archimateElement="id-5a17d020" targetConnections="conn-5a17d091 conn-5a17d095">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d088" targetConnections="conn-5a17d091 conn-5a17d095" archimateElement="id-5a17d020">
         <bounds x="40" y="180" width="160" height="61"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d089" archimateElement="id-5a17d021" targetConnections="conn-5a17d097">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d089" targetConnections="conn-5a17d097" archimateElement="id-5a17d021">
         <bounds x="840" y="180" width="160" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d093" source="obj-5a17d089" target="obj-5a17d08b" archimateRelationship="id-5a17d04a"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d08a" archimateElement="id-5a17d022" targetConnections="conn-5a17d092 conn-5a17d096">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d08a" targetConnections="conn-5a17d092 conn-5a17d096" archimateElement="id-5a17d022">
         <bounds x="320" y="180" width="180" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d090" source="obj-5a17d08a" target="obj-5a17d087" archimateRelationship="id-5a17d046"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d091" source="obj-5a17d08a" target="obj-5a17d088" archimateRelationship="id-5a17d048"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d094" source="obj-5a17d08a" target="obj-5a17d08c" archimateRelationship="id-5a17d04b"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d08b" archimateElement="id-5a17d023" targetConnections="conn-5a17d093">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d08b" targetConnections="conn-5a17d093" archimateElement="id-5a17d023">
         <bounds x="560" y="180" width="160" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d092" source="obj-5a17d08b" target="obj-5a17d08a" archimateRelationship="id-5a17d049"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d08c" archimateElement="id-5a17d024" targetConnections="conn-5a17d094">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d08c" targetConnections="conn-5a17d094" archimateElement="id-5a17d024">
         <bounds x="320" y="290" width="180" height="61"/>
+        <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d0b3" source="obj-5a17d08c" target="obj-5a17d0b4" archimateRelationship="id-5a17d04c"/>
       </child>
       <child xsi:type="archimate:DiagramObject" id="obj-5a17d08d" archimateElement="id-5a17d026">
         <bounds x="40" y="420" width="180" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d095" source="obj-5a17d08d" target="obj-5a17d088" archimateRelationship="id-5a17d04d"/>
       </child>
       <child xsi:type="archimate:DiagramObject" id="obj-5a17d08e" archimateElement="id-5a17d027">
-        <bounds x="340" y="420" width="180" height="61"/>
+        <bounds x="540" y="372" width="180" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d096" source="obj-5a17d08e" target="obj-5a17d08a" archimateRelationship="id-5a17d04e"/>
       </child>
       <child xsi:type="archimate:DiagramObject" id="obj-5a17d08f" archimateElement="id-5a17d028">
         <bounds x="800" y="420" width="180" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d097" source="obj-5a17d08f" target="obj-5a17d089" archimateRelationship="id-5a17d04f"/>
       </child>
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d0b2" targetConnections="conn-5a17d0b1" archimateElement="id-5a17d01f">
+        <bounds x="680" y="40" width="220" height="61"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d0b4" targetConnections="conn-5a17d0b3" archimateElement="id-5a17d01e">
+        <bounds x="320" y="470" width="180" height="61"/>
+      </child>
       <child xsi:type="archimate:Note" id="note-5a17d098" textAlignment="1">
         <bounds x="300" y="100" width="320" height="60"/>
         <content>LA COSTURA
 Aquí difieren las dos alternativas. Los elementos se nombran como ABB, nunca con un nombre comercial.</content>
       </child>
+      <documentation>STAKEHOLDER: equipo de arquitectura y comité de inversión
+CONCERN: qué sistemas tendrían que hablarse, y por dónde
+PUNTO DE VISTA: aplicación con su sustrato tecnológico
+FASE DEL ADM: C y D · Sistemas de información y tecnología
+DECISIÓN QUE HABILITA: qué se pone en la costura. Es la decisión de la Fase E
+
+ENGANCHE CON LAS OTRAS VISTAS: el servicio de aplicación sirve al servicio de negocio de las vistas 1 y 2, y el registro de identidad realiza el objeto de negocio «Identidad del paciente» de la vista 2.
+
+LA COSTURA está entre los dos HIS: el índice maestro y el adaptador. La alternativa B elimina ambos: migra las 6 sedes adquiridas al HIS corporativo y apaga el HIS de esas sedes.</documentation>
     </element>
     <element xsi:type="archimate:ArchimateDiagramModel" name="4 · En qué orden se hace y qué deja de existir" id="view-5a17d099">
-      <documentation>STAKEHOLDER: comité de inversión
-CONCERN: en qué orden se hace, y qué deja de existir
-PUNTO DE VISTA: implementación y migración, plateaus y brechas
-FASE DEL ADM: E · Opportunities &amp; Solutions
-DECISIÓN QUE HABILITA: aprobación por tramos, con puntos de corte
-
-SUPUESTO DECLARADO: la convivencia se presupuestó a 18 meses. Ese número es el punto de sensibilidad de toda la decisión: a 30 meses, la alternativa descartada sería la mejor.</documentation>
       <child xsi:type="archimate:DiagramObject" id="obj-5a17d09a" archimateElement="id-5a17d029">
         <bounds x="40" y="60" width="220" height="70"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d0a5" source="obj-5a17d09a" target="obj-5a17d09b" archimateRelationship="id-5a17d050"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d09b" archimateElement="id-5a17d02a" targetConnections="conn-5a17d0a5 conn-5a17d0a7 conn-5a17d0ad">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d09b" targetConnections="conn-5a17d0a5 conn-5a17d0a7 conn-5a17d0ad" archimateElement="id-5a17d02a">
         <bounds x="340" y="60" width="220" height="70"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d0a6" source="obj-5a17d09b" target="obj-5a17d09c" archimateRelationship="id-5a17d051"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d09c" archimateElement="id-5a17d02b" targetConnections="conn-5a17d0a6 conn-5a17d0a8 conn-5a17d0ae">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d09c" targetConnections="conn-5a17d0a6 conn-5a17d0a8 conn-5a17d0ae" archimateElement="id-5a17d02b">
         <bounds x="640" y="60" width="220" height="70"/>
       </child>
       <child xsi:type="archimate:DiagramObject" id="obj-5a17d09d" archimateElement="id-5a17d02c">
-        <bounds x="340" y="180" width="220" height="61"/>
+        <bounds x="160" y="180" width="220" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d0a7" source="obj-5a17d09d" target="obj-5a17d09b" archimateRelationship="id-5a17d052"/>
       </child>
       <child xsi:type="archimate:DiagramObject" id="obj-5a17d09e" archimateElement="id-5a17d02d">
-        <bounds x="640" y="180" width="220" height="61"/>
+        <bounds x="470" y="180" width="220" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d0a8" source="obj-5a17d09e" target="obj-5a17d09c" archimateRelationship="id-5a17d053"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d09f" archimateElement="id-5a17d032" targetConnections="conn-5a17d0a9 conn-5a17d0aa">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d09f" targetConnections="conn-5a17d0a9 conn-5a17d0aa" archimateElement="id-5a17d032">
         <bounds x="340" y="290" width="220" height="61"/>
+        <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d0b5" source="obj-5a17d09f" target="obj-5a17d0b6" archimateRelationship="id-5a17d0b0"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d0ad" source="obj-5a17d09f" target="obj-5a17d09b" archimateRelationship="id-5a17d058"/>
       </child>
-      <child xsi:type="archimate:DiagramObject" id="obj-5a17d0a0" archimateElement="id-5a17d033" targetConnections="conn-5a17d0ab conn-5a17d0ac">
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d0a0" targetConnections="conn-5a17d0ab conn-5a17d0ac" archimateElement="id-5a17d033">
         <bounds x="640" y="290" width="220" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d0ae" source="obj-5a17d0a0" target="obj-5a17d09c" archimateRelationship="id-5a17d059"/>
       </child>
@@ -371,11 +369,32 @@ SUPUESTO DECLARADO: la convivencia se presupuestó a 18 meses. Ese número es el
         <bounds x="810" y="410" width="150" height="61"/>
         <sourceConnection xsi:type="archimate:Connection" id="conn-5a17d0ac" source="obj-5a17d0a4" target="obj-5a17d0a0" archimateRelationship="id-5a17d057"/>
       </child>
+      <child xsi:type="archimate:DiagramObject" id="obj-5a17d0b6" targetConnections="conn-5a17d0b5" archimateElement="id-5a17d022">
+        <bounds x="40" y="290" width="200" height="61"/>
+      </child>
       <child xsi:type="archimate:Note" id="note-5a17d0af" textAlignment="1">
         <bounds x="40" y="410" width="230" height="90"/>
         <content>DEJA DE EXISTIR
-La conciliación manual de admisiones: 120 horas-persona al mes. Una transformación que solo suma cosas no es una transformación.</content>
+La conciliación manual de admisiones (supuesto: 120 horas-persona al mes). Una transformación que solo suma cosas no es una transformación.</content>
       </child>
+      <documentation>STAKEHOLDER: comité de inversión
+CONCERN: en qué orden se hace, y qué deja de existir
+PUNTO DE VISTA: implementación y migración, plateaus y brechas
+FASE DEL ADM: E · Opportunities &amp; Solutions
+DECISIÓN QUE HABILITA: aprobación por tramos, con puntos de corte
+
+ENGANCHE CON LAS OTRAS VISTAS: el entregable «Índice maestro en producción» realiza el índice maestro de pacientes de la vista 3.
+
+RESTRICCIÓN DEL CASO: el contrato del HIS de las sedes adquiridas (HIS-NORTE) vence en 2027 y renovarlo antes tiene penalidad. Es la fecha que fija los puntos de corte.
+
+SUPUESTO DECLARADO: la convivencia se presupuestó a 18 meses. Ese número es el punto de sensibilidad de toda la decisión: a 30 meses, la alternativa descartada sería la mejor.</documentation>
     </element>
   </folder>
+  <purpose>Modelo de ejemplo de la Unidad 2 del curso de Arquitectura Empresarial (Maestría en Ingeniería de Software, Universidad de La Sabana).
+
+Caso: Red Salud Andina, IPS de 24 sedes que creció por replicación, adquirió seis sedes que siguen operando con otro sistema de historia clínica, y prometió públicamente «historia clínica única».
+
+Contiene las cuatro vistas que exige la Actividad 2.2, cada una con su stakeholder, su concern y la decisión que habilita, en la documentación de la propia vista. Marco: TOGAF Standard, 10.ª edición. Lenguaje: ArchiMate 3.2.
+
+La costura —el punto donde las dos alternativas difieren— está marcada en la vista de aplicación y tecnología.</purpose>
 </archimate:model>
