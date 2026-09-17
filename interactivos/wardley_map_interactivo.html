@@ -77,6 +77,15 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;}
 .movement-box{background:var(--claro);border-radius:8px;padding:10px 12px;font-size:11px;color:#333;line-height:1.6;}
 .movement-box strong{color:var(--azul);}
 
+/* ── CASE SWITCH ── */
+.case-bar{background:var(--claro);border-bottom:1px solid var(--pale);padding:8px 24px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.case-lbl{font-size:11px;font-weight:700;color:var(--azul);margin-right:4px;}
+.case-btn{font:inherit;font-size:11px;font-weight:700;color:var(--medio);background:white;border:1.5px solid var(--slate);border-radius:16px;padding:4px 12px;cursor:pointer;}
+.case-btn:hover{border-color:var(--medio);}
+.case-btn[aria-pressed="true"]{background:var(--azul);border-color:var(--azul);color:white;}
+.case-btn:focus-visible{outline:3px solid #FF6F00;outline-offset:2px;}
+.case-note{font-size:11px;color:#555;flex-basis:100%;}
+
 @media(max-width:860px){
   .main{grid-template-columns:1fr;}
   .panel{position:relative;top:0;}
@@ -97,6 +106,13 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;}
   <div class="strat"><div class="strat-dot" style="background:var(--explore)"></div>EXPLORAR — Emergente, Genesis</div>
   <div class="sep-v"></div>
   <span class="hint">👆 Clic en cualquier componente</span>
+</div>
+
+<div class="case-bar" role="group" aria-label="Caso del ejemplo">
+  <span class="case-lbl">Caso del ejemplo:</span>
+  <button type="button" class="case-btn" data-caso="banco" aria-pressed="true">🏦 Banco Colombia Digital</button>
+  <button type="button" class="case-btn" data-caso="salud" aria-pressed="false">🏥 Red Salud Andina</button>
+  <span class="case-note" id="caseNote"></span>
 </div>
 
 <div class="main">
@@ -491,10 +507,234 @@ const nodes = {
   }
 };
 
+/* ════════ Caso Red Salud Andina ════════
+   Datos del dossier del caso de respaldo. Donde el dossier calla (apetito de riesgo frente a la nube,
+   capacidades del proveedor de HIS-NORTE) el texto lo marca como supuesto declarado. */
+const COLOR = { build:'#1565C0', buy:'#2E7D32', rent:'#6A1B9A', explore:'#B45309' };
+// [clave, x, y, radio, color, ícono, etiqueta, subetiqueta, legado/inercia]
+const MAPA_SALUD = [
+  ['consulta', 255, 110, 20, COLOR.build,   '🩺', 'Consulta clínica',      'Vista para el médico', false],
+  ['ia',       125, 172, 16, COLOR.explore, '🤖', 'Resumen con IA',        'Emergente',            false],
+  ['telemed',  445, 118, 18, COLOR.buy,     '🎥', 'Telemedicina',          'Plataforma de tercero', false],
+  ['mpi',      420, 205, 20, COLOR.buy,     '🪪', 'Índice maestro (MPI)',  'Producto a configurar', false],
+  ['estandar', 512, 242, 16, COLOR.buy,     '📑', 'Estándar clínico',      'Lo fija la norma',     false],
+  ['adaptador',290, 250, 18, COLOR.build,   '🔄', 'Adaptador HIS-NORTE',   'Desechable en 2027',   false],
+  ['hiscore',  240, 322, 18, COLOR.build,   '🏥', 'HIS-CORE',              '⚠️ Oracle Forms · legado', true],
+  ['hisnorte', 440, 305, 18, COLOR.buy,     '🏥', 'HIS-NORTE',             '⚠️ Contrato hasta 2027', true],
+  ['bus',      455, 385, 17, COLOR.buy,     '📨', 'Bus de integración',    'Adquirido en 2016',    false],
+  ['mensajeria',565,330, 17, COLOR.rent,    '✉️', 'Mensajería',            'Servicio gestionado',  false],
+  ['bd',       575, 388, 17, COLOR.rent,    '🗄', 'Base de datos',         'Servicio gestionado',  false],
+  ['infra',    622, 442, 16, COLOR.rent,    '☁️', 'Infraestructura',       'Centro de datos + nube', false]
+];
+// dependencias: [x1, y1, x2, y2, futura]
+const DEPS_SALUD = [
+  [290,82, 264,90, false],   // necesidad → consulta
+  [340,82, 432,102, false],  // necesidad → telemedicina
+  [240,128, 138,158, true],  // consulta → resumen IA (futura)
+  [272,120, 402,197, false], // consulta → MPI
+  [270,124, 500,232, false], // consulta → estándar
+  [252,130, 242,302, false], // consulta → HIS-CORE
+  [405,218, 306,242, false], // MPI → adaptador
+  [438,136, 424,185, true],  // telemedicina → MPI (integración pendiente)
+  [304,262, 424,298, false], // adaptador → HIS-NORTE
+  [306,256, 549,324, false], // adaptador → mensajería
+  [300,266, 441,373, true],  // adaptador → bus (alternativa: APIs sobre el bus)
+  [436,222, 563,374, false], // MPI → base de datos
+  [256,340, 604,440, false], // HIS-CORE → infraestructura
+  [582,405, 610,428, false], // base de datos → infraestructura
+  [572,347, 614,426, false], // mensajería → infraestructura
+  [471,394, 604,444, false]  // bus → infraestructura
+];
+
+function svgSalud() {
+  const bancoSvg = document.getElementById('wardley').innerHTML;
+  const fondo = bancoSvg.slice(0, bancoSvg.indexOf('<!-- ── TITLE ── -->'));
+  const deps = DEPS_SALUD.map(([x1,y1,x2,y2,fut]) => fut
+    ? `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#B45309" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowBlue)" opacity=".6"/>`
+    : `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#93AAC9" stroke-width="1" marker-end="url(#arrowBlue)"/>`).join('\n  ');
+  const nodos = MAPA_SALUD.map(([k,x,y,r,c,ic,lab,sub,leg]) => `
+  <g class="wnode" onclick="show('${k}')" id="n-${k}">
+    <circle cx="${x}" cy="${y}" r="${r}" fill="${c}" class="node-circle" ${leg ? 'stroke="#FF6F00" stroke-width="2.5" stroke-dasharray="5,2"' : (c === COLOR.explore ? 'stroke="white" stroke-width="2" stroke-dasharray="4,2"' : 'stroke="white" stroke-width="2"')}/>
+    <text x="${x}" y="${y+3}" text-anchor="middle" font-size="9" font-weight="800" fill="white" class="node-label">${ic}</text>
+    <text x="${x}" y="${y+r+10}" text-anchor="middle" font-size="8.5" font-weight="700" fill="${c}" class="node-label">${lab}</text>
+    <text x="${x}" y="${y+r+21}" text-anchor="middle" font-size="7" fill="${leg ? '#B45309' : '#555'}" class="node-sublabel">${sub}</text>
+  </g>`).join('');
+  return fondo + `<!-- ── TITLE ── -->
+  <text x="360" y="20" font-size="9.5" font-weight="700" fill="#93AAC9" text-anchor="middle">NECESIDAD DEL USUARIO: "Historia completa del paciente, venga de la sede que venga"</text>
+  ${deps}
+  <line x1="143" y1="172" x2="210" y2="172" class="evo-arrow" marker-end="url(#arrowGrey)"/>
+  <line x1="442" y1="205" x2="500" y2="205" class="evo-arrow" marker-end="url(#arrowGrey)"/>
+  <line x1="530" y1="242" x2="580" y2="242" class="evo-arrow" marker-end="url(#arrowGrey)"/>
+  <rect x="466" y="289" width="5" height="32" rx="1" fill="#002060"/>
+  <g class="wnode" onclick="show('userneed')" id="n-userneed">
+    <rect x="215" y="54" width="200" height="28" rx="8" fill="#002060" class="node-circle"/>
+    <text x="315" y="71" text-anchor="middle" font-size="9.5" font-weight="800" fill="white" class="node-label">🎯 Historia completa del paciente</text>
+  </g>${nodos}
+  <rect x="62" y="32" width="70" height="16" rx="6" fill="#FFF3E0" stroke="#B45309" stroke-width="1"/>
+  <text x="97" y="43" text-anchor="middle" font-size="7.5" font-weight="700" fill="#B45309">🔬 Explorar</text>
+  <rect x="217" y="32" width="70" height="16" rx="6" fill="#E3F0FF" stroke="#1565C0" stroke-width="1"/>
+  <text x="252" y="43" text-anchor="middle" font-size="7.5" font-weight="700" fill="#1565C0">🔨 Construir</text>
+  <rect x="372" y="32" width="70" height="16" rx="6" fill="#E8F5E9" stroke="#2E7D32" stroke-width="1"/>
+  <text x="407" y="43" text-anchor="middle" font-size="7.5" font-weight="700" fill="#2E7D32">🛒 Comprar</text>
+  <rect x="527" y="32" width="70" height="16" rx="6" fill="#F3E5F5" stroke="#6A1B9A" stroke-width="1"/>
+  <text x="562" y="43" text-anchor="middle" font-size="7.5" font-weight="700" fill="#6A1B9A">📡 Arrendar</text>
+  <text x="360" y="512" text-anchor="middle" font-size="8" fill="#93AAC9" font-weight="600">← Menos predecible · EVOLUCIÓN DEL COMPONENTE → Más predecible →</text>
+  <circle cx="80" cy="465" r="7" fill="none" stroke="#FF6F00" stroke-width="2" stroke-dasharray="4,2"/>
+  <text x="92" y="469" font-size="7.5" fill="#B45309" font-weight="700">= Legado / deuda técnica</text>
+  <line x1="70" y1="455" x2="100" y2="455" stroke="#B45309" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="105" y="458" font-size="7.5" fill="#B45309" font-weight="700">= Dependencia futura</text>
+  <rect x="78" y="433" width="4" height="14" rx="1" fill="#002060"/>
+  <text x="92" y="443" font-size="7.5" fill="#002060" font-weight="700">= Inercia (contrato vigente)</text>`;
+}
+
+const nodesSalud = {
+  userneed:{
+    name:'Historia completa del paciente', badge:'NECESIDAD DEL USUARIO', badgeColor:'#002060',
+    evo:'Siempre visible — es el ancla del mapa', evoStage:[1,0,0,0],
+    evoDesc:'La necesidad del médico tratante —y, detrás de él, del paciente— es el punto de partida: ver la historia completa, venga de la sede que venga. Está arriba en el eje de visibilidad y no evoluciona; lo que evoluciona son los componentes que la satisfacen.',
+    what:'Es la primera apuesta de Andina 2029: «el paciente cuenta su historia una sola vez, en cualquier punto de la red». Antes se resolvía con el archivo físico de cada sede; hoy choca con dos HIS que no se hablan; mañana puede apoyarse en un resumen clínico asistido.',
+    decision:'decision-build',
+    decisionText:'<strong>Esta necesidad no se compra ni se arrienda: se satisface.</strong> La pregunta estratégica es qué cadena de componentes la satisface hoy, con medio presupuesto y un área de TI que no crece, y cuál la satisfará en 2029. El mapa muestra esa cadena completa.',
+    movement:'La necesidad no se mueve. Se mueven sus componentes: el índice maestro y el estándar de interoperabilidad avanzan hacia commodity, y el resumen con IA sale de génesis. Una decisión correcta hoy debe traer la fecha en que se vuelve a mirar.'
+  },
+  consulta:{
+    name:'Experiencia de consulta clínica', badge:'CONSTRUIR', badgeColor:'#1565C0',
+    evo:'Custom Built — permanecerá aquí', evoStage:[0,1,0,0],
+    evoDesc:'Cómo ve el médico la historia en los pocos minutos de la consulta: qué aparece primero, cómo se distingue lo que viene de otra sede, cómo se advierte una historia parcial. Depende de los flujos propios de la red y de su Dirección Médica; no viene en ningún producto.',
+    what:'La pantalla y el flujo con los que el médico tratante consulta la historia unificada durante la atención. Es donde se nota —o no— la promesa pública, y donde el concern de la Dirección Médica se vuelve concreto: «si el sistema se cae en urgencias, el problema no es informático».',
+    decision:'decision-build',
+    decisionText:'<strong>Construir, sobre componentes comprados.</strong> Lo diferenciador es el diseño del flujo clínico y la regla de historia parcial, no la tecnología de pantallas. Se construye poco, y encima de lo que ya es producto.',
+    movement:'Permanece a medida: cada red organiza su atención distinto. Lo que cambiará es lo de abajo: si el resumen con IA madura, la consulta se rediseña alrededor de él. Por eso conviene separar el flujo clínico de la fuente de los datos.'
+  },
+  ia:{
+    name:'Resumen clínico asistido por IA', badge:'EXPLORAR', badgeColor:'#B45309',
+    evo:'Genesis — emergente, alto riesgo, alto potencial', evoStage:[1,0,0,0],
+    evoDesc:'Un asistente que resume la historia del paciente para el médico está en génesis en el contexto de la red: no hay un producto estable validado para su información clínica, y la exactitud del resumen y la responsabilidad sobre él están por demostrar.',
+    what:'Entrega al médico un resumen de la historia antes de la consulta. Es el escenario E5 de la herramienta ATAM: p95 ≤ 3 s, exactitud ≥ 85 % contra un conjunto de evaluación versionado y, si el modelo no responde, la historia se muestra sin resumen.',
+    decision:'decision-explore',
+    decisionText:'<strong>Explorar con un piloto acotado.</strong> Equipo pequeño, presupuesto cerrado, métricas de aprendizaje y un escenario de calidad más exigente que el de cualquier otro componente, porque no hay años de operación de terceros que lo respalden. El error en génesis es comprometer la operación clínica con algo que todavía no se entiende.',
+    movement:'Se moverá a la derecha a medida que existan productos validados para uso clínico. Depende de la historia unificada —la línea punteada del mapa—: sin los datos consolidados de las 24 sedes, el resumen omite antecedentes. Por eso no va primero.'
+  },
+  telemed:{
+    name:'Telemedicina', badge:'COMPRAR', badgeColor:'#2E7D32',
+    evo:'Producto — se contrata como servicio', evoStage:[0,0,1,0],
+    evoDesc:'La teleconsulta es un producto maduro que se contrata como servicio. La red la tiene en piloto desde 2025 con la plataforma de un tercero.',
+    what:'Canal de la apuesta 3 de Andina 2029: «telemedicina como canal de primera línea». La plataforma contratada trae su propio módulo de agenda, que duplica AGENDA-WEB; se aceptó porque «venía incluido» y no tenía costo adicional visible. Hoy hay dos agendas que no se hablan.',
+    decision:'decision-buy',
+    decisionText:'<strong>Comprar el producto, gobernar la integración.</strong> No tiene sentido construir teleconsulta; sí lo tiene exigir que el producto use la agenda y la identidad del paciente de la red en lugar de traer las suyas. Lo barato de un módulo incluido se paga después en integración.',
+    movement:'Se moverá hacia commodity. El riesgo no es la plataforma sino la duplicación: cada producto que trae su propio maestro de pacientes o su propia agenda aleja la historia única. La línea punteada hacia el índice maestro es la integración pendiente.'
+  },
+  mpi:{
+    name:'Índice maestro de pacientes (MPI)', badge:'COMPRAR', badgeColor:'#2E7D32',
+    evo:'Producto — se configura, no se construye', evoStage:[0,0,1,0],
+    evoDesc:'La identificación única del paciente es una capacidad conocida en el sector salud y hay productos que la resuelven. Lo que no viene en el producto es la calibración del emparejamiento con los datos reales de la red.',
+    what:'Une bajo un identificador único las identidades de los cuatro maestros actuales: HIS-CORE, HIS-NORTE, CRM-CC y AGENDA-WEB. Hoy la conciliación se hace por documento de identidad, con un error estimado del 6 %.',
+    decision:'decision-buy',
+    decisionText:'<strong>Comprar y configurar; no construir desde cero.</strong> El valor de la red no está en el algoritmo de emparejamiento sino en la calidad de sus datos y en la regla de revisión de los casos dudosos. Construir un índice propio con 9 personas de desarrollo es gastar el medio presupuesto en algo que no diferencia.',
+    movement:'Avanza hacia commodity. Por eso en el modelo de ejemplo se nombra como bloque de arquitectura («índice maestro de pacientes») y no con el nombre de un producto: el producto puede cambiar sin que cambie la arquitectura.'
+  },
+  estandar:{
+    name:'Estándar de interoperabilidad clínica', badge:'ADOPTAR', badgeColor:'#2E7D32',
+    evo:'Producto → moviéndose a Commodity', evoStage:[0,0,1,0],
+    evoDesc:'El formato para intercambiar información clínica entre prestadores lo fijan la norma y los estándares del sector. No es algo que la red deba inventar.',
+    what:'Define cómo se representa e intercambia la historia clínica entre sistemas y prestadores. El dossier señala la obligación normativa de interoperabilidad, con plazos vigentes; qué estándar exige la norma es parte de la investigación del grupo, con fuente citada en APA 7.',
+    decision:'decision-buy',
+    decisionText:'<strong>Adoptar el estándar; nunca un formato propio.</strong> Un formato inventado por la red sería deuda desde el primer día: cada aliado, asegurador o autoridad obligaría a traducirlo. Los plazos normativos no se negocian, así que el estándar condiciona el contrato de la API de consulta.',
+    movement:'Avanza hacia commodity a medida que la regulación y los productos lo adoptan. Diseñar hoy la API de consulta sobre el estándar vigente evita rehacerla cuando sea obligatorio en todos los intercambios.'
+  },
+  adaptador:{
+    name:'Adaptador de HIS-NORTE', badge:'CONSTRUIR', badgeColor:'#1565C0',
+    evo:'Custom Built — con fecha de vencimiento', evoStage:[0,1,0,0],
+    evoDesc:'Es a medida por naturaleza: traduce el modelo de un sistema propietario concreto al modelo común de la red. Ningún producto lo trae hecho.',
+    what:'Traduce las atenciones e identidades de HIS-NORTE, acepta registros en modo degradado cuando la sede no responde y garantiza que un reintento no registre dos veces la misma atención.',
+    decision:'decision-build',
+    decisionText:'<strong>Construir, pero desechable.</strong> Tiene un vencimiento natural: el contrato de HIS-NORTE en 2027. Se construye lo mínimo, sobre mensajería gestionada, sin convertirlo en plataforma. Supuesto declarado: HIS-NORTE expone una API de consulta.',
+    movement:'No se moverá a la derecha: desaparecerá. Si la red consolida en 2027, se apaga con HIS-NORTE; si decide conservarlo, se vuelve deuda refinanciada. En los dos casos, invertir en él más allá del contrato es construir en el lugar equivocado.'
+  },
+  hiscore:{
+    name:'HIS-CORE (legado)', badge:'DEUDA TÉCNICA', badgeColor:'#B45309',
+    evo:'Custom Built pero envejeciendo', evoStage:[0,1,0,0],
+    evoDesc:'Oracle Forms en operación desde 2009, muy adaptado a la red. Demasiado particular para reemplazarlo por un producto sin un proyecto mayor, y demasiado frágil para seguir creciendo encima. El círculo punteado indica deuda técnica.',
+    what:'Historia clínica, admisión y agenda interna de 18 sedes y la clínica. 31 horas de indisponibilidad no planeada en 12 meses; dos personas conocen su código y una se pensiona en 14 meses; FACT-SALUD lee sus tablas directamente.',
+    decision:'decision-buy',
+    decisionText:'<strong>No crecer encima sin administrar el riesgo de talento.</strong> La alternativa B lo vuelve el sistema único de 24 sedes y concentra el riesgo en dos personas; la A lo deja como está y lo protege detrás de interfaces. En cualquiera de las dos, documentar su conocimiento es la primera partida de deuda por pagar.',
+    movement:'Los HIS modernos son productos, y en algún momento la red tendrá que decidir si sustituye HIS-CORE. El dossier no dice cuál es la posición del consejo directivo frente a esa sustitución: es un vacío deliberado que se resuelve declarando un supuesto.'
+  },
+  hisnorte:{
+    name:'HIS-NORTE', badge:'PRODUCTO CON INERCIA', badgeColor:'#B45309',
+    evo:'Producto — frenado por un contrato', evoStage:[0,0,1,0],
+    evoDesc:'Un producto propietario de un proveedor, comprado por el antiguo dueño de las sedes. Está en producto, pero no se puede mover: la barra vertical del mapa es la inercia del contrato hasta 2027.',
+    what:'Sistema asistencial de las 6 sedes adquiridas en 2024. Modelo de datos distinto, codificación de procedimientos no homologada y sin interfaz con el laboratorio.',
+    decision:'decision-buy',
+    decisionText:'<strong>No invertir en él; decidir antes de 2027.</strong> La inercia no se vence con un diagrama: se administra sabiendo dónde está. El vencimiento del contrato es la fecha de la decisión, y la penalidad por renovar antes es parte del costo de la alternativa B.',
+    movement:'La inercia es la fuerza que frena el movimiento en un mapa de Wardley: contratos vigentes, licencias pagadas, personas cuyo cargo depende de operar el sistema. Aquí tiene fecha, 2027, y eso la vuelve planificable.'
+  },
+  bus:{
+    name:'Bus de integración', badge:'YA COMPRADO', badgeColor:'#2E7D32',
+    evo:'Producto — adquirido y subutilizado', evoStage:[0,0,1,0],
+    evoDesc:'Un bus de integración es un producto maduro. La red ya lo compró en 2016.',
+    what:'Adquirido para centralizar las interfaces; hoy carga 6 de las 41 registradas, y TI estima entre 8 y 12 interfaces más que ni siquiera están en el inventario.',
+    decision:'decision-buy',
+    decisionText:'<strong>Reutilizar antes de comprar otro, con una regla que obligue a usarlo.</strong> La alternativa A del dossier propone exponer los HIS mediante APIs sobre el bus ya adquirido (la línea punteada). Sin una regla de gobierno, el proyecto nuevo terminará, como los anteriores, construyendo su integración por fuera.',
+    movement:'Los buses tradicionales se desplazan hacia servicios gestionados de integración y mensajería. Una compra de 2016 que casi no se usa es inercia sin beneficio: la decisión de reutilizarlo necesita fecha de revisión.'
+  },
+  mensajeria:{
+    name:'Mensajería gestionada', badge:'ARRENDAR', badgeColor:'#6A1B9A',
+    evo:'Commodity — servicio estándar', evoStage:[0,0,0,1],
+    evoDesc:'Las colas y los tópicos de mensajes son hoy un servicio estándar que se consume gestionado.',
+    what:'Transporta las atenciones del adaptador de HIS-NORTE hacia el índice maestro, con entrega «al menos una vez», reintentos y cola de mensajes fallidos.',
+    decision:'decision-rent',
+    decisionText:'<strong>Consumir como servicio gestionado.</strong> Un área de 38 personas, con 7 en infraestructura y sin crecer el próximo año, no debe operar su propia plataforma de mensajería. Supuesto declarado: el servicio se contrata en un entorno aceptado para información clínica, porque el dossier no dice cuál es el apetito de riesgo frente a la nube.',
+    movement:'Sigue hacia utility. Lo que importa no es el producto sino el contrato de los mensajes: si los eventos están bien definidos y versionados, cambiar de proveedor no cambia la arquitectura.'
+  },
+  bd:{
+    name:'Base de datos', badge:'ARRENDAR', badgeColor:'#6A1B9A',
+    evo:'Commodity — servicio gestionado', evoStage:[0,0,0,1],
+    evoDesc:'Las bases de datos relacionales son commodity y se consumen como servicio gestionado, con respaldo y alta disponibilidad incluidos.',
+    what:'Guarda el registro de identidad del índice maestro y la copia de lectura de la historia consolidada.',
+    decision:'decision-rent',
+    decisionText:'<strong>Gestionada, nunca operada a mano.</strong> El equipo de datos, de 3 personas, debe dedicarse al modelo y a la calidad del dato —la glosa inicial del 9,4 % nace ahí—, no a parches y respaldos.',
+    movement:'Avanza hacia modalidades de pago por uso. Para información clínica, dónde queda el dato y el apetito de riesgo frente a la nube pesan más que el precio: es un supuesto que hay que declarar.'
+  },
+  infra:{
+    name:'Infraestructura de cómputo', badge:'ARRENDAR', badgeColor:'#6A1B9A',
+    evo:'Utility — como la electricidad', evoStage:[0,0,0,1],
+    evoDesc:'La capacidad de cómputo es utility. La red combina un centro de datos propio con tres servicios en la nube contratados con dos proveedores, sin lineamiento previo.',
+    what:'Centro de datos propio en la sede principal y un cuarto técnico en la clínica, sin sitio alterno; el plan de recuperación de 2019 nunca se probó. En la nube corren AGENDA-WEB, TELEMED y parte de PORTAL-B2B.',
+    decision:'decision-rent',
+    decisionText:'<strong>Consumir como utility, con un lineamiento que hoy no existe.</strong> Tres servicios en dos nubes, cada uno elegido por su proveedor, son el síntoma de decidir sin principios. El mapa no decide entre centro de datos y nube: obliga a declarar el criterio.',
+    movement:'La presión va hacia la nube, pero el dossier deja abierto el apetito de riesgo frente a servicios en la nube para información clínica. Hasta que el grupo lo declare como supuesto, cualquier decisión sobre dónde corre el índice maestro está incompleta.'
+  }
+};
+
+const CASOS = {
+  banco:{ nodes:nodes, nota:'Banco Colombia Digital es el caso transversal del curso: core T24, Kubernetes en Azure y Kafka.' },
+  salud:{ nodes:nodesSalud, nota:'Red Salud Andina es el caso de respaldo: una IPS de 24 sedes con dos HIS distintos. La barra vertical junto a HIS-NORTE marca la inercia del contrato hasta 2027.' }
+};
+const svgBanco = document.getElementById('wardley').innerHTML;
+const svgSaludHtml = svgSalud();
+let caso = 'banco';
+
+function setCaso(nuevo) {
+  if (!CASOS[nuevo]) return;
+  caso = nuevo;
+  current = null;
+  document.getElementById('wardley').innerHTML = nuevo === 'salud' ? svgSaludHtml : svgBanco;
+  document.querySelectorAll('.case-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.caso === nuevo)));
+  document.getElementById('caseNote').textContent = CASOS[nuevo].nota;
+  document.getElementById('emptyState').style.display = '';
+  document.getElementById('panelContent').classList.remove('visible');
+  try {
+    const u = new URL(window.location.href);
+    if (nuevo === 'salud') u.searchParams.set('caso', 'red-salud'); else u.searchParams.delete('caso');
+    window.history.replaceState(null, '', u);
+  } catch (e) {}
+}
+
 let current = null;
 
 function show(key) {
-  const d = nodes[key];
+  const d = CASOS[caso].nodes[key];
   if (!d) return;
 
   // Deselect previous
@@ -535,6 +775,13 @@ function show(key) {
     document.querySelector('.panel').scrollIntoView({behavior:'smooth', block:'nearest'});
   }
 }
+
+document.querySelectorAll('.case-btn').forEach(b => b.addEventListener('click', () => setCaso(b.dataset.caso)));
+(function () {
+  let inicial = 'banco';
+  try { if (new URLSearchParams(window.location.search).get('caso') === 'red-salud') inicial = 'salud'; } catch (e) {}
+  setCaso(inicial);
+})();
 </script>
 </body>
 </html>

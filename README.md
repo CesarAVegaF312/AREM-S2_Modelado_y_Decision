@@ -38,7 +38,10 @@ Lo que se entrega con este material:
    [`modelo/AREM_S2_Modelo_Red_Salud_Andina.archimate`](modelo/AREM_S2_Modelo_Red_Salud_Andina.archimate).
    Despliegan **Views** en el árbol de la izquierda y tienen las cuatro vistas armadas.
 
-Con eso ya pueden seguir el paso a paso.
+Con eso ya pueden seguir el paso a paso. Si quieren ver primero una decisión resuelta de
+principio a fin, lean el [dossier del caso](documentos/AREM_Caso_Red_Salud_Andina.pdf) y sigan
+los [recorridos resueltos de las herramientas](documentos/AREM_S2_Recorridos_Resueltos.pdf):
+las siete herramientas, paso a paso, con Red Salud Andina.
 
 ---
 
@@ -55,7 +58,8 @@ campo por campo, en
 
 ### Paso 1 · Decidir qué vistas van
 
-- **Cuándo:** Taller 1, en la sesión, antes de abrir Archi.
+- **Cuándo:** Taller 1, en la sesión, antes de abrir Archi. Enunciado en
+  [`documentos/AREM_S2_Enunciado_Talleres.pdf`](documentos/AREM_S2_Enunciado_Talleres.pdf).
 - **Con qué:** [`interactivos/vistas_archimate_red_salud.html`](interactivos/vistas_archimate_red_salud.html)
   (las cuatro vistas resueltas y tres contraejemplos) y el modelo de ejemplo.
 - **Produce:** **F-13** — catálogo de vistas. Una ficha por vista, con su *stakeholder*, su
@@ -76,7 +80,8 @@ campo por campo, en
 
 ### Paso 3 · Escenarios de calidad, árbol de utilidad y alternativas
 
-- **Cuándo:** Taller 2, en la sesión (F-14 y F-16); el F-15 en trabajo independiente.
+- **Cuándo:** Taller 2, en la sesión (F-14 y F-16); el F-15 en trabajo independiente. Enunciado
+  en [`documentos/AREM_S2_Enunciado_Talleres.pdf`](documentos/AREM_S2_Enunciado_Talleres.pdf).
 - **Con qué:** [`interactivos/atam_escenarios_interactivo.html`](interactivos/atam_escenarios_interactivo.html).
   No deja registrar un escenario sin medida ni cerrar la decisión sin la renuncia, y genera el
   texto para pegar en el informe.
@@ -142,7 +147,7 @@ AREM-S2_Modelado_y_Decision/
 ├── LICENSE
 ├── interactivos/   ← las siete herramientas HTML
 ├── modelo/         ← el caso Red Salud Andina en Archi (.archimate y Open Exchange .xml)
-└── documentos/     ← deck, instrumentos F-13 a F-20 y guías (PDF)
+└── documentos/     ← dossier del caso, deck, instrumentos F-13 a F-20 y guías (PDF)
 ```
 
 ### `interactivos/` — herramientas HTML
@@ -153,12 +158,19 @@ requieren instalación, ni servidor, ni conexión a internet.
 | Archivo | Para qué sirve | Paso |
 |---|---|---|
 | [`vistas_archimate_red_salud.html`](interactivos/vistas_archimate_red_salud.html) | Las cuatro vistas resueltas del caso Red Salud Andina, cada una con su *stakeholder*, su *concern* y la decisión que habilita, y tres contraejemplos diagnosticados. | 1 |
-| [`archimate_interactivo.html`](interactivos/archimate_interactivo.html) | Capas, elementos y relaciones de ArchiMate 3.2, con ejemplos del caso bancario. El diccionario que se consulta mientras se modela. | 2 |
+| [`archimate_interactivo.html`](interactivos/archimate_interactivo.html) | Capas, elementos y relaciones de ArchiMate 3.2, con ejemplos del caso bancario o de Red Salud Andina. El diccionario que se consulta mientras se modela. | 2 |
 | [`atam_escenarios_interactivo.html`](interactivos/atam_escenarios_interactivo.html) | Constructor de escenarios de calidad (F-14), árbol de utilidad (F-15) y comparador de alternativas (F-16). | 3 |
 | [`c4_model_interactivo.html`](interactivos/c4_model_interactivo.html) | Los cuatro niveles del C4 Model: las decisiones se toman en el nivel de contenedor y se pagan en el de componente. | 4 |
 | [`costura_integracion_interactivo.html`](interactivos/costura_integracion_interactivo.html) | Las cuatro formas de resolver la costura de integración, comparadas campo por campo, con su acoplamiento real. | 4 |
 | [`wardley_map_interactivo.html`](interactivos/wardley_map_interactivo.html) | Posición evolutiva de cada componente y la decisión de construir o consumir. | 4 |
 | [`deuda_arquitectonica_interactivo.html`](interactivos/deuda_arquitectonica_interactivo.html) | Principal, interés mensual y la gráfica del mes en que el interés alcanza al principal. | 5 |
+
+**Dos casos.** ArchiMate, C4 y Wardley abren con **Banco Colombia Digital**, el ejemplo de la
+demostración en vivo, y traen arriba un selector **«Caso del ejemplo»** para cambiar a **Red
+Salud Andina**. Para abrirlas directamente en Red Salud Andina, agreguen `?caso=red-salud` al
+final de la dirección; por ejemplo,
+`https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision/interactivos/c4_model_interactivo.html?caso=red-salud`.
+Las otras cuatro herramientas trabajan con Red Salud Andina desde el inicio.
 
 ### `modelo/` — el caso en Archi
 
@@ -182,6 +194,9 @@ vista, su fase del ADM y la decisión que habilita.
 
 | Archivo | Tipo | Descripción |
 |---|---|---|
+| [`AREM_Caso_Red_Salud_Andina.pdf`](documentos/AREM_Caso_Red_Salud_Andina.pdf) | Caso | El dossier de la organización simulada de respaldo: identidad, sistemas, cifras, episodios, restricciones y las dos alternativas de la Unidad 2. |
+| [`AREM_S2_Recorridos_Resueltos.pdf`](documentos/AREM_S2_Recorridos_Resueltos.pdf) | Guía | Las siete herramientas recorridas paso a paso con Red Salud Andina, con lo que cada una deja en los formatos, y una ficha de Banco Colombia Digital. |
+| [`AREM_S2_Enunciado_Talleres.pdf`](documentos/AREM_S2_Enunciado_Talleres.pdf) | Taller | El enunciado de los talleres 1 y 2: objetivo, entregas, reparto del tiempo, ejemplos resueltos, qué los invalida y los conceptos que usan. |
 | [`AREM_S2_Instrumentos.pdf`](documentos/AREM_S2_Instrumentos.pdf) | Se llena | Los ocho formatos F-13 a F-20, con el orden de llenado y la regla que invalida cada campo. |
 | [`AREM_S2_Guia_Visuales_e_Instrumentos.pdf`](documentos/AREM_S2_Guia_Visuales_e_Instrumentos.pdf) | Guía | Cómo leer cada herramienta y cómo diligenciar cada formato, campo por campo. |
 | [`AREM_S2_Guia_Archi_PasoAPaso.pdf`](documentos/AREM_S2_Guia_Archi_PasoAPaso.pdf) | Guía | Archi, de la instalación a la exportación de imágenes, con las cuatro vistas paso a paso. |
