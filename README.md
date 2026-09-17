@@ -8,7 +8,7 @@ La unidad va de representar formalmente una arquitectura a **decidir entre dos c
 defendibles y declarar qué se sacrifica**. Marco de referencia: **TOGAF® Standard,
 10th Edition**. Lenguaje de modelado: **ArchiMate® 3.2**.
 
-Lo que se entrega con este material:
+Las actividades de la unidad, tal como están en la plataforma:
 
 - **Actividad 2.1 — Presentación del reto** · individual · formativa, sin calificación.
   - **Antes de la sesión:** instalen Archi y lean la
@@ -19,123 +19,138 @@ Lo que se entrega con este material:
     el **F-19**.
 - **Actividad 2.2 — Modelado arquitectónico y evaluación de trade-offs** · grupal, de **3 a 4
   integrantes** · 30 % · 20 horas.
-  - **Entregable:** un repositorio de arquitectura con **(a)** los diagramas ArchiMate
-    exportados como imagen (PNG o PDF) y **(b)** un informe de evaluación arquitectónica en PDF
-    de **máximo 20 páginas**, en **norma APA 7**.
-  - Se califica con la rúbrica de la actividad en la plataforma, de cuatro criterios: vistas ArchiMate (2,0),
+  - **Entregable:** lo que la actividad llama «repositorio de arquitectura» son dos cosas que se
+    suben a la plataforma: **(a)** los diagramas ArchiMate exportados como imagen (PNG o PDF) y
+    **(b)** un informe de evaluación arquitectónica en PDF de **máximo 20 páginas**, en **norma
+    APA 7**. No es un repositorio de GitHub.
+  - Se califica con la rúbrica de la actividad, de cuatro criterios: vistas ArchiMate (2,0),
     evaluación ATAM y trade-offs (1,5), estrategia de integración y deuda (1,0) y calidad
     documental (0,5).
-  - **Los formatos F-13 a F-20 no se suben a la plataforma:** son el borrador de las secciones
-    del informe. Qué formato va a qué sección, y con qué criterio se califica, está en el
-    [mapa de la Actividad 2.2](documentos/1_actividad_2_2/AREM_S2_Mapa_Actividad_2_2.pdf); cómo se ve el
-    informe terminado, en el
-    [informe de ejemplo](documentos/1_actividad_2_2/AREM_S2_Informe_Ejemplo_Actividad_2_2.pdf).
+  - **Los formatos F-13 a F-20 no se suben:** son el borrador de las secciones del informe.
 
 ---
 
 ## Empiecen aquí
 
-1. **Abran la portada.** Descarguen el repositorio (botón verde **`Code` → `Download ZIP`**),
-   descomprímanlo y hagan doble clic en `index.html`. Desde ahí se abre todo lo demás.
-2. **Instalen Archi.** Descárguenlo de [archimatetool.com](https://www.archimatetool.com) →
+1. **Lean el [mapa de la Actividad 2.2](documentos/1_actividad_2_2/AREM_S2_Mapa_Actividad_2_2.pdf).** Tres páginas: qué pide la actividad, con
+   qué criterio se califica, en qué sección del informe va cada cosa y qué formato la prepara.
+2. **Miren el [informe de ejemplo](documentos/1_actividad_2_2/AREM_S2_Informe_Ejemplo_Actividad_2_2.pdf).** Así se ve la 2.2 terminada, con Red Salud
+   Andina. Cada sección abre con un recuadro que explica qué hay que hacer en ella.
+3. **Instalen Archi.** Descárguenlo de [archimatetool.com](https://www.archimatetool.com) →
    *Downloads*. Es gratuito y de código abierto.
-3. **Abran el caso resuelto.** En Archi, **`File → Open`** →
+4. **Abran el caso resuelto.** En Archi, **`File → Open`** →
    [`modelo/AREM_S2_Modelo_Red_Salud_Andina.archimate`](modelo/AREM_S2_Modelo_Red_Salud_Andina.archimate).
-   Despliegan **Views** en el árbol de la izquierda y tienen las cuatro vistas armadas.
+   Despliegan **Views** en el árbol de la izquierda y tienen las cuatro vistas del informe de
+   ejemplo.
 
-Con eso ya pueden seguir el paso a paso. Si quieren ver primero una decisión resuelta de
-principio a fin, lean el [dossier del caso](documentos/2_caso/AREM_Caso_Red_Salud_Andina.pdf) y sigan
-los [recorridos resueltos de las herramientas](documentos/3_como_se_hace/AREM_S2_Recorridos_Resueltos.pdf):
-las siete herramientas, paso a paso, con Red Salud Andina.
+Para trabajar sin conexión, descarguen el repositorio (botón verde **`Code` → `Download ZIP`**),
+descomprímanlo y hagan doble clic en `index.html`: la portada abre todos los documentos y
+herramientas. El caso completo está en el [dossier de Red Salud Andina](documentos/2_caso/AREM_Caso_Red_Salud_Andina.pdf).
 
 ---
 
 ## Paso a paso de la unidad
 
-El orden importa, y es el contrario al que la mayoría intenta: **primero se decide qué se va a
+Los pasos siguen el orden en que conviene trabajar, no el orden del informe; por eso cada paso
+dice en qué sección del informe termina. El orden importa: **primero se decide qué se va a
 mostrar, después se dibuja**. Quien abre Archi antes de llenar el F-13 dibuja dos veces: una
 para descubrir qué quería mostrar y otra para mostrarlo.
 
-Todos los formatos están en
-[`documentos/3_como_se_hace/AREM_S2_Instrumentos.pdf`](documentos/3_como_se_hace/AREM_S2_Instrumentos.pdf), y cómo llenarlos
-campo por campo, en
-[`documentos/3_como_se_hace/AREM_S2_Guia_Visuales_e_Instrumentos.pdf`](documentos/3_como_se_hace/AREM_S2_Guia_Visuales_e_Instrumentos.pdf).
+Los formatos están en los [Instrumentos F-13 a F-20](documentos/3_como_se_hace/AREM_S2_Instrumentos.pdf); cómo llenarlos campo por campo,
+en la [guía de formatos](documentos/3_como_se_hace/AREM_S2_Guia_Visuales_e_Instrumentos.pdf); y cada herramienta recorrida con el caso, en los
+[recorridos resueltos](documentos/3_como_se_hace/AREM_S2_Recorridos_Resueltos.pdf).
 
 ### Paso 1 · Decidir qué vistas van
 
-- **Cuándo:** en clase, en la **Actividad 2.2 · Parte 1**, antes de abrir Archi. Enunciado en
-  [`documentos/1_actividad_2_2/AREM_S2_Enunciado_Actividad_2_2.pdf`](documentos/1_actividad_2_2/AREM_S2_Enunciado_Actividad_2_2.pdf).
-- **Con qué:** [`interactivos/vistas_archimate_red_salud.html`](interactivos/vistas_archimate_red_salud.html)
-  (las cuatro vistas resueltas y tres contraejemplos) y el modelo de ejemplo.
+- **Cuándo:** en clase, en la **Actividad 2.2 · Parte 1**, antes de abrir Archi. Qué se hace
+  en la parte 1 está en el [enunciado](documentos/1_actividad_2_2/AREM_S2_Enunciado_Actividad_2_2.pdf).
+- **Con qué:** [las cuatro vistas de Red Salud Andina](interactivos/vistas_archimate_red_salud.html)
+  (resueltas, con tres contraejemplos) y el modelo de ejemplo.
 - **Produce:** **F-13** — catálogo de vistas. Una ficha por vista, con su *stakeholder*, su
   *concern*, su punto de vista, su fase del ADM y la decisión que habilita.
-- **Alimenta:** criterio *Vistas ArchiMate* de la 2.2 (2,0 puntos).
+- **Va al informe en:** sección 2, la tabla debajo de cada vista.
+- **Se califica en:** *Vistas ArchiMate* (2,0).
 
 ### Paso 2 · Modelar las cuatro vistas en Archi
 
 - **Cuándo:** fuera de clase, en grupo.
-- **Con qué:** [`documentos/3_como_se_hace/AREM_S2_Guia_Archi_PasoAPaso.pdf`](documentos/3_como_se_hace/AREM_S2_Guia_Archi_PasoAPaso.pdf)
-  abierta y [`interactivos/archimate_interactivo.html`](interactivos/archimate_interactivo.html)
-  al lado, como diccionario de elementos y relaciones.
-- **Produce:** las cuatro vistas del informe —motivación y estrategia; negocio; aplicación y
-  tecnología; implementación y migración—, cada una con **mínimo 5 elementos**, sus relaciones
-  y las decisiones de diseño que representa, exportadas como imagen (PNG o PDF).
-- **Alimenta:** criterio *Vistas ArchiMate* de la 2.2 (2,0 puntos). La rúbrica premia que las
-  vistas estén **relacionadas y sean coherentes entre sí**, no solo que existan.
+- **Con qué:** la [guía de Archi paso a paso](documentos/3_como_se_hace/AREM_S2_Guia_Archi_PasoAPaso.pdf) abierta y
+  [ArchiMate 3.2 interactivo](interactivos/archimate_interactivo.html) al lado, como diccionario
+  de elementos y relaciones.
+- **Produce:** las cuatro vistas —motivación y estrategia; negocio; aplicación y tecnología;
+  implementación y migración—, cada una con **mínimo 5 elementos**, sus relaciones y las
+  decisiones de diseño que representa, exportadas como imagen (PNG o PDF).
+- **Va al informe en:** sección 2, una figura por vista, y como diagramas sueltos en la entrega.
+- **Se califica en:** *Vistas ArchiMate* (2,0). La rúbrica premia que las vistas estén
+  **relacionadas y sean coherentes entre sí**, no solo que existan.
 
 ### Paso 3 · Escenarios de calidad, árbol de utilidad y alternativas
 
 - **Cuándo:** en clase, en la **Actividad 2.2 · Parte 2** (F-14 y F-16); el F-15, fuera de clase
-  y en grupo. Enunciado en
-  [`documentos/1_actividad_2_2/AREM_S2_Enunciado_Actividad_2_2.pdf`](documentos/1_actividad_2_2/AREM_S2_Enunciado_Actividad_2_2.pdf).
-- **Con qué:** [`interactivos/atam_escenarios_interactivo.html`](interactivos/atam_escenarios_interactivo.html).
-  No deja registrar un escenario sin medida ni cerrar la decisión sin la renuncia, y genera el
-  texto para pegar en el informe.
+  y en grupo. Qué se hace en la parte 2 está en el [enunciado](documentos/1_actividad_2_2/AREM_S2_Enunciado_Actividad_2_2.pdf).
+- **Con qué:** [Escenarios ATAM](interactivos/atam_escenarios_interactivo.html). No deja
+  registrar un escenario sin medida ni cerrar la decisión sin la renuncia, y genera el texto
+  para pegar en el informe.
 - **Produce:**
   - **F-14** — al menos **tres escenarios de calidad**, con medida de respuesta y cómo se
-    verifica, y entre ellos **disponibilidad, rendimiento y evolubilidad (mantenibilidad)**, los
-    tres atributos que nombra la guía de la Actividad 2.2. El costo de operación y el componente
-    de IA se agregan como escenarios adicionales.
+    verifica: **disponibilidad, rendimiento y evolubilidad (mantenibilidad)**, los tres que pide
+    la actividad. Los de costo de operación y componente de IA son **opcionales**: agréguenlos
+    solo si su caso los necesita.
   - **F-15** — árbol de utilidad completo, con la doble valoración.
   - **F-16** — las dos alternativas y, para **cada una**, qué se gana y qué se sacrifica, sus
     **riesgos** y sus **puntos de sensibilidad**. La rúbrica exige el análisis de riesgos para
     la nota máxima.
-- **Alimenta:** criterio *Evaluación ATAM y trade-offs* de la 2.2 (1,5 puntos).
-- **Si las alternativas difieren sobre todo en costo,** complementen ATAM con **CBAM**
+- **Va al informe en:** sección 3 — las alternativas en 3.1, los escenarios del F-14 en 3.2, el
+  árbol del F-15 en 3.3 y la comparación, los riesgos, los trade-offs y la decisión del F-16 en
+  3.4 a 3.7.
+- **Se califica en:** *Evaluación ATAM y trade-offs* (1,5).
+- **Si las alternativas difieren sobre todo en costo,** pueden complementar ATAM con **CBAM**
   (Cost-Benefit Analysis Method; Bass, Clements y Kazman, 2003), que pone valor esperado y
   costo a cada alternativa.
 
 ### Paso 4 · Elegir la costura de integración
 
 - **Cuándo:** fuera de clase, en grupo.
-- **Con qué:** [`interactivos/c4_model_interactivo.html`](interactivos/c4_model_interactivo.html)
-  (en qué nivel de zoom vive la decisión),
-  [`interactivos/costura_integracion_interactivo.html`](interactivos/costura_integracion_interactivo.html)
-  (las cuatro formas de resolverla) y
-  [`interactivos/wardley_map_interactivo.html`](interactivos/wardley_map_interactivo.html)
-  (qué se construye y qué se consume).
+- **Con qué:** [C4 Model](interactivos/c4_model_interactivo.html) (en qué nivel de zoom vive la
+  decisión), [Costura de integración](interactivos/costura_integracion_interactivo.html) (las
+  cuatro formas de resolverla) y [Wardley Map](interactivos/wardley_map_interactivo.html) (qué se
+  construye y qué se consume).
 - **Produce:** **F-17** — ficha de la costura de integración. La estrategia elegida (APIs,
   arquitectura orientada a eventos o mensajería) tiene que quedar **dibujada en la vista
   ArchiMate de aplicación** y justificada frente a las alternativas.
 - **Tengan presente el dilema de la unidad:** reescribir el sistema heredado de una vez o
   **estrangularlo gradualmente** detrás de una fachada (patrón *Strangler Fig*; Fowler, 2004).
   La costura que elijan decide cuál de los dos caminos es posible.
-- **Alimenta:** criterio *Estrategia de integración y deuda* de la 2.2 (1,0 punto).
+- **Va al informe en:** sección 4.
+- **Se califica en:** *Estrategia de integración y deuda* (1,0).
 
 ### Paso 5 · Registrar la deuda arquitectónica
 
 - **Cuándo:** fuera de clase, en grupo.
-- **Con qué:** [`interactivos/deuda_arquitectonica_interactivo.html`](interactivos/deuda_arquitectonica_interactivo.html).
-  Cada partida con principal, interés mensual con cifra, vencimiento y estrategia.
+- **Con qué:** [Deuda arquitectónica](interactivos/deuda_arquitectonica_interactivo.html). Cada
+  partida con principal, interés mensual con cifra, vencimiento y estrategia.
 - **Produce:** **F-18** — registro de deuda arquitectónica. La cartera tiene que usar **al
   menos dos estrategias de gestión distintas**: pagar, refinanciar o declarar.
-- **Alimenta:** criterio *Estrategia de integración y deuda* de la 2.2 (1,0 punto).
+- **Va al informe en:** sección 5.
+- **Se califica en:** *Estrategia de integración y deuda* (1,0).
 
-### Paso 6 · Verificar antes de entregar
+### Paso 6 · Armar el informe
 
-- **Cuándo:** antes de subir el informe.
+- **Cuándo:** fuera de clase, en grupo, cuando los pasos 1 a 5 estén listos.
+- **Con qué:** el [informe de ejemplo](documentos/1_actividad_2_2/AREM_S2_Informe_Ejemplo_Actividad_2_2.pdf) como guía de estructura.
+- **Produce:** el informe completo. Además de pasar los formatos a las secciones 2 a 5, se
+  escriben dos secciones que no salen de ningún formato:
+  - **Sección 1 · Contexto, alcance y método:** la brecha que priorizaron en la Unidad 1, qué
+    cubre el informe y qué no, el método y la tabla de supuestos.
+  - **Sección 6 · Conclusiones:** lo que el informe demuestra, sin análisis nuevo.
+  - **Referencias** en APA 7, citadas en el texto.
+- **Se califica en:** *Calidad documental* (0,5): narrativa integrada con los diagramas y APA 7.
+
+### Paso 7 · Verificar antes de entregar
+
+- **Cuándo:** antes de subir los diagramas y el informe.
 - **Con qué:** la lista del **F-20**, condición por condición.
-- **Alimenta:** criterio *Calidad documental* de la 2.2 (0,5 puntos).
+- **Se califica en:** *Calidad documental* (0,5).
 - El **F-19** no lo llenan ustedes: es la rúbrica con la que el docente da la retroalimentación
   de la Actividad 2.1.
 
@@ -164,7 +179,7 @@ AREM-S2_Modelado_y_Decision/
 
 Las carpetas están numeradas en el orden en que conviene abrirlas.
 
-**`1_actividad_2_2/` — qué se entrega y cómo se ve.** Empiecen aquí.
+**`1_actividad_2_2/` — qué se entrega y cómo se ve.** Es la primera carpeta que se abre.
 
 | Archivo | Descripción |
 |---|---|
@@ -208,8 +223,8 @@ requieren instalación, ni servidor, ni conexión a internet.
 | [`wardley_map_interactivo.html`](interactivos/wardley_map_interactivo.html) | Posición evolutiva de cada componente y la decisión de construir o consumir. | 4 |
 | [`deuda_arquitectonica_interactivo.html`](interactivos/deuda_arquitectonica_interactivo.html) | Principal, interés mensual y la gráfica del mes en que el interés alcanza al principal. | 5 |
 
-**Dos casos.** ArchiMate, C4 y Wardley abren con **Banco Colombia Digital**, el ejemplo de la
-demostración en vivo, y traen arriba un selector **«Caso del ejemplo»** para cambiar a **Red
+**Dos casos.** ArchiMate, C4 y Wardley abren con **Banco Colombia Digital**, el caso
+transversal del curso, y traen arriba un selector **«Caso del ejemplo»** para cambiar a **Red
 Salud Andina**. Para abrirlas directamente en Red Salud Andina, agreguen `?caso=red-salud` al
 final de la dirección; por ejemplo,
 `https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision/interactivos/c4_model_interactivo.html?caso=red-salud`.
@@ -236,7 +251,7 @@ vista, su fase del ADM y la decisión que habilita.
 > La Sesión 1 —marcos de referencia y capacidades— está en su propio repositorio:
 > [AREM-S1_Marcos_y_Capacidades](https://github.com/CesarAVegaF312/AREM-S1_Marcos_y_Capacidades-repositorio).
 > Allí está el **TOGAF ADM interactivo**, que se reutiliza en esta sesión para ubicar las
-> fases C, D y E.
+> fases B a E.
 
 ---
 
