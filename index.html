@@ -30,6 +30,7 @@ a.card.taller{border-left-color:var(--coral);}
 .tag{font-size:10.5px;font-weight:700;letter-spacing:.4px;background:var(--claro);color:var(--medio);
      padding:2px 7px;border-radius:3px;text-transform:uppercase;}
 .tag.c{background:#FBEDE3;color:var(--coral);}
+code{font-size:12px;background:var(--claro);padding:1px 5px;border-radius:3px;}
 .stack{display:flex;flex-direction:column;gap:10px;}
 footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--pale);font-size:12px;color:#7C8DA8;}
 </style>
@@ -44,69 +45,82 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--pale);font-si
 
 <div class="wrap">
 
-  <h2>Recursos interactivos</h2>
-  <p class="hint">Se abren en el navegador. No hay que instalar nada.</p>
+  <h2>1 · La Actividad 2.2: qué se entrega y cómo se ve</h2>
+  <p class="hint">Empiecen aquí. La Actividad 2.2 se entrega en la plataforma: los diagramas ArchiMate y un informe en PDF. Los formatos F-13 a F-20 no se suben; son el borrador del informe. Carpeta <code>documentos/1_actividad_2_2</code>.</p>
+  <div class="stack">
+    <a class="doc" href="documentos/1_actividad_2_2/AREM_S2_Mapa_Actividad_2_2.pdf">
+      <span class="tag c">Mapa</span><b>Mapa de la Actividad 2.2</b>
+      <span>Lo que pide la actividad en la plataforma y su rúbrica, y de qué formato sale cada sección del informe.</span></a>
+    <a class="doc" href="documentos/1_actividad_2_2/AREM_S2_Informe_Ejemplo_Actividad_2_2.pdf">
+      <span class="tag c">Ejemplo</span><b>Informe de ejemplo de la Actividad 2.2</b>
+      <span>El producto final, con Red Salud Andina: cada sección explica qué hay que hacer en ella, en qué criterio se califica y con qué formato se prepara.</span></a>
+    <a class="doc" href="documentos/1_actividad_2_2/AREM_S2_Enunciado_Actividad_2_2.pdf">
+      <span class="tag c">Partes 1 y 2</span><b>Enunciado de las partes 1 y 2 en la sesión</b>
+      <span>Qué se hace en cada parte, qué se produce, cuándo está mal y los conceptos que se usan.</span></a>
+  </div>
+
+  <h2>2 · El caso</h2>
+  <p class="hint">Un solo caso atraviesa el mapa, el informe de ejemplo y las herramientas. Léanlo antes de recorrerlas. Carpetas <code>documentos/2_caso</code> y <code>modelo</code>.</p>
+  <div class="stack">
+    <a class="doc" href="documentos/2_caso/AREM_Caso_Red_Salud_Andina.pdf">
+      <span class="tag">Caso</span><b>Dossier de Red Salud Andina</b>
+      <span>La organización simulada de respaldo: sistemas, cifras, episodios, restricciones y las dos alternativas de la Unidad 2.</span></a>
+    <a class="doc" href="modelo/AREM_S2_Modelo_Red_Salud_Andina.archimate">
+      <span class="tag">Archi</span><b>Modelo del caso (.archimate)</b>
+      <span>Se abre con File → Open en Archi. 41 elementos, 39 relaciones y las cuatro vistas armadas y encadenadas. No usen File → Import con este archivo.</span></a>
+    <a class="doc" href="modelo/AREM_S2_Modelo_Red_Salud_Andina_OpenExchange.xml">
+      <span class="tag">Open Exchange</span><b>Modelo del caso (.xml estándar)</b>
+      <span>El mismo modelo en el formato de The Open Group. Se abre con File → Import → Model From Open Exchange File…, en Archi o en otra herramienta ArchiMate.</span></a>
+  </div>
+
+  <h2>3 · Cómo se hace: formatos, guías y herramientas</h2>
+  <p class="hint">Los formatos se llenan; las guías se consultan. Carpeta <code>documentos/3_como_se_hace</code>.</p>
+  <div class="stack">
+    <a class="doc" href="documentos/3_como_se_hace/AREM_S2_Instrumentos.pdf">
+      <span class="tag c">Se llena</span><b>Instrumentos F-13 a F-20</b>
+      <span>Los ocho formatos de la unidad, con el orden de llenado, la regla que invalida cada campo y la sección del informe a la que va.</span></a>
+    <a class="doc" href="documentos/3_como_se_hace/AREM_S2_Guia_Visuales_e_Instrumentos.pdf">
+      <span class="tag">Guía</span><b>Cómo leer las herramientas y llenar los formatos</b>
+      <span>Campo por campo, con una fila resuelta en cada formato.</span></a>
+    <a class="doc" href="documentos/3_como_se_hace/AREM_S2_Guia_Archi_PasoAPaso.pdf">
+      <span class="tag">Guía</span><b>Archi paso a paso</b>
+      <span>De la instalación a la exportación de imágenes, con las cuatro vistas una por una.</span></a>
+    <a class="doc" href="documentos/3_como_se_hace/AREM_S2_Recorridos_Resueltos.pdf">
+      <span class="tag">Guía</span><b>Recorridos resueltos de las herramientas</b>
+      <span>Las siete herramientas recorridas paso a paso con Red Salud Andina, y qué deja cada una en los formatos.</span></a>
+  </div>
+
+  <p class="hint" style="margin-top:18px"><b>Herramientas interactivas.</b> Se abren en el navegador; no hay que instalar nada. ArchiMate, C4 y Wardley abren con Banco Colombia Digital y traen arriba un selector para cambiar a Red Salud Andina.</p>
   <div class="grid">
-    <a class="card" href="interactivos/archimate_interactivo.html">
-      <b>ArchiMate 3.2 Interactivo</b>
-      <span>Las capas, los elementos y las relaciones del lenguaje, con el caso del banco o el de Red Salud Andina. Consúltenlo mientras modelan.</span></a>
     <a class="card" href="interactivos/vistas_archimate_red_salud.html">
       <b>Las cuatro vistas — Red Salud Andina</b>
       <span>El ejemplo resuelto de las cuatro vistas que exige la entrega, con tres contraejemplos diagnosticados.</span></a>
-    <a class="card" href="interactivos/c4_model_interactivo.html">
-      <b>C4 Model Interactivo</b>
-      <span>Los cuatro niveles de zoom, con el banco o con Red Salud Andina. Las decisiones se toman en el nivel 2 y se pagan en el nivel 3.</span></a>
+    <a class="card" href="interactivos/archimate_interactivo.html">
+      <b>ArchiMate 3.2 Interactivo</b>
+      <span>Las capas, los elementos y las relaciones del lenguaje, con el caso del banco o el de Red Salud Andina. Consúltenlo mientras modelan.</span></a>
     <a class="card taller" href="interactivos/atam_escenarios_interactivo.html">
       <b>Escenarios ATAM</b>
       <span>Constructor de escenarios de calidad, árbol de utilidad y comparador de alternativas. Genera el texto para el informe.</span></a>
-    <a class="card" href="interactivos/wardley_map_interactivo.html">
-      <b>Wardley Map</b>
-      <span>Posición evolutiva de cada componente, con el banco o con Red Salud Andina: qué se construye y qué se consume.</span></a>
+    <a class="card" href="interactivos/c4_model_interactivo.html">
+      <b>C4 Model Interactivo</b>
+      <span>Los cuatro niveles de zoom, con el banco o con Red Salud Andina. Las decisiones se toman en el nivel 2 y se pagan en el nivel 3.</span></a>
     <a class="card" href="interactivos/costura_integracion_interactivo.html">
       <b>Costura de integración</b>
       <span>Las cuatro formas de resolverla comparadas campo por campo, con su acoplamiento real.</span></a>
+    <a class="card" href="interactivos/wardley_map_interactivo.html">
+      <b>Wardley Map</b>
+      <span>Posición evolutiva de cada componente, con el banco o con Red Salud Andina: qué se construye y qué se consume.</span></a>
     <a class="card" href="interactivos/deuda_arquitectonica_interactivo.html">
       <b>Deuda arquitectónica</b>
       <span>Principal, interés mensual y el mes en que el interés alcanza al principal.</span></a>
   </div>
 
-  <p class="hint" style="margin-top:12px">ArchiMate, C4 y Wardley abren con Banco Colombia Digital y traen arriba un selector para cambiar a Red Salud Andina.</p>
-
-  <h2>Empiecen por el caso</h2>
-  <p class="hint">Un solo caso atraviesa las siete herramientas. Léanlo antes de recorrerlas.</p>
+  <h2>4 · La clase</h2>
+  <p class="hint">Carpeta <code>documentos/4_clase</code>.</p>
   <div class="stack">
-    <a class="doc" href="documentos/AREM_Caso_Red_Salud_Andina.pdf">
-      <span class="tag">Caso</span><b>Dossier de Red Salud Andina</b>
-      <span>La organización simulada de respaldo: sistemas, cifras, episodios, restricciones y las dos alternativas de la Unidad 2.</span></a>
-    <a class="doc" href="documentos/AREM_S2_Recorridos_Resueltos.pdf">
-      <span class="tag">Guía</span><b>Recorridos resueltos de las herramientas</b>
-      <span>Las siete herramientas recorridas paso a paso con Red Salud Andina, y qué deja cada una en los formatos.</span></a>
-  </div>
-
-  <h2>Documentos</h2>
-  <p class="hint">Descárguenlos. Los formatos se llenan; las guías se consultan.</p>
-  <div class="stack">
-    <a class="doc" href="documentos/AREM_S2_Enunciado_Talleres.pdf">
-      <span class="tag c">Taller</span><b>Enunciado de los talleres 1 y 2</b>
-      <span>Qué se hace en cada taller, qué se entrega, cuándo está mal y los conceptos que se usan.</span></a>
-    <a class="doc" href="documentos/AREM_S2_Instrumentos.pdf">
-      <span class="tag c">Se llena</span><b>Instrumentos F-13 a F-20</b>
-      <span>Los ocho formatos de la unidad, con el orden de llenado y la regla que invalida cada campo.</span></a>
-    <a class="doc" href="documentos/AREM_S2_Guia_Archi_PasoAPaso.pdf">
-      <span class="tag">Guía</span><b>Archi paso a paso</b>
-      <span>De la instalación a la exportación de imágenes, con las cuatro vistas una por una.</span></a>
-    <a class="doc" href="documentos/AREM_S2_Guia_Visuales_e_Instrumentos.pdf">
-      <span class="tag">Guía</span><b>Cómo leer las herramientas y llenar los formatos</b>
-      <span>Campo por campo, con una fila resuelta en cada formato.</span></a>
-    <a class="doc" href="documentos/AREM_S2_Deck_Reto_U2.pdf">
+    <a class="doc" href="documentos/4_clase/AREM_S2_Deck_Reto_U2.pdf">
       <span class="tag">Clase</span><b>Deck de la sesión</b>
-      <span>Las 30 diapositivas del encuentro sincrónico.</span></a>
-    <a class="doc" href="modelo/AREM_S2_Modelo_Red_Salud_Andina.archimate">
-      <span class="tag c">Archi</span><b>Modelo del caso (.archimate)</b>
-      <span>Se abre con File → Open en Archi. 41 elementos, 39 relaciones y las cuatro vistas armadas y encadenadas. No usen File → Import con este archivo.</span></a>
-    <a class="doc" href="modelo/AREM_S2_Modelo_Red_Salud_Andina_OpenExchange.xml">
-      <span class="tag c">Open Exchange</span><b>Modelo del caso (.xml estándar)</b>
-      <span>El mismo modelo en el formato de The Open Group. Se abre con File → Import → Model From Open Exchange File…, en Archi o en otra herramienta ArchiMate.</span></a>
+      <span>Las 20 diapositivas del encuentro sincrónico: tres conceptos, cada uno con su ejemplo y su formato diligenciado.</span></a>
   </div>
 
   <footer>
