@@ -22,9 +22,14 @@ Lo que se entrega con este material:
   - **Entregable:** un repositorio de arquitectura con **(a)** los diagramas ArchiMate
     exportados como imagen (PNG o PDF) y **(b)** un informe de evaluación arquitectónica en PDF
     de **máximo 20 páginas**, en **norma APA 7**.
-  - Se construye con los formatos **F-13 a F-20** y se califica con cuatro criterios: vistas
-    ArchiMate (2,0), evaluación ATAM y trade-offs (1,5), estrategia de integración y deuda
-    (1,0) y calidad documental (0,5).
+  - Se califica con la rúbrica de la actividad en la plataforma, de cuatro criterios: vistas ArchiMate (2,0),
+    evaluación ATAM y trade-offs (1,5), estrategia de integración y deuda (1,0) y calidad
+    documental (0,5).
+  - **Los formatos F-13 a F-20 no se suben a la plataforma:** son el borrador de las secciones
+    del informe. Qué formato va a qué sección, y con qué criterio se califica, está en el
+    [mapa de la Actividad 2.2](documentos/1_actividad_2_2/AREM_S2_Mapa_Actividad_2_2.pdf); cómo se ve el
+    informe terminado, en el
+    [informe de ejemplo](documentos/1_actividad_2_2/AREM_S2_Informe_Ejemplo_Actividad_2_2.pdf).
 
 ---
 
@@ -39,8 +44,8 @@ Lo que se entrega con este material:
    Despliegan **Views** en el árbol de la izquierda y tienen las cuatro vistas armadas.
 
 Con eso ya pueden seguir el paso a paso. Si quieren ver primero una decisión resuelta de
-principio a fin, lean el [dossier del caso](documentos/AREM_Caso_Red_Salud_Andina.pdf) y sigan
-los [recorridos resueltos de las herramientas](documentos/AREM_S2_Recorridos_Resueltos.pdf):
+principio a fin, lean el [dossier del caso](documentos/2_caso/AREM_Caso_Red_Salud_Andina.pdf) y sigan
+los [recorridos resueltos de las herramientas](documentos/3_como_se_hace/AREM_S2_Recorridos_Resueltos.pdf):
 las siete herramientas, paso a paso, con Red Salud Andina.
 
 ---
@@ -52,14 +57,14 @@ mostrar, después se dibuja**. Quien abre Archi antes de llenar el F-13 dibuja d
 para descubrir qué quería mostrar y otra para mostrarlo.
 
 Todos los formatos están en
-[`documentos/AREM_S2_Instrumentos.pdf`](documentos/AREM_S2_Instrumentos.pdf), y cómo llenarlos
+[`documentos/3_como_se_hace/AREM_S2_Instrumentos.pdf`](documentos/3_como_se_hace/AREM_S2_Instrumentos.pdf), y cómo llenarlos
 campo por campo, en
-[`documentos/AREM_S2_Guia_Visuales_e_Instrumentos.pdf`](documentos/AREM_S2_Guia_Visuales_e_Instrumentos.pdf).
+[`documentos/3_como_se_hace/AREM_S2_Guia_Visuales_e_Instrumentos.pdf`](documentos/3_como_se_hace/AREM_S2_Guia_Visuales_e_Instrumentos.pdf).
 
 ### Paso 1 · Decidir qué vistas van
 
-- **Cuándo:** Taller 1, en la sesión, antes de abrir Archi. Enunciado en
-  [`documentos/AREM_S2_Enunciado_Talleres.pdf`](documentos/AREM_S2_Enunciado_Talleres.pdf).
+- **Cuándo:** en clase, en la **Actividad 2.2 · Parte 1**, antes de abrir Archi. Enunciado en
+  [`documentos/1_actividad_2_2/AREM_S2_Enunciado_Actividad_2_2.pdf`](documentos/1_actividad_2_2/AREM_S2_Enunciado_Actividad_2_2.pdf).
 - **Con qué:** [`interactivos/vistas_archimate_red_salud.html`](interactivos/vistas_archimate_red_salud.html)
   (las cuatro vistas resueltas y tres contraejemplos) y el modelo de ejemplo.
 - **Produce:** **F-13** — catálogo de vistas. Una ficha por vista, con su *stakeholder*, su
@@ -68,8 +73,8 @@ campo por campo, en
 
 ### Paso 2 · Modelar las cuatro vistas en Archi
 
-- **Cuándo:** trabajo independiente.
-- **Con qué:** [`documentos/AREM_S2_Guia_Archi_PasoAPaso.pdf`](documentos/AREM_S2_Guia_Archi_PasoAPaso.pdf)
+- **Cuándo:** fuera de clase, en grupo.
+- **Con qué:** [`documentos/3_como_se_hace/AREM_S2_Guia_Archi_PasoAPaso.pdf`](documentos/3_como_se_hace/AREM_S2_Guia_Archi_PasoAPaso.pdf)
   abierta y [`interactivos/archimate_interactivo.html`](interactivos/archimate_interactivo.html)
   al lado, como diccionario de elementos y relaciones.
 - **Produce:** las cuatro vistas del informe —motivación y estrategia; negocio; aplicación y
@@ -80,8 +85,9 @@ campo por campo, en
 
 ### Paso 3 · Escenarios de calidad, árbol de utilidad y alternativas
 
-- **Cuándo:** Taller 2, en la sesión (F-14 y F-16); el F-15 en trabajo independiente. Enunciado
-  en [`documentos/AREM_S2_Enunciado_Talleres.pdf`](documentos/AREM_S2_Enunciado_Talleres.pdf).
+- **Cuándo:** en clase, en la **Actividad 2.2 · Parte 2** (F-14 y F-16); el F-15, fuera de clase
+  y en grupo. Enunciado en
+  [`documentos/1_actividad_2_2/AREM_S2_Enunciado_Actividad_2_2.pdf`](documentos/1_actividad_2_2/AREM_S2_Enunciado_Actividad_2_2.pdf).
 - **Con qué:** [`interactivos/atam_escenarios_interactivo.html`](interactivos/atam_escenarios_interactivo.html).
   No deja registrar un escenario sin medida ni cerrar la decisión sin la renuncia, y genera el
   texto para pegar en el informe.
@@ -101,7 +107,7 @@ campo por campo, en
 
 ### Paso 4 · Elegir la costura de integración
 
-- **Cuándo:** trabajo independiente.
+- **Cuándo:** fuera de clase, en grupo.
 - **Con qué:** [`interactivos/c4_model_interactivo.html`](interactivos/c4_model_interactivo.html)
   (en qué nivel de zoom vive la decisión),
   [`interactivos/costura_integracion_interactivo.html`](interactivos/costura_integracion_interactivo.html)
@@ -118,7 +124,7 @@ campo por campo, en
 
 ### Paso 5 · Registrar la deuda arquitectónica
 
-- **Cuándo:** trabajo independiente.
+- **Cuándo:** fuera de clase, en grupo.
 - **Con qué:** [`interactivos/deuda_arquitectonica_interactivo.html`](interactivos/deuda_arquitectonica_interactivo.html).
   Cada partida con principal, interés mensual con cifra, vencimiento y estrategia.
 - **Produce:** **F-18** — registro de deuda arquitectónica. La cartera tiene que usar **al
@@ -145,10 +151,47 @@ AREM-S2_Modelado_y_Decision/
 ├── index.html      ← portada: desde aquí se abre todo lo demás
 ├── README.md
 ├── LICENSE
-├── interactivos/   ← las siete herramientas HTML
-├── modelo/         ← el caso Red Salud Andina en Archi (.archimate y Open Exchange .xml)
-└── documentos/     ← dossier del caso, deck, instrumentos F-13 a F-20 y guías (PDF)
+├── documentos/                 ← PDF, en el orden en que se usan
+│   ├── 1_actividad_2_2/        ← qué se entrega y cómo se ve: mapa, informe de ejemplo, enunciado
+│   ├── 2_caso/                 ← dossier de Red Salud Andina
+│   ├── 3_como_se_hace/         ← instrumentos F-13 a F-20 y guías
+│   └── 4_clase/                ← deck de la sesión
+├── interactivos/               ← las siete herramientas HTML
+└── modelo/                     ← el caso Red Salud Andina en Archi (.archimate y Open Exchange .xml)
 ```
+
+### `documentos/` — PDF
+
+Las carpetas están numeradas en el orden en que conviene abrirlas.
+
+**`1_actividad_2_2/` — qué se entrega y cómo se ve.** Empiecen aquí.
+
+| Archivo | Descripción |
+|---|---|
+| [`AREM_S2_Mapa_Actividad_2_2.pdf`](documentos/1_actividad_2_2/AREM_S2_Mapa_Actividad_2_2.pdf) | Lo que pide la Actividad 2.2 en la plataforma, su rúbrica y, para cada requisito, la sección del informe, el formato que la prepara, cuándo se trabaja y dónde ver su ejemplo. |
+| [`AREM_S2_Informe_Ejemplo_Actividad_2_2.pdf`](documentos/1_actividad_2_2/AREM_S2_Informe_Ejemplo_Actividad_2_2.pdf) | Un informe de la 2.2 terminado, sobre Red Salud Andina, con un recuadro por sección que explica qué hacer en ella, en qué criterio se califica y con qué formato se prepara. |
+| [`AREM_S2_Enunciado_Actividad_2_2.pdf`](documentos/1_actividad_2_2/AREM_S2_Enunciado_Actividad_2_2.pdf) | El enunciado de las partes 1 y 2 que se trabajan en la sesión: objetivo, qué se produce, reparto del tiempo, ejemplos resueltos, qué las invalida y los conceptos que usan. |
+
+**`2_caso/` — el caso de ejemplo.** El modelo en Archi está en [`modelo/`](#modelo--el-caso-en-archi).
+
+| Archivo | Descripción |
+|---|---|
+| [`AREM_Caso_Red_Salud_Andina.pdf`](documentos/2_caso/AREM_Caso_Red_Salud_Andina.pdf) | El dossier de la organización simulada de respaldo: identidad, sistemas, cifras, episodios, restricciones y las dos alternativas de la Unidad 2. |
+
+**`3_como_se_hace/` — formatos y guías.** Los formatos se llenan; las guías se consultan.
+
+| Archivo | Descripción |
+|---|---|
+| [`AREM_S2_Instrumentos.pdf`](documentos/3_como_se_hace/AREM_S2_Instrumentos.pdf) | Los ocho formatos F-13 a F-20, con el orden de llenado, la regla que invalida cada campo y la sección del informe a la que va. |
+| [`AREM_S2_Guia_Visuales_e_Instrumentos.pdf`](documentos/3_como_se_hace/AREM_S2_Guia_Visuales_e_Instrumentos.pdf) | Cómo leer cada herramienta y cómo diligenciar cada formato, campo por campo. |
+| [`AREM_S2_Guia_Archi_PasoAPaso.pdf`](documentos/3_como_se_hace/AREM_S2_Guia_Archi_PasoAPaso.pdf) | Archi, de la instalación a la exportación de imágenes, con las cuatro vistas paso a paso. |
+| [`AREM_S2_Recorridos_Resueltos.pdf`](documentos/3_como_se_hace/AREM_S2_Recorridos_Resueltos.pdf) | Las siete herramientas recorridas paso a paso con Red Salud Andina, con lo que cada una deja en los formatos, y una ficha de Banco Colombia Digital. |
+
+**`4_clase/` — la sesión.**
+
+| Archivo | Descripción |
+|---|---|
+| [`AREM_S2_Deck_Reto_U2.pdf`](documentos/4_clase/AREM_S2_Deck_Reto_U2.pdf) | Las 20 diapositivas del encuentro sincrónico: tres conceptos, cada uno con su ejemplo en Red Salud Andina, el formato diligenciado y la comparación «cómo y por qué». |
 
 ### `interactivos/` — herramientas HTML
 
@@ -189,18 +232,6 @@ vista, su fase del ADM y la decisión que habilita.
 > El modelo está en **ArchiMate 3.2**, que es la versión que implementa Archi y en la que se
 > entrega la Actividad 2.2. El estándar publicado es ArchiMate 4; esa diferencia se discute en
 > la sesión y es, ella misma, un ejemplo de deuda arquitectónica declarada.
-
-### `documentos/` — PDF
-
-| Archivo | Tipo | Descripción |
-|---|---|---|
-| [`AREM_Caso_Red_Salud_Andina.pdf`](documentos/AREM_Caso_Red_Salud_Andina.pdf) | Caso | El dossier de la organización simulada de respaldo: identidad, sistemas, cifras, episodios, restricciones y las dos alternativas de la Unidad 2. |
-| [`AREM_S2_Recorridos_Resueltos.pdf`](documentos/AREM_S2_Recorridos_Resueltos.pdf) | Guía | Las siete herramientas recorridas paso a paso con Red Salud Andina, con lo que cada una deja en los formatos, y una ficha de Banco Colombia Digital. |
-| [`AREM_S2_Enunciado_Talleres.pdf`](documentos/AREM_S2_Enunciado_Talleres.pdf) | Taller | El enunciado de los talleres 1 y 2: objetivo, entregas, reparto del tiempo, ejemplos resueltos, qué los invalida y los conceptos que usan. |
-| [`AREM_S2_Instrumentos.pdf`](documentos/AREM_S2_Instrumentos.pdf) | Se llena | Los ocho formatos F-13 a F-20, con el orden de llenado y la regla que invalida cada campo. |
-| [`AREM_S2_Guia_Visuales_e_Instrumentos.pdf`](documentos/AREM_S2_Guia_Visuales_e_Instrumentos.pdf) | Guía | Cómo leer cada herramienta y cómo diligenciar cada formato, campo por campo. |
-| [`AREM_S2_Guia_Archi_PasoAPaso.pdf`](documentos/AREM_S2_Guia_Archi_PasoAPaso.pdf) | Guía | Archi, de la instalación a la exportación de imágenes, con las cuatro vistas paso a paso. |
-| [`AREM_S2_Deck_Reto_U2.pdf`](documentos/AREM_S2_Deck_Reto_U2.pdf) | Clase | Las 30 diapositivas del encuentro sincrónico. |
 
 > La Sesión 1 —marcos de referencia y capacidades— está en su propio repositorio:
 > [AREM-S1_Marcos_y_Capacidades](https://github.com/CesarAVegaF312/AREM-S1_Marcos_y_Capacidades-repositorio).
