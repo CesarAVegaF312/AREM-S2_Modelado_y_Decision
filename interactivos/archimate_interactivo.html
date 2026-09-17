@@ -112,6 +112,18 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;}
 .rel-trigger{background:#FCE4EC;color:#880E4F;}
 .rel-compo{background:#EDE7F6;color:#4A148C;}
 .rel-access{background:#FFF8E1;color:#F57F17;}
+.rel-assoc{background:#ECEFF1;color:#37474F;}
+.rel-infl{background:#F3E5F5;color:#6A1B9A;}
+.rel-flow{background:#E0F7FA;color:#006064;}
+
+/* ── CASE SWITCH ── */
+.case-bar{background:var(--claro);border-bottom:1px solid var(--pale);padding:8px 28px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.case-lbl{font-size:11px;font-weight:700;color:var(--azul);margin-right:4px;}
+.case-btn{font:inherit;font-size:11px;font-weight:700;color:var(--medio);background:white;border:1.5px solid var(--slate);border-radius:16px;padding:4px 12px;cursor:pointer;}
+.case-btn:hover{border-color:var(--medio);}
+.case-btn[aria-pressed="true"]{background:var(--azul);border-color:var(--azul);color:white;}
+.case-btn:focus-visible{outline:3px solid #FF6F00;outline-offset:2px;}
+.case-note{font-size:11px;color:#555;flex-basis:100%;}
 
 @media(max-width:900px){
   .main{grid-template-columns:1fr;}
@@ -124,6 +136,13 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;}
 <div class="header">
   <h1>ArchiMate 3.2 — Lenguaje de Modelado de Arquitectura Empresarial (Interactivo)</h1>
   <p>Maestría en Arquitectura Empresarial · Universidad de La Sabana · Haz clic en cualquier elemento para ver su definición, relaciones y ejemplo práctico</p>
+</div>
+
+<div class="case-bar" role="group" aria-label="Caso del ejemplo">
+  <span class="case-lbl">Caso del ejemplo:</span>
+  <button type="button" class="case-btn" data-caso="banco" aria-pressed="true">🏦 Banco Colombia Digital</button>
+  <button type="button" class="case-btn" data-caso="salud" aria-pressed="false">🏥 Red Salud Andina</button>
+  <span class="case-note" id="caseNote"></span>
 </div>
 
 <div class="legend">
@@ -143,7 +162,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;}
 <div class="main">
 
 <!-- ═══ DIAGRAM ═══ -->
-<div class="diagram">
+<div class="diagram" id="diagram">
 
   <!-- MOTIVACIÓN -->
   <div class="layer layer-motiv">
@@ -276,7 +295,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;}
 <div class="detail">
   <div class="detail-empty" id="emptyState">
     <div class="de-icon">📐</div>
-    <p><strong>Selecciona un elemento</strong> del diagrama para ver su definición ArchiMate, qué representa en el caso del banco colombiano y cómo se relaciona con los demás elementos.</p>
+    <p id="emptyText"><strong>Selecciona un elemento</strong> del diagrama para ver su definición ArchiMate, qué representa en el caso del banco colombiano y cómo se relaciona con los demás elementos.</p>
     <br/>
     <p style="font-size:10px;">ArchiMate 3.2 permite modelar la arquitectura en capas coherentes, trazando desde los objetivos estratégicos (Motivación) hasta la infraestructura física (Tecnología) de forma integrada.</p>
   </div>
@@ -291,7 +310,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;}
       <p id="dDef"></p>
     </div>
     <div class="dsec">
-      <h4>🏦 En el banco colombiano</h4>
+      <h4 id="dExampleTitle">🏦 En el banco colombiano</h4>
       <p id="dExample"></p>
     </div>
     <div class="dsec" id="dRelSec">
@@ -533,10 +552,305 @@ const data = {
   }
 };
 
+/* ════════ Caso Red Salud Andina ════════
+   Mismos tipos de elemento que el caso del banco, más dos componentes de aplicación de la costura.
+   Nombres y relaciones tomados del modelo de Archi del repositorio (modelo/); las relaciones que el
+   modelo no trae se verificaron contra la tabla de relaciones de ArchiMate 3.2 que usa Archi. */
+const DEF = key => data[key].def;
+const dataSalud = {
+  goal:{
+    type:'Goal', name:'Historia completa del paciente en ≤ 5 min', layer:'Capa de Motivación',
+    color:'var(--motiv)', def:DEF('goal'),
+    example:'Que el médico tenga delante la historia completa del paciente —24 sedes, la clínica y el laboratorio— en cinco minutos o menos desde que el paciente llega. Hoy, si el paciente se atendió en una de las 6 sedes adquiridas, ese antecedente no aparece. Los 5 minutos son un supuesto declarado: se infirieron de la promesa pública de «historia clínica única» del plan Andina 2029; no están escritos en ningún documento.',
+    rels:[
+      {type:'Influence',cls:'rel-infl',from:'Driver: Promesa pública de historia clínica única',to:'→ influye en esta meta',desc:'La promesa hecha ante el consejo y la prensa es la que vuelve urgente la meta.'},
+      {type:'Realization',cls:'rel-realize',from:'Principle: Interoperar antes que consolidar',to:'→ realiza esta meta',desc:'El principio concreta por qué camino se va a perseguir.'},
+      {type:'Realization',cls:'rel-realize',from:'Outcome: Cero duplicados de paciente',to:'→ realiza esta meta',desc:'El resultado medible que demuestra que la meta se está cumpliendo.'},
+    ],
+    why:'Una meta con cifra pone a competir las alternativas con la misma vara: la capa de integración la acerca en meses; la consolidación, en 18 a 24. «Mejorar la historia clínica» no descarta nada. Y como la cifra es un supuesto, se declara: si la Dirección fija otra, la decisión se revisa.'
+  },
+  principle:{
+    type:'Principle', name:'Interoperar antes que consolidar', layer:'Capa de Motivación',
+    color:'var(--motiv)', def:DEF('principle'),
+    example:'Frente a la historia clínica única, la red conecta los dos HIS mediante un índice maestro de pacientes antes de migrar las 6 sedes adquiridas a un solo sistema. Es un principio porque restringe: descarta, como primera jugada, apagar HIS-NORTE de golpe.',
+    rels:[
+      {type:'Realization',cls:'rel-realize',from:'Interoperar antes que consolidar',to:'→ realiza → Goal: Historia completa en ≤ 5 min',desc:'El principio es la forma elegida de llegar a la meta.'},
+      {type:'Realization',cls:'rel-realize',from:'Requirement: Identidad única de paciente',to:'→ realiza este principio',desc:'El requisito es lo verificable que se desprende del principio.'},
+      {type:'Influence',cls:'rel-infl',from:'Constraint: Contrato de HIS-NORTE vigente hasta 2027',to:'→ influye en este principio',desc:'El contrato vigente refuerza que no se consolide de inmediato.'},
+    ],
+    why:'Es el principio que descarta una de las dos alternativas en la Fase E. Si ninguna alternativa choca con él, no es un principio: es un eslogan. Por eso se discute con la Dirección Médica y la Financiera antes de modelar, no después de elegir.'
+  },
+  constraint:{
+    type:'Constraint', name:'Contrato de HIS-NORTE vigente hasta 2027', layer:'Capa de Motivación',
+    color:'var(--motiv)', def:DEF('constraint'),
+    example:'Las 6 sedes adquiridas en 2024 siguen en el HIS de su antiguo dueño, con un contrato heredado que vence en 2027; renovarlo anticipadamente tiene penalidad. No es una elección de la red: es una obligación que limita cuándo se puede apagar ese sistema. El dossier trae otra restricción del mismo tipo: los plazos normativos de interoperabilidad no son negociables ni aplazables.',
+    rels:[
+      {type:'Influence',cls:'rel-infl',from:'Contrato de HIS-NORTE',to:'→ influye en → Principle: Interoperar antes que consolidar',desc:'La restricción pesa sobre el principio que se adopta.'},
+      {type:'Association',cls:'rel-assoc',from:'Contrato de HIS-NORTE',to:'— asociada a — App Component: HIS adquirido (6 sedes)',desc:'Señala sobre qué sistema recae la restricción.'},
+    ],
+    why:'Una restricción modelada vuelve visible el calendario que manda. Consolidar tiene sentido si la migración termina antes de 2027; la capa de integración convive con el contrato. Sin este elemento, el comité compara las dos alternativas como si el tiempo fuera gratis.'
+  },
+  driver:{
+    type:'Driver', name:'Promesa pública de historia clínica única', layer:'Capa de Motivación',
+    color:'var(--motiv)', def:DEF('driver'),
+    example:'En marzo, la Presidencia presentó «Andina 2029» ante el consejo directivo y la prensa regional. Su primera apuesta: «el paciente cuenta su historia una sola vez, en cualquier punto de la red». Afirmó que la red «cuenta con la base tecnológica para ejecutarlo». No la tiene: 6 sedes operan con otro HIS y cada sistema mantiene su propio maestro de pacientes. Esa distancia es el impulsor.',
+    rels:[
+      {type:'Association',cls:'rel-assoc',from:'Stakeholder: Dirección General (Presidencia)',to:'— tiene interés en este impulsor',desc:'Su reputación está comprometida con la promesa.'},
+      {type:'Association',cls:'rel-assoc',from:'Stakeholder: Superintendencia Nacional de Salud',to:'— tiene interés en este impulsor',desc:'Vigila la interoperabilidad de la historia clínica y el reporte de información.'},
+      {type:'Influence',cls:'rel-infl',from:'Assessment: 6 sedes operan con otro HIS',to:'→ influye en este impulsor',desc:'La evaluación de la situación actual muestra por qué la promesa está en riesgo.'},
+      {type:'Influence',cls:'rel-infl',from:'Promesa pública',to:'→ influye en → Goal: Historia completa en ≤ 5 min',desc:'El impulsor se traduce en una meta con cifra.'},
+    ],
+    why:'Los impulsores explican decisiones que de otra forma parecen caprichos. Quien propone un índice maestro de pacientes sin nombrar la promesa pública está hablando de tecnología; quien la nombra habla de la reputación de la Presidencia, que es lo que el comité está cuidando.'
+  },
+
+  // NEGOCIO
+  actor:{
+    type:'Business Actor', name:'Paciente', layer:'Capa de Negocio',
+    color:'var(--biz)', def:DEF('actor'),
+    example:'Cualquiera de las personas que se atienden en la red: unas 96.000 atenciones ambulatorias y 7.400 urgencias al mes. Un paciente atendido en una sede adquirida y luego en la clínica puede figurar como dos personas distintas: la conciliación por documento de identidad tiene un error estimado del 6 %.',
+    rels:[
+      {type:'Serving',cls:'rel-serve',from:'Business Service: Consulta de historia clínica unificada',to:'→ sirve a este actor',desc:'El paciente es el beneficiario del servicio, aunque no toque el sistema.'},
+      {type:'Association',cls:'rel-assoc',from:'Paciente',to:'— asociado a — Business Event: Llegada del paciente a la consulta',desc:'El actor origina el evento que abre el proceso.'},
+    ],
+    why:'El paciente es el actor al que la promesa le habla, aunque quien consulta la historia es el médico. Modelarlo evita confundir al usuario del sistema con el beneficiario del servicio, y deja ver que el episodio del «paciente duplicado» es un riesgo para su seguridad, no una molestia de TI.'
+  },
+  role:{
+    type:'Business Role', name:'Médico tratante', layer:'Capa de Negocio',
+    color:'var(--biz)', def:DEF('role'),
+    example:'Lo cumple quien atiende la consulta, en cualquiera de las 24 sedes o en la clínica. Una misma médica puede ser «médica tratante» en la consulta externa de la mañana y «médica de urgencias» en el turno de la noche: una persona (el actor), dos roles, con procesos y permisos distintos.',
+    rels:[
+      {type:'Assignment',cls:'rel-assign',from:'Médico tratante',to:'→ asignado a → Business Process: Atender consulta',desc:'El rol ejecuta el proceso.'},
+      {type:'Serving',cls:'rel-serve',from:'Business Service: Consulta de historia clínica unificada',to:'→ sirve a este rol',desc:'Es quien de verdad lee la historia durante la atención.'},
+    ],
+    why:'Los permisos sobre la historia clínica se asignan a roles, no a personas: con 1.700 personas asistenciales y alta rotación, asignarlos persona por persona es inmanejable. Y el rol carga el concern de la Dirección Médica: si el antecedente no aparece, quien decide sin él es el médico tratante.'
+  },
+  event:{
+    type:'Business Event', name:'Llegada del paciente a la consulta', layer:'Capa de Negocio',
+    color:'var(--biz)', def:DEF('event'),
+    example:'El paciente se presenta en la sede para su cita. Ese instante dispara «Identificar al paciente», el primer paso del proceso. En una integración por eventos, su contraparte técnica sería un mensaje «PacienteAdmitido» con la sede, la hora y el identificador del paciente en el índice maestro.',
+    rels:[
+      {type:'Triggering',cls:'rel-trigger',from:'Llegada del paciente',to:'→ dispara → Business Process: Identificar al paciente',desc:'El evento abre el proceso de atención.'},
+      {type:'Association',cls:'rel-assoc',from:'Business Actor: Paciente',to:'— origina este evento',desc:'El evento ocurre cuando el paciente llega.'},
+    ],
+    why:'El evento fija dónde empieza el reloj de la meta de 5 minutos. Sin él, cada área mide desde un punto distinto —la cita, la admisión, la apertura de la historia— y la meta deja de ser verificable.'
+  },
+  process:{
+    type:'Business Process', name:'Recuperar historia previa', layer:'Capa de Negocio',
+    color:'var(--biz)', def:DEF('process'),
+    example:'El segundo de cuatro pasos: Identificar al paciente → Recuperar historia previa → Atender consulta → Registrar y facturar. Aquí se rompe la historia única: el paso devuelve solo lo registrado en el HIS de la sede actual. Si el paciente se atendió en una sede adquirida, el antecedente está en HIS-NORTE y no llega.',
+    rels:[
+      {type:'Triggering',cls:'rel-trigger',from:'Business Process: Identificar al paciente',to:'→ dispara este paso',desc:'Sin identidad resuelta no hay historia que recuperar.'},
+      {type:'Triggering',cls:'rel-trigger',from:'Recuperar historia previa',to:'→ dispara → Business Process: Atender consulta',desc:'La consulta empieza con lo que este paso haya traído.'},
+      {type:'Access',cls:'rel-access',from:'Recuperar historia previa',to:'→ lee → Business Object: Historia clínica',desc:'El paso consulta la historia; no la modifica.'},
+      {type:'Serving',cls:'rel-serve',from:'App Service: Consulta unificada de historia',to:'→ sirve a este proceso',desc:'El servicio de aplicación es el que debe traer las 24 sedes.'},
+    ],
+    why:'Es el paso donde duele, y marcarlo es lo que convierte un diagrama de proceso en un argumento. Además decide dónde se interviene: si el problema estuviera en la admisión, la solución sería otra.'
+  },
+  'biz-service':{
+    type:'Business Service', name:'Consulta de historia clínica unificada', layer:'Capa de Negocio',
+    color:'var(--biz)', def:DEF('biz-service'),
+    example:'Lo que el médico y el paciente perciben: «la historia está completa, venga de la sede que venga». No importa si por detrás hay un índice maestro sobre dos HIS o un solo HIS consolidado: el servicio es el mismo en las dos alternativas, y por eso es el punto fijo contra el que se comparan.',
+    rels:[
+      {type:'Realization',cls:'rel-realize',from:'Business Process: Atender consulta',to:'→ realiza este servicio',desc:'El proceso interno es lo que produce el servicio.'},
+      {type:'Serving',cls:'rel-serve',from:'Consulta de historia clínica unificada',to:'→ sirve a → Business Actor: Paciente',desc:'El paciente es su beneficiario.'},
+      {type:'Serving',cls:'rel-serve',from:'App Service: Consulta unificada de historia',to:'→ sirve a este servicio',desc:'La capa de aplicación lo hace posible (relación entre capas).'},
+    ],
+    why:'Es el hilo de las vistas del modelo de ejemplo: aparece en la de motivación, en la de negocio y en la de aplicación. Un servicio que atraviesa las vistas es la prueba de que se encadenan y no son cuatro dibujos sueltos.'
+  },
+  'biz-object':{
+    type:'Business Object', name:'Identidad del paciente', layer:'Capa de Negocio',
+    color:'var(--biz)', def:DEF('biz-object'),
+    example:'Quién es el paciente para el negocio: nombre, documento, fecha de nacimiento, asegurador. Hoy vive en cuatro maestros sin identificador común —HIS-CORE, HIS-NORTE, CRM-CC y AGENDA-WEB— y se concilia por documento de identidad, con un error estimado del 6 %.',
+    rels:[
+      {type:'Access',cls:'rel-access',from:'Business Process: Identificar al paciente',to:'→ lee y actualiza este objeto',desc:'La admisión confirma o corrige la identidad.'},
+      {type:'Realization',cls:'rel-realize',from:'Data Object: Registro de identidad',to:'→ realiza este objeto de negocio',desc:'El objeto de datos es su representación técnica.'},
+    ],
+    why:'El negocio habla de «identidad del paciente»; el equipo de datos, del registro del índice maestro. La realización entre los dos es la trazabilidad entre capas que evalúa la rúbrica, y la que permite responder ante la Superintendencia dónde está el dato y quién lo corrige.'
+  },
+
+  // APLICACIÓN
+  'app-iface':{
+    type:'Application Interface', name:'API de consulta de historia unificada', layer:'Capa de Aplicación',
+    color:'var(--app)', def:DEF('app-iface'),
+    example:'El contrato por el que HIS-CORE y, más adelante, TELEMED piden la historia de un paciente: qué se pregunta (el identificador del índice maestro), qué se devuelve y qué pasa si una sede no responde (historia parcial, marcada como tal). El formato de intercambio clínico lo fija la norma de interoperabilidad vigente, que el grupo debe investigar y citar.',
+    rels:[
+      {type:'Composition',cls:'rel-compo',from:'App Component: Índice maestro de pacientes',to:'→ se compone de esta interfaz',desc:'La interfaz pertenece al componente.'},
+      {type:'Assignment',cls:'rel-assign',from:'API de consulta',to:'→ asignada a → App Service: Consulta unificada de historia',desc:'Es el punto por el que se ofrece el servicio.'},
+      {type:'Serving',cls:'rel-serve',from:'API de consulta',to:'→ sirve a → App Component: HIS corporativo',desc:'El HIS de las 18 sedes y la clínica la consume.'},
+    ],
+    why:'La interfaz es donde se firma la letra pequeña: tiempo de espera por sede, historia parcial, versionado. Si la vista la omite, nadie ve que el escenario de rendimiento (p95 ≤ 1,5 s con 300 consultas concurrentes) depende de lo que prometa este contrato.'
+  },
+  'app-service':{
+    type:'Application Service', name:'Consulta unificada de historia', layer:'Capa de Aplicación',
+    color:'var(--app)', def:DEF('app-service'),
+    example:'El comportamiento que la capa de aplicación ofrece: dado un paciente, devuelve su historia consolidada de las 24 sedes. Por dentro resuelve la identidad en el índice maestro y reúne lo que tiene cada HIS; quien lo invoca no ve cuántos sistemas hay detrás.',
+    rels:[
+      {type:'Realization',cls:'rel-realize',from:'App Component: Índice maestro de pacientes',to:'→ realiza este servicio',desc:'El componente provee el servicio.'},
+      {type:'Serving',cls:'rel-serve',from:'Consulta unificada de historia',to:'→ sirve a → Business Service: Consulta de historia clínica unificada',desc:'La relación entre capas que explica por qué existe el software.'},
+      {type:'Serving',cls:'rel-serve',from:'Consulta unificada de historia',to:'→ sirve a → Business Process: Recuperar historia previa',desc:'Es el paso del proceso que hoy se rompe.'},
+    ],
+    why:'Esta cadena responde por qué existe cada pieza de software: el servicio de aplicación existe porque sirve al servicio de negocio que la promesa pública exige. Sin ella, el índice maestro parece un capricho de TI.'
+  },
+  'app-comp':{
+    type:'Application Component', name:'Índice maestro de pacientes (MPI)', layer:'Capa de Aplicación',
+    color:'var(--app)', def:DEF('app-comp'),
+    example:'Un componente nuevo: une las identidades de los cuatro maestros actuales bajo un identificador único y le responde a cualquier sistema de la red «quién es quién». Hoy es una capacidad inexistente. Se nombra como bloque de arquitectura (ABB), no con el nombre de un producto: qué producto se compra es una decisión posterior.',
+    rels:[
+      {type:'Realization',cls:'rel-realize',from:'Índice maestro de pacientes',to:'→ realiza → App Service: Consulta unificada de historia',desc:'El componente provee el servicio.'},
+      {type:'Access',cls:'rel-access',from:'Índice maestro de pacientes',to:'→ lee y escribe → Data Object: Registro de identidad',desc:'Es el dueño del registro de identidad.'},
+      {type:'Serving',cls:'rel-serve',from:'App Component: Adaptador de integración',to:'→ sirve a este componente',desc:'Le entrega las identidades y atenciones de las 6 sedes adquiridas.'},
+      {type:'Realization',cls:'rel-realize',from:'Artifact: Imagen de contenedor del MPI',to:'→ realiza este componente',desc:'Lo que de verdad se instala.'},
+    ],
+    why:'Es el corazón de la costura en la alternativa A y, por eso, su punto de sensibilidad: un umbral de coincidencia mal calibrado mezcla las historias de dos pacientes o duplica a uno. En la alternativa B no hace falta, porque habría un solo HIS. Con el componente en el modelo, esa diferencia se ve en lugar de discutirse.'
+  },
+  adapter:{
+    type:'Application Component', name:'Adaptador de integración', layer:'Capa de Aplicación',
+    color:'var(--app)', def:DEF('app-comp'),
+    example:'Traduce lo que registra HIS-NORTE al modelo que entiende el índice maestro, y acepta las atenciones en modo degradado cuando el HIS de la sede no responde. Es una capa anticorrupción: impide que el modelo de datos del sistema adquirido se filtre al resto de la red.',
+    rels:[
+      {type:'Flow',cls:'rel-flow',from:'App Component: HIS adquirido (6 sedes)',to:'→ fluye hacia este adaptador',desc:'Las atenciones de las sedes adquiridas entran por aquí.'},
+      {type:'Serving',cls:'rel-serve',from:'Adaptador de integración',to:'→ sirve a → App Component: Índice maestro de pacientes',desc:'El índice no conoce el modelo de HIS-NORTE: solo el del adaptador.'},
+    ],
+    why:'Aquí difieren las dos alternativas: la B elimina este componente completo. Además tiene un vencimiento natural —el contrato de HIS-NORTE en 2027—, así que se diseña para durar lo que dure ese contrato. Supuesto declarado: HIS-NORTE expone una API de consulta; si solo permitiera leer su base de datos, el esfuerzo se duplica.'
+  },
+  'his-norte':{
+    type:'Application Component', name:'HIS adquirido (6 sedes)', layer:'Capa de Aplicación',
+    color:'var(--app)', def:DEF('app-comp'),
+    example:'HIS-NORTE: el sistema asistencial de las 6 sedes compradas en 2024 a Centro Médico del Norte. Aplicación web propietaria de 2018, con contrato heredado hasta 2027. No tiene interfaz con el laboratorio, así que los resultados de esas sedes no quedan asociados a la historia del paciente.',
+    rels:[
+      {type:'Flow',cls:'rel-flow',from:'HIS adquirido',to:'→ fluye hacia → App Component: Adaptador de integración',desc:'Entrega las atenciones y las identidades de sus sedes.'},
+      {type:'Realization',cls:'rel-realize',from:'Node: Servidor de la sede adquirida',to:'→ realiza este componente',desc:'Corre en otro servidor, en otra sede.'},
+      {type:'Association',cls:'rel-assoc',from:'Constraint: Contrato de HIS-NORTE vigente hasta 2027',to:'— asociada a este componente',desc:'La restricción que fija cuándo se puede apagar.'},
+    ],
+    why:'Es el legado que ninguna de las dos alternativas puede ignorar: la A lo conserva detrás de un adaptador; la B lo apaga. Modelarlo con su nodo deja ver que corre en otro servidor, en otra sede y con otra ventana de mantenimiento, que es justo lo que pone en juego el escenario de disponibilidad.'
+  },
+  'data-obj':{
+    type:'Data Object', name:'Registro de identidad', layer:'Capa de Aplicación',
+    color:'var(--app)', def:DEF('data-obj'),
+    example:'La representación técnica de la identidad: identificador del índice maestro, identificadores locales en cada HIS, documento, datos demográficos, puntaje de coincidencia y fecha de la última fusión o separación de registros.',
+    rels:[
+      {type:'Access',cls:'rel-access',from:'App Component: Índice maestro de pacientes',to:'→ lee y escribe este objeto',desc:'El índice es su dueño.'},
+      {type:'Realization',cls:'rel-realize',from:'Registro de identidad',to:'→ realiza → Business Object: Identidad del paciente',desc:'El dato técnico implementa el concepto de negocio.'},
+    ],
+    why:'El puntaje de coincidencia es el dato que permite auditar el punto de sensibilidad del índice: cuando dos registros se funden por error, es lo que deja reconstruir qué pasó. «Dónde está el dato de identidad y quién lo corrige» se responde con esta traza.'
+  },
+
+  // TECNOLOGÍA
+  node:{
+    type:'Node', name:'Clúster de contenedores (nube privada)', layer:'Capa de Tecnología',
+    color:'var(--tech)', def:DEF('node'),
+    example:'El entorno donde corren las piezas nuevas —índice maestro y adaptadores—, separado del servidor de la sede central donde vive HIS-CORE. Supuesto declarado: el dossier no dice cuál es el apetito de riesgo de la red frente a la nube pública para información clínica; por eso el nodo se declara de nube privada.',
+    rels:[
+      {type:'Composition',cls:'rel-compo',from:'Clúster de contenedores',to:'→ se compone de → System Software: Orquestador de contenedores',desc:'El software de sistema es parte del nodo.'},
+      {type:'Assignment',cls:'rel-assign',from:'Clúster de contenedores',to:'→ asignado a → Artifact: Imagen de contenedor del MPI',desc:'El nodo aloja el artefacto desplegado.'},
+      {type:'Realization',cls:'rel-realize',from:'Clúster de contenedores',to:'→ realiza → Tech Service: Ejecución de contenedores',desc:'El nodo ofrece el servicio de tecnología.'},
+    ],
+    why:'El nodo hace visible una decisión con consecuencias de disponibilidad: la red no tiene sitio alterno y su plan de recuperación nunca se probó. Si el índice maestro se vuelve la pieza de la que todos dependen, dónde corre deja de ser un detalle técnico.'
+  },
+  'sys-sw':{
+    type:'System Software', name:'Orquestador de contenedores', layer:'Capa de Tecnología',
+    color:'var(--tech)', def:DEF('sys-sw'),
+    example:'El software de sistema que arranca, reinicia y reparte las instancias del índice maestro y de los adaptadores. No tiene lógica clínica: es la plataforma sobre la que esas piezas corren. Se nombra por su función, no por el producto.',
+    rels:[
+      {type:'Composition',cls:'rel-compo',from:'Node: Clúster de contenedores',to:'→ se compone de este software',desc:'Forma parte del nodo.'},
+      {type:'Assignment',cls:'rel-assign',from:'Orquestador de contenedores',to:'→ asignado a → Artifact: Imagen de contenedor del MPI',desc:'Ejecuta el artefacto.'},
+    ],
+    why:'Aparece en el modelo porque alguien tiene que operarlo, y el área de TI tiene 7 personas en infraestructura y no crecerá el próximo año. Una plataforma que nadie sabe operar es un riesgo de la alternativa A, y el modelo lo deja escrito.'
+  },
+  artifact:{
+    type:'Artifact', name:'Imagen de contenedor del MPI', layer:'Capa de Tecnología',
+    color:'var(--tech)', def:DEF('artifact'),
+    example:'El paquete desplegable que produce el proceso de construcción del índice maestro: una imagen de contenedor versionada. Es inmutable: para cambiar el componente se genera una imagen nueva.',
+    rels:[
+      {type:'Realization',cls:'rel-realize',from:'Imagen de contenedor del MPI',to:'→ realiza → App Component: Índice maestro de pacientes',desc:'Lo físico implementa lo lógico.'},
+      {type:'Assignment',cls:'rel-assign',from:'Node: Clúster de contenedores',to:'→ asignado a este artefacto',desc:'Se despliega sobre el clúster.'},
+    ],
+    why:'El artefacto conecta el componente lógico con lo que de verdad se instala. Cambiar la tecnología con la que se construye el índice cambia el artefacto, no el componente ni su servicio: por eso la vista del comité puede quedarse en el componente.'
+  },
+  network:{
+    type:'Communication Network', name:'Enlace entre sedes (WAN)', layer:'Capa de Tecnología',
+    color:'var(--tech)', def:DEF('network'),
+    example:'La red que une la sede central, la clínica y las 24 sedes en tres departamentos. Por ella viajan las atenciones del adaptador de HIS-NORTE hacia el índice maestro. Si cae el enlace de una sede adquirida, esa sede queda aislada del resto de la historia.',
+    rels:[
+      {type:'Association',cls:'rel-assoc',from:'Enlace entre sedes',to:'— conecta — Node: Clúster de contenedores (nube privada)',desc:'Llega al entorno donde corre el índice.'},
+      {type:'Association',cls:'rel-assoc',from:'Enlace entre sedes',to:'— conecta — Node: Servidor de la sede adquirida',desc:'Llega al servidor donde corre HIS-NORTE.'},
+    ],
+    why:'Es el primer lugar donde mirar al escribir el escenario de disponibilidad: la historia unificada depende de que cada sede alcance el índice. El modo degradado del adaptador —aceptar la atención y conciliar después— existe por este enlace.'
+  },
+  'tech-service':{
+    type:'Technology Service', name:'Ejecución de contenedores', layer:'Capa de Tecnología',
+    color:'var(--tech)', def:DEF('tech-service'),
+    example:'Lo que el clúster ofrece a las aplicaciones: arranque de instancias, reinicio automático ante fallas y escalado durante la carga pico de consulta externa. El índice maestro lo consume sin saber en qué máquina corre.',
+    rels:[
+      {type:'Realization',cls:'rel-realize',from:'Node: Clúster de contenedores',to:'→ realiza este servicio',desc:'El nodo es la fuente del servicio.'},
+      {type:'Serving',cls:'rel-serve',from:'Ejecución de contenedores',to:'→ sirve a → App Component: Índice maestro de pacientes',desc:'Habilita la ejecución del componente.'},
+    ],
+    why:'El servicio de tecnología es el límite de la arquitectura empresarial: se llega hasta aquí, no hasta cuántas réplicas tiene el clúster. Si la vista baja a versiones o réplicas, se pasó de nivel y el comité la deja de leer.'
+  }
+};
+
+/* Disposición del diagrama de Red Salud Andina: capa → filas → elementos [clave, clase, ícono]. */
+const layoutSalud = [
+  {cls:'layer-motiv', icon:'🎯', title:'Capa de Motivación', sub:'— ¿Por qué existe la arquitectura?', rows:[
+    [['goal','elem-motiv','🏆'],['principle','elem-motiv','📐'],['constraint','elem-motiv','⚖️'],['driver','elem-motiv','🚀']]]},
+  {cls:'layer-biz', icon:'🏢', title:'Capa de Negocio', sub:'— Procesos, actores y servicios de negocio', rows:[
+    [['actor','elem-actor','👤'],['role','elem-role','🩺'],['event','elem-event','⚡']],
+    [['process','elem-process','⚙️'],['biz-service','elem-service-biz','🔧'],['biz-object','elem-object','📄']]]},
+  {cls:'layer-app', icon:'💻', title:'Capa de Aplicación', sub:'— Componentes de software que soportan el negocio', rows:[
+    [['app-iface','elem-iface','🔌'],['app-service','elem-service-app','⚡'],['app-comp','elem-comp','📦']],
+    [['adapter','elem-comp','🔄'],['his-norte','elem-comp','🏥'],['data-obj','elem-data','🗃']]]},
+  {cls:'layer-tech', icon:'🖥', title:'Capa de Tecnología', sub:'— Infraestructura que ejecuta las aplicaciones', rows:[
+    [['node','elem-node','☁️'],['sys-sw','elem-sw','⚙️'],['artifact','elem-artifact','📦'],['network','elem-network','🔗'],['tech-service','elem-tech-service','🔋']]]}
+];
+
+const TIPO_CORTO = {'Business Actor':'Business Actor','Business Role':'Business Role','Business Event':'Business Event','Business Process':'Business Process','Business Service':'Business Service','Business Object':'Business Object','Application Interface':'App Interface','Application Service':'Application Service','Application Component':'App Component','Data Object':'Data Object','System Software':'System Software','Communication Network':'Network','Technology Service':'Technology Service'};
+
+function htmlSalud(){
+  return layoutSalud.map(l => `
+  <div class="layer ${l.cls}">
+    <div class="layer-header"><span>${l.icon}</span> ${l.title} <small>${l.sub}</small></div>
+    ${l.rows.map(r => `<div class="elem-row">${r.map(([k,c,i]) => `
+      <div class="elem ${c}" onclick="show('${k}')" id="el-${k}">
+        <div class="e-type">${TIPO_CORTO[dataSalud[k].type] || dataSalud[k].type}</div>
+        <div class="e-icon">${i}</div>
+        <div class="e-name">${dataSalud[k].name}</div>
+      </div>`).join('')}</div>`).join('')}
+  </div>`).join('');
+}
+
+const CASOS = {
+  banco:{ data:data, titulo:'🏦 En el banco colombiano',
+    vacio:'<strong>Selecciona un elemento</strong> del diagrama para ver su definición ArchiMate, qué representa en el caso del banco colombiano y cómo se relaciona con los demás elementos.',
+    nota:'Banco Colombia Digital es el caso transversal del curso: core T24, Kubernetes en Azure y Kafka.' },
+  salud:{ data:dataSalud, titulo:'🏥 En Red Salud Andina',
+    vacio:'<strong>Selecciona un elemento</strong> del diagrama para ver su definición ArchiMate, qué representa en Red Salud Andina y cómo se relaciona con los demás elementos.',
+    nota:'Red Salud Andina es el caso de respaldo: una IPS de 24 sedes con dos HIS distintos. Los nombres coinciden con el modelo de Archi del repositorio; los tipos que ese modelo no usa (evento, interfaz, software de sistema, artefacto, red y servicio de tecnología) se agregan aquí para completar el recorrido.' }
+};
+const htmlBanco = document.getElementById('diagram').innerHTML;
+let caso = 'banco';
+
+function setCaso(nuevo){
+  if(!CASOS[nuevo]) return;
+  caso = nuevo;
+  selected = null;
+  document.getElementById('diagram').innerHTML = nuevo === 'salud' ? htmlSalud() : htmlBanco;
+  document.querySelectorAll('.case-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.caso === nuevo)));
+  document.getElementById('caseNote').textContent = CASOS[nuevo].nota;
+  document.getElementById('dExampleTitle').textContent = CASOS[nuevo].titulo;
+  document.getElementById('emptyText').innerHTML = CASOS[nuevo].vacio;
+  document.getElementById('emptyState').style.display = '';
+  document.getElementById('detailContent').classList.remove('visible');
+  try {
+    const u = new URL(window.location.href);
+    if(nuevo === 'salud') u.searchParams.set('caso','red-salud'); else u.searchParams.delete('caso');
+    history.replaceState(null, '', u);
+  } catch(e) {}
+}
+
 let selected = null;
 
 function show(key){
-  const d = data[key];
+  const d = CASOS[caso].data[key];
   if(!d) return;
 
   // Clear previous selection
@@ -573,6 +887,13 @@ function show(key){
     document.querySelector('.detail').scrollIntoView({behavior:'smooth',block:'nearest'});
   }
 }
+
+document.querySelectorAll('.case-btn').forEach(b => b.addEventListener('click', () => setCaso(b.dataset.caso)));
+(function(){
+  let inicial = 'banco';
+  try { if(new URLSearchParams(window.location.search).get('caso') === 'red-salud') inicial = 'salud'; } catch(e) {}
+  setCaso(inicial);
+})();
 </script>
 </body>
 </html>

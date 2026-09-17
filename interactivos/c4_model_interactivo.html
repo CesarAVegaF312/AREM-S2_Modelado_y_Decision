@@ -107,6 +107,17 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;mi
 .back-btn{display:block;text-align:center;margin:14px 24px 18px;padding:9px;background:var(--claro);border:1px solid var(--pale);border-radius:8px;cursor:pointer;font-size:12px;color:var(--medio);font-weight:700;}
 .back-btn:hover{background:var(--pale);}
 
+/* ── CASE SWITCH ── */
+.case-bar{background:var(--claro);border-bottom:1px solid var(--pale);padding:8px 28px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.case-lbl{font-size:11px;font-weight:700;color:var(--azul);margin-right:4px;}
+.case-btn{font:inherit;font-size:11px;font-weight:700;color:var(--medio);background:white;border:1.5px solid var(--slate);border-radius:16px;padding:4px 12px;cursor:pointer;}
+.case-btn:hover{border-color:var(--medio);}
+.case-btn[aria-pressed="true"]{background:var(--azul);border-color:var(--azul);color:white;}
+.case-btn:focus-visible{outline:3px solid #FF6F00;outline-offset:2px;}
+.case-note{font-size:11px;color:#555;flex-basis:100%;}
+.cnt-new{outline:3px dashed rgba(255,255,255,.85);outline-offset:-7px;}
+.alt-note{max-width:900px;margin:-10px auto 18px;background:white;border-left:4px solid var(--orange);border-radius:8px;padding:9px 13px;font-size:11px;line-height:1.6;color:#3a1a00;}
+
 @media(max-width:700px){
   .cnt-layout{grid-template-columns:1fr;}
   .cnt-span2{grid-column:span 1;}
@@ -121,6 +132,13 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4FB;color:#1a1a2e;mi
     <h1>C4 Model — Diagrama Interactivo de Arquitectura de Software</h1>
     <p>Maestría en Arquitectura Empresarial · Universidad de La Sabana · Haz clic para hacer zoom-in en cada nivel</p>
   </div>
+</div>
+
+<div class="case-bar" role="group" aria-label="Caso del ejemplo">
+  <span class="case-lbl">Caso del ejemplo:</span>
+  <button type="button" class="case-btn" data-caso="banco" aria-pressed="true">🏦 Banco Colombia Digital</button>
+  <button type="button" class="case-btn" data-caso="salud" aria-pressed="false">🏥 Red Salud Andina</button>
+  <span class="case-note" id="caseNote"></span>
 </div>
 
 <!-- NAV -->
@@ -445,6 +463,248 @@ const containers = {
   }
 };
 
+// ── CASO RED SALUD ANDINA ──
+// Datos del dossier del caso de respaldo. Los contenedores marcados «Nuevo» son la costura de la
+// alternativa A (capa de integración); lo que no dice el dossier se marca como supuesto declarado.
+const view1Salud = `
+  <div class="view-title">Nivel 1 — Diagrama de Contexto del Sistema</div>
+  <div class="view-subtitle">¿Quién usa el sistema y con qué sistemas externos interactúa? — Haz clic en el sistema central para ver los contenedores (Nivel 2)</div>
+  <div class="ctx-grid">
+    <div class="ctx-row">
+      <div class="c4-box box-person">
+        <div class="box-icon">🩺</div>
+        <div class="box-label">Person</div>
+        <div class="box-title">Médico tratante</div>
+        <div class="box-desc">Consulta y registra la historia clínica en las 24 sedes y en la clínica</div>
+      </div>
+      <div class="c4-box box-person">
+        <div class="box-icon">🪪</div>
+        <div class="box-label">Person</div>
+        <div class="box-title">Auxiliar de admisiones</div>
+        <div class="box-desc">Identifica al paciente y abre la atención; hoy concilia identidades a mano</div>
+      </div>
+      <div class="c4-box box-person">
+        <div class="box-icon">👤</div>
+        <div class="box-label">Person</div>
+        <div class="box-title">Paciente</div>
+        <div class="box-desc">Agenda por web y consulta resultados en la app; unas 96.000 atenciones ambulatorias al mes</div>
+      </div>
+    </div>
+    <div class="rel-row">
+      <span class="rel-line">🩺 HIS de la sede <span class="rel-arrow">→</span> red interna</span>
+      <span class="rel-line">🪪 Admisión <span class="rel-arrow">→</span> red interna</span>
+      <span class="rel-line">📱 Web y app <span class="rel-arrow">→</span> HTTPS</span>
+    </div>
+    <div class="c4-box box-system" onclick="goLevel2()" style="width:260px;padding:22px 24px;">
+      <div class="box-icon">🏥</div>
+      <div class="box-label">Software System — Bajo Diseño</div>
+      <div class="box-title">Sistemas asistenciales de Red Salud Andina</div>
+      <div class="box-desc">Historia clínica, admisión e identificación del paciente en 24 sedes, la clínica y el laboratorio, con la costura de la historia clínica única</div>
+      <div class="drill-hint">🔍 Clic → ver contenedores (Nivel 2)</div>
+    </div>
+    <div class="rel-row">
+      <span class="rel-line">Portales y archivos <span class="rel-arrow">→</span> 🧾 Aseguradores</span>
+      <span class="rel-line">Reporte <span class="rel-arrow">→</span> 🏛 Autoridades de salud</span>
+      <span class="rel-line">HTTPS <span class="rel-arrow">→</span> 🔬 IPS clientes</span>
+      <span class="rel-line">Sin integrar <span class="rel-arrow">↔</span> 🎥 Telemedicina</span>
+    </div>
+    <div class="ctx-row">
+      <div class="c4-box box-external">
+        <div class="box-icon">🧾</div>
+        <div class="box-label">External System</div>
+        <div class="box-title">Aseguradores</div>
+        <div class="box-desc">Siete aseguradores: autorizaciones y radicación de facturas; dos concentran cerca del 60 % de la facturación</div>
+      </div>
+      <div class="c4-box box-external">
+        <div class="box-icon">🏛</div>
+        <div class="box-label">External System</div>
+        <div class="box-title">Autoridades de salud</div>
+        <div class="box-desc">Ministerio de Salud y Superintendencia Nacional de Salud: RIPS, facturación electrónica e interoperabilidad de la historia clínica</div>
+      </div>
+      <div class="c4-box box-external">
+        <div class="box-icon">🔬</div>
+        <div class="box-label">External System</div>
+        <div class="box-title">IPS clientes del laboratorio</div>
+        <div class="box-desc">Compran servicios de diagnóstico y reciben resultados por PORTAL-B2B</div>
+      </div>
+      <div class="c4-box box-external">
+        <div class="box-icon">🎥</div>
+        <div class="box-label">External System</div>
+        <div class="box-title">Plataforma de telemedicina</div>
+        <div class="box-desc">Servicio en la nube de un tercero, piloto desde 2025; trae su propia agenda, que duplica AGENDA-WEB</div>
+      </div>
+    </div>
+  </div>`;
+
+const CNT_SALUD = [
+  ['hiscore','cnt-app','🏥','Aplicación existente','HIS-CORE','Oracle Forms · base Oracle · desde 2009','Historia clínica, admisión y agenda interna de 18 sedes y la clínica. Crítico: dos desarrolladores conocen su código'],
+  ['hisnorte','cnt-app','🏥','Aplicación existente','HIS-NORTE','Web propietaria · 2018 · contrato hasta 2027','Sistema asistencial de las 6 sedes adquiridas en 2024. Desaparece en la alternativa B'],
+  ['mpi','cnt-app cnt-new','🪪','Nuevo · Alternativa A','Índice maestro de pacientes (MPI)','Bloque de arquitectura · producto por decidir en la Fase E','Resuelve «quién es quién» en toda la red con un identificador único. Hoy esa capacidad no existe'],
+  ['adaptador','cnt-app cnt-new','🔄','Nuevo · Alternativa A','Adaptador de HIS-NORTE','Capa anticorrupción · mensajería con outbox','Traduce HIS-NORTE al modelo común y acepta atenciones en modo degradado cuando la sede no responde'],
+  ['consulta','cnt-web cnt-new','🩺','Nuevo','Servicio de consulta de historia unificada','API · vista consolidada por eventos','Devuelve la historia de las 24 sedes en una sola vista, con objetivo p95 ≤ 1,5 s'],
+  ['bus','cnt-msg','📨','Existente · subutilizado','Bus de integración','Producto comercial · adquirido en 2016','Usado en 6 de las 41 interfaces registradas; el resto se construyó por fuera'],
+  ['datos','cnt-db cnt-new','🗄','Nuevo · bases de datos','Registro de identidad y vista consolidada','Transaccional + copia de lectura','Identidades unificadas con su puntaje de coincidencia y la copia de lectura de la historia'],
+  ['lis','cnt-ext','🔬','Producto existente','LIS-LAB','Producto comercial · 2019','Órdenes y resultados de laboratorio. Interfaz por archivos con HIS-CORE; con HIS-NORTE no hay interfaz'],
+  ['fact','cnt-ext','💵','Producto existente','FACT-SALUD','Producto comercial · 2014 · muy personalizado','Facturación, RIPS y glosas. Lee tablas de HIS-CORE directamente, sin interfaz']
+];
+
+const view2Salud = `
+  <div class="view-title">Nivel 2 — Diagrama de Contenedores</div>
+  <div class="view-subtitle">¿Qué aplicaciones y servicios forman el sistema? — Haz clic en cualquier contenedor para ver sus componentes internos (Nivel 3)</div>
+  <div class="alt-note"><strong>Cómo leer el borde punteado:</strong> marca lo nuevo. Con la <strong>alternativa A</strong> (capa de integración) aparecen el índice maestro y el adaptador, y los dos HIS siguen vivos. Con la <strong>alternativa B</strong> (consolidación) desaparecen HIS-NORTE y el adaptador, y HIS-CORE recibe las 6 sedes. Las dos se dibujan a este mismo nivel, una al lado de la otra.</div>
+  <div class="cnt-layout">
+    ${CNT_SALUD.map(([k,c,i,t,n,tech,desc]) => `
+    <div class="cnt-box ${c}" onclick="goLevel3('${k}')">
+      <div class="box-icon">${i}</div>
+      <div class="box-type">${t}</div>
+      <div class="box-title">${n}</div>
+      <div class="box-tech">${tech}</div>
+      <div class="box-desc">${desc}</div>
+      <div class="drill-hint">🔍 Ver componentes</div>
+    </div>`).join('')}
+  </div>`;
+
+const containersSalud = {
+  hiscore:{
+    icon:'🏥', title:'HIS-CORE', tech:'Oracle Forms · base Oracle · en operación desde 2009',
+    desc:'Sistema de información asistencial de 18 sedes y la clínica',
+    components:[
+      {title:'Módulo de admisión',tech:'Oracle Forms',desc:'Registra la llegada y busca al paciente por documento en su propio maestro. Aquí nace buena parte del 6 % de error estimado en la conciliación de identidades.'},
+      {title:'Historia clínica',tech:'Oracle Forms · base Oracle',desc:'Notas, diagnósticos y órdenes de las 18 sedes y la clínica. No sabe nada de lo registrado en HIS-NORTE.'},
+      {title:'Agenda interna',tech:'Oracle Forms',desc:'Agenda de consultorios. Convive con AGENDA-WEB y con la agenda propia de la plataforma de telemedicina, que no se hablan entre sí.'},
+      {title:'Tablas leídas por FACT-SALUD',tech:'Base Oracle · acceso directo',desc:'Tablas que FACT-SALUD lee sin pasar por una interfaz. Es un contrato implícito que nadie documentó: un cambio de esquema dejó tres días de atenciones sin facturar.'},
+    ],
+    why:'HIS-CORE es crítico y frágil a la vez: 31 horas de indisponibilidad no planeada en los últimos 12 meses, una ventana de mantenimiento de dos horas cada domingo y dos personas que conocen su código, una de las cuales se pensiona en 14 meses. Cualquier alternativa que le cargue más peso tiene que decir cómo administra ese riesgo.',
+    rel:'En ArchiMate es el Application Component «HIS corporativo» de la vista 3 del modelo de ejemplo. En la deuda arquitectónica, las tablas leídas por FACT-SALUD son deuda sin declarar, y el episodio del cambio de esquema es su interés cobrado. En la alternativa B recibe las 6 sedes adquiridas y concentra el riesgo en un sistema que dos personas conocen.',
+    c4note:'HIS-CORE se dibuja como un solo contenedor aunque sea un monolito: se despliega como unidad y tiene su propia base. La lectura directa de FACT-SALUD sobre sus tablas es una relación entre contenedores que no pasa por ninguna interfaz, y en el Nivel 2 hay que dibujarla igual: es justo la que se rompió.'
+  },
+  hisnorte:{
+    icon:'🏥', title:'HIS-NORTE', tech:'Aplicación web propietaria · 2018 · contrato heredado hasta 2027',
+    desc:'Sistema asistencial de las 6 sedes adquiridas a Centro Médico del Norte',
+    components:[
+      {title:'Registro asistencial',tech:'Aplicación web del proveedor',desc:'Historia y atenciones de las 6 sedes, con un modelo de datos distinto al de HIS-CORE y una codificación de procedimientos no homologada.'},
+      {title:'Maestro de pacientes local',tech:'Base del proveedor',desc:'Uno de los cuatro maestros sin identificador común. Un paciente atendido aquí y luego en la clínica puede figurar como dos personas distintas.'},
+      {title:'Interfaz de consulta (supuesto declarado)',tech:'Por verificar con el proveedor',desc:'Se asume que expone una API de consulta. El dossier no dice qué capacidades reales tiene el proveedor para exponer servicios: si solo permitiera leer su base, el adaptador cambia de naturaleza y el esfuerzo se duplica.'},
+    ],
+    why:'HIS-NORTE es el legado que ninguna alternativa puede ignorar. Su contrato vence en 2027 y la renovación anticipada tiene penalidad: la alternativa A lo conserva detrás de un adaptador; la B lo apaga antes del vencimiento. Mientras exista sin interfaz con el laboratorio, los resultados de esas sedes no quedan asociados a la historia del paciente.',
+    rel:'En ArchiMate es el Application Component «HIS adquirido», realizado por el nodo «Servidor de la sede adquirida». En ATAM, su supuesta API es un punto de sensibilidad. En Wardley es un producto comprado con inercia contractual: no se mueve hasta 2027.',
+    c4note:'En un sistema de terceros, el Nivel 3 muestra solo lo que la decisión necesita saber. Por eso son tres componentes, y uno de ellos es un supuesto: en C4 también se marca lo que no se ha verificado. Que corra en otro servidor y en otra sede es información del diagrama de despliegue, no de este nivel.'
+  },
+  mpi:{
+    icon:'🪪', title:'Índice maestro de pacientes (MPI)', tech:'Bloque de arquitectura · producto por decidir en la Fase E',
+    desc:'Identificador único del paciente para toda la red · aparece en la alternativa A',
+    components:[
+      {title:'API de identidad',tech:'Contrato versionado',desc:'Recibe «¿quién es este paciente?» desde cualquier HIS y devuelve el identificador único con su puntaje de coincidencia.'},
+      {title:'Motor de emparejamiento',tech:'Reglas determinísticas y probabilísticas',desc:'Compara documento, nombres, fecha de nacimiento y asegurador. El umbral de coincidencia es el punto de sensibilidad de la alternativa A: mal calibrado, mezcla dos pacientes o duplica a uno.'},
+      {title:'Cola de revisión de posibles duplicados',tech:'Flujo con revisión humana',desc:'Los casos entre dos umbrales no se funden solos: los revisa Admisiones. Reduce a excepciones la conciliación manual que hoy consume, como supuesto declarado, 120 horas-persona al mes.'},
+      {title:'Publicador de fusiones y separaciones',tech:'Eventos',desc:'Avisa a los HIS, a FACT-SALUD y a BI-ANDINA cuando dos registros se funden o se separan, para que corrijan sus referencias.'},
+    ],
+    why:'El índice maestro convierte un problema de datos —cuatro maestros y un 6 % de error— en una pieza de software de la que todos van a depender. Resuelve la historia única sin tocar la operación de las sedes, pero se vuelve un punto único de falla nuevo, y eso obliga a escribir un escenario de disponibilidad para él.',
+    rel:'En ArchiMate es el Application Component de la vista 3 y realiza la capacidad «Gestión de identidad del paciente» de la vista 1, con madurez 1 de 5. En TOGAF se nombra como ABB; el producto concreto (SBB) se elige en la Fase E. En Wardley es un producto maduro: se configura, no se construye desde cero.',
+    c4note:'Este es el contenedor donde vive la decisión de la unidad: con la alternativa A aparece en el Nivel 2; con la B, la costura desaparece. Por eso las dos alternativas se dibujan al mismo nivel de zoom, una al lado de la otra, y la diferencia se ve sin tener que explicarla.'
+  },
+  adaptador:{
+    icon:'🔄', title:'Adaptador de HIS-NORTE', tech:'Capa anticorrupción · mensajería punto a punto con outbox',
+    desc:'Conecta las 6 sedes adquiridas con el índice maestro · aparece en la alternativa A',
+    components:[
+      {title:'Receptor de atenciones con outbox',tech:'Outbox transaccional en la sede',desc:'Guarda la atención y el mensaje en la misma transacción local. Si HIS-NORTE o el enlace caen, la atención no se pierde: queda pendiente de envío.'},
+      {title:'Traductor de modelo',tech:'Capa anticorrupción · homologación de códigos',desc:'Convierte el modelo y la codificación de procedimientos de HIS-NORTE al modelo común. Impide que el modelo del sistema adquirido se filtre al resto de la red.'},
+      {title:'Guarda de idempotencia',tech:'Clave única por atención',desc:'La mensajería entrega «al menos una vez»: el mismo mensaje puede llegar dos veces. La guarda registra la clave de cada atención y descarta el duplicado.'},
+      {title:'Reintentos y cola de mensajes fallidos',tech:'Cola con DLQ tras 5 intentos',desc:'Reintenta con espera creciente; después de cinco intentos manda el mensaje a revisión en lugar de perderlo o repetirlo sin fin.'},
+    ],
+    why:'La guarda de idempotencia es la letra pequeña de integrar por mensajería: sin ella, un reintento después de una caída del enlace registra dos veces la misma atención, y una atención facturada dos veces es una glosa asegurada. El outbox sostiene el escenario de disponibilidad: cero atenciones perdidas y conciliación en 15 minutos o menos.',
+    rel:'En la herramienta de costura es la opción B, mensajería punto a punto con outbox. En ATAM sostiene el escenario E1, de disponibilidad. En la deuda arquitectónica es la estrategia REFINANCIAR: aísla HIS-NORTE detrás de un adaptador para que su modelo no se propague mientras dure el contrato.',
+    c4note:'Es el mismo aprendizaje del servicio de pagos del banco: la decisión se toma en el Nivel 2 (poner un adaptador con mensajería) y se paga en el Nivel 3 (outbox, idempotencia, reintentos). Si el grupo decide sin bajar a este nivel, no sabe qué firmó.'
+  },
+  consulta:{
+    icon:'🩺', title:'Servicio de consulta de historia unificada', tech:'API · vista consolidada alimentada por eventos',
+    desc:'La historia completa del paciente en una sola vista, venga de la sede que venga',
+    components:[
+      {title:'API de consulta de historia',tech:'Contrato versionado',desc:'Recibe el identificador del índice maestro y devuelve la historia consolidada. El formato de intercambio clínico lo fija la norma de interoperabilidad vigente, que el grupo debe investigar y citar.'},
+      {title:'Vista consolidada',tech:'Copia de lectura actualizada por eventos',desc:'Consultar en vivo seis HIS no llega a 1,5 s: la vista se prepara de antemano con los eventos de atención cerrada.'},
+      {title:'Tiempo de espera por fuente',tech:'Límite por sede',desc:'Si una fuente no responde a tiempo, no bloquea la consulta completa.'},
+      {title:'Marcador de historia parcial',tech:'Regla de presentación',desc:'Cuando falta una fuente, el médico ve la historia con la advertencia de que está incompleta, en lugar de un error o de una historia que parece completa y no lo es.'},
+    ],
+    why:'El escenario de rendimiento —p95 ≤ 1,5 s con 300 consultas concurrentes— no se cumple consultando en vivo cada HIS. Y el concern de la Dirección Médica no es solo la velocidad sino la confianza: una historia incompleta que parece completa es peor que una marcada como parcial.',
+    rel:'En ArchiMate realiza el Application Service «Consulta unificada de historia», que sirve al servicio de negocio «Consulta de historia clínica unificada»: el hilo que encadena las vistas. En ATAM es el artefacto del escenario E2, y su valoración en la alternativa A es amarilla precisamente porque depende de la vista consolidada.',
+    c4note:'La vista consolidada es un componente de este contenedor, pero su almacenamiento se dibuja como un contenedor de base de datos aparte, porque se despliega y se respalda por separado. Confundir las dos cosas es el error más común al pasar del Nivel 2 al 3.'
+  },
+  bus:{
+    icon:'📨', title:'Bus de integración', tech:'Producto comercial · adquirido en 2016',
+    desc:'Comprado para centralizar las interfaces; hoy carga 6 de 41',
+    components:[
+      {title:'Interfaces que pasan por el bus',tech:'6 de las 41 registradas',desc:'Las únicas que usan el producto adquirido para centralizarlas.'},
+      {title:'Interfaces construidas por fuera',tech:'35 registradas + 8 a 12 sin registrar',desc:'Construidas directamente entre sistemas, por archivos o leyendo bases de datos ajenas. TI estima que existen entre 8 y 12 que no están en el inventario.'},
+      {title:'Monitoreo',tech:'Solo de infraestructura',desc:'No hay monitoreo de servicio de extremo a extremo: los incidentes los reporta el usuario, no el sistema.'},
+    ],
+    why:'Un bus que carga 6 de 41 interfaces no es una plataforma de integración: es una compra sin gobierno. La alternativa A del dossier propone exponer los HIS mediante APIs sobre el bus ya adquirido, lo que ahorra inversión, pero obliga a responder por qué esta vez sí se va a usar.',
+    rel:'En TOGAF es un SBB que ya existe: antes de comprar otro, la Fase E pregunta si se reutiliza. En la deuda arquitectónica, las interfaces construidas por fuera son deuda sin registrar. En la Unidad 3 es el ejemplo de una inversión que nadie hizo cumplir.',
+    c4note:'En el Nivel 2 un bus se dibuja como contenedor, y cada línea que pasa por él dice qué intercambia. Una flecha genérica «usa el bus» no informa nada; y las interfaces que no pasan por él también son líneas del diagrama.'
+  },
+  datos:{
+    icon:'🗄', title:'Registro de identidad y vista consolidada', tech:'Base transaccional + almacenamiento de lectura',
+    desc:'Los datos nuevos de la costura, cada uno con su propio régimen de respaldo',
+    components:[
+      {title:'Registro de identidad',tech:'Base transaccional',desc:'Identificador único, identificadores locales de cada HIS, datos demográficos, puntaje de coincidencia e historial de fusiones y separaciones.'},
+      {title:'Copia de lectura de la historia',tech:'Almacenamiento de lectura',desc:'La vista consolidada que alimenta la consulta. Si se corrompe, se reconstruye desde los eventos.'},
+      {title:'Bitácora de acceso',tech:'Registro inmutable',desc:'Quién consultó qué historia y cuándo. La historia clínica es información sensible y cada acceso debe quedar trazado.'},
+    ],
+    why:'Separar el registro de identidad de la copia de lectura permite tratarlos distinto: el primero exige consistencia y respaldo estricto; la segunda se puede reconstruir. La bitácora responde la pregunta que hará cualquier auditoría: quién vio la historia de este paciente.',
+    rel:'En ArchiMate, el registro de identidad es el Data Object que realiza el Business Object «Identidad del paciente». En la Unidad 4 es la primera pieza del dominio «Paciente», hoy repartido en cuatro maestros.',
+    c4note:'En C4 cada base se dibuja como un contenedor propio y pertenece a un solo contenedor de aplicación. Si el adaptador o FACT-SALUD leyeran esta base directamente, se repetiría el error del cambio de esquema en HIS-CORE.'
+  },
+  lis:{
+    icon:'🔬', title:'LIS-LAB', tech:'Producto comercial · 2019',
+    desc:'Gestión del laboratorio de referencia: órdenes, muestras y resultados',
+    components:[
+      {title:'Órdenes y muestras',tech:'Producto comercial',desc:'Recibe las órdenes de laboratorio de la red y de las IPS clientes.'},
+      {title:'Resultados',tech:'Producto comercial',desc:'Unos 210.000 exámenes al mes. Se entregan a HIS-CORE por archivos y a las IPS clientes por PORTAL-B2B; a HIS-NORTE, por ninguna vía.'},
+      {title:'Base de datos del laboratorio',tech:'Leída directamente por PORTAL-B2B',desc:'PORTAL-B2B consulta esta base sin interfaz formal. Cualquier actualización puede romperlo, y por eso se aplazó la actualización mayor que anunció el proveedor.'},
+    ],
+    why:'Los resultados de las 6 sedes adquiridas no quedan asociados a la historia del paciente porque LIS-LAB no tiene interfaz con HIS-NORTE. Una historia única que no trae el laboratorio no cumple la promesa: el laboratorio también es parte de la costura.',
+    rel:'En la deuda arquitectónica, la lectura directa de PORTAL-B2B es el episodio «Actualización del laboratorio» (modificabilidad). En Wardley, LIS-LAB es un producto: se consume y se integra por su interfaz, no por su base.',
+    c4note:'Un producto comercial va como contenedor si la organización lo opera, y como sistema externo si lo opera el proveedor. La red opera LIS-LAB, así que va en el Nivel 2; sus componentes solo se detallan en lo que afecta a la integración.'
+  },
+  fact:{
+    icon:'💵', title:'FACT-SALUD', tech:'Producto comercial · 2014 · con desarrollos a la medida',
+    desc:'Facturación, radicación, RIPS y gestión de glosas',
+    components:[
+      {title:'Facturación y radicación',tech:'Producto muy personalizado',desc:'Genera y radica las facturas ante los siete aseguradores. Tiene dos versiones de actualización aplazadas.'},
+      {title:'Generación de RIPS',tech:'Reporte obligatorio',desc:'Arma el registro de prestaciones que exige la norma con los datos que toma del HIS.'},
+      {title:'Lector de tablas de HIS-CORE',tech:'Acceso directo a la base Oracle',desc:'No usa una interfaz: lee tablas de HIS-CORE. Un cambio de esquema por un requerimiento normativo dejó tres días de atenciones sin facturar.'},
+      {title:'Gestión de glosas',tech:'FACT-SALUD + base ofimática del área financiera',desc:'Glosa inicial del 9,4 % y rotación de cartera de 126 días. El indicador oficial de glosa se calcula fuera de los sistemas.'},
+    ],
+    why:'Aquí se cobra el paciente duplicado: una atención con identidad equivocada o registrada dos veces termina en glosa. Por eso la historia única no es solo un asunto clínico: la apuesta 5 de Andina 2029 —cero glosas por calidad de la información— depende de la misma costura.',
+    rel:'En ATAM, el escenario de evolubilidad (E3) ataca el mismo problema que el episodio del cambio de esquema. En la herramienta de costura, FACT-SALUD es uno de los consumidores del evento de atención cerrada (opción C). En ArchiMate corresponde a la capacidad «Facturación de servicios» de la vista 1.',
+    c4note:'La lectura directa de tablas es una relación entre contenedores que no pasa por ninguna interfaz. En el Nivel 2 se dibuja igual, y se marca: los acoplamientos que no se dibujan son los que rompen los cambios de esquema.'
+  }
+};
+
+const CASOS = {
+  banco:{ containers:containers, nota:'Banco Colombia Digital es el caso transversal del curso: core T24, Kubernetes en Azure y Kafka.' },
+  salud:{ containers:containersSalud, nota:'Red Salud Andina es el caso de respaldo: una IPS de 24 sedes con dos HIS distintos. El Nivel 2 muestra la costura de la alternativa A y dice qué cambia con la B.' }
+};
+const htmlBanco = { view1: document.getElementById('view1').innerHTML, view2: document.getElementById('view2').innerHTML };
+const htmlSaludV = { view1: view1Salud, view2: view2Salud };
+let caso = 'banco';
+
+function setCaso(nuevo) {
+  if (!CASOS[nuevo]) return;
+  caso = nuevo;
+  const src = nuevo === 'salud' ? htmlSaludV : htmlBanco;
+  document.getElementById('view1').innerHTML = src.view1;
+  document.getElementById('view2').innerHTML = src.view2;
+  document.getElementById('compPanel').innerHTML = '';
+  backToLevel1();
+  document.querySelectorAll('.case-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.caso === nuevo)));
+  document.getElementById('caseNote').textContent = CASOS[nuevo].nota;
+  try {
+    const u = new URL(window.location.href);
+    if (nuevo === 'salud') u.searchParams.set('caso', 'red-salud'); else u.searchParams.delete('caso');
+    window.history.replaceState(null, '', u);
+  } catch (e) {}
+}
+
 // ── NAVIGATION ──
 let history = ['view1'];
 
@@ -455,7 +715,7 @@ function goLevel2() {
 }
 
 function goLevel3(key) {
-  const d = containers[key];
+  const d = CASOS[caso].containers[key];
   if (!d) return;
 
   const panel = document.getElementById('compPanel');
@@ -542,6 +802,13 @@ function backToLevel1() {
   document.getElementById('view1').classList.add('active');
   window.scrollTo({top:0, behavior:'smooth'});
 }
+
+document.querySelectorAll('.case-btn').forEach(b => b.addEventListener('click', () => setCaso(b.dataset.caso)));
+(function () {
+  let inicial = 'banco';
+  try { if (new URLSearchParams(window.location.search).get('caso') === 'red-salud') inicial = 'salud'; } catch (e) {}
+  setCaso(inicial);
+})();
 </script>
 </body>
 </html>
