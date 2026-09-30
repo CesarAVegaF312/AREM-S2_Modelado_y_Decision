@@ -1,0 +1,2374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"/>
+<meta name="theme-color" content="#0E181D"/>
+<meta name="color-scheme" content="light"/>
+<title>AREM S2 · Modelado y Decisión — Presentación</title>
+<style>
+:root{
+  --osc:#1C2B33; --txt:#31424B; --gris:#6B7A82; --claro:#EFF2F3; --linea:#CFDAE0; --crema:#F6EAE1;
+  --coral:#C2622C; --teal:#46707E; --teal2:#34535D; --cafe:#9E5C3B;
+  --serif:'Cambria','Georgia','Times New Roman',serif;
+  --sans:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;
+  --sombra:0 18px 48px rgba(28,43,51,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#0E181D;font-family:var(--sans);color:var(--txt);overflow:hidden}
+body.notas-abiertas{overflow:auto}
+
+/* ── escenario: una diapositiva de 1280×720 escalada al viewport ── */
+#escenario{position:fixed;inset:0;overflow:hidden}
+#lienzo{width:1280px;height:720px;position:absolute;left:50%;top:calc(50% - 17px);
+  transform-origin:center;background:#fff;box-shadow:var(--sombra);border-radius:6px;overflow:hidden}
+body.sin-barra #lienzo{top:50%}
+.slide{position:absolute;inset:0;padding:34px 46px 30px;display:none;flex-direction:column;background:#fff}
+.slide.viva{display:flex}
+.slide.entra{animation:entrar .42s cubic-bezier(.22,.61,.36,1)}
+.slide.entra-atras{animation:entrar-atras .42s cubic-bezier(.22,.61,.36,1)}
+@keyframes entrar{from{opacity:0;transform:translateX(26px) scale(.995)}to{opacity:1;transform:none}}
+@keyframes entrar-atras{from{opacity:0;transform:translateX(-26px) scale(.995)}to{opacity:1;transform:none}}
+
+/* ── encabezado ── */
+.kicker{font-size:12.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--coral)}
+.slide h1{font-family:var(--serif);font-size:38px;line-height:1.14;color:var(--osc);margin:6px 0 0;font-weight:700}
+.regla{height:4px;width:74px;border-radius:2px;margin:14px 0 0;background:var(--coral)}
+.slide[data-bloque="1"] .regla{background:var(--coral)}
+.slide[data-bloque="2"] .regla{background:var(--teal)}
+.slide[data-bloque="3"] .regla{background:var(--cafe)}
+.slide[data-bloque="2"] .kicker{color:var(--teal)}
+.slide[data-bloque="3"] .kicker{color:var(--cafe)}
+.cuerpo{flex:1;display:flex;flex-direction:column;gap:14px;justify-content:center;padding:14px 0 6px;min-height:0}
+.pie{font-size:11.5px;color:var(--gris);border-top:1px solid var(--linea);padding-top:8px}
+
+/* ── animación de entrada de cada elemento ── */
+[data-anim]{opacity:0;transform:translateY(14px)}
+.slide.viva [data-anim]{animation:surgir .5s cubic-bezier(.22,.61,.36,1) forwards;animation-delay:calc(var(--i,0) * 90ms + 120ms)}
+@keyframes surgir{to{opacity:1;transform:none}}
+
+/* ── tarjetas ── */
+.tarjetas{display:grid;gap:16px;grid-auto-flow:column;grid-auto-columns:1fr}
+.tarjeta{border-radius:12px;overflow:hidden;background:var(--claro);display:flex;flex-direction:column;
+  box-shadow:0 2px 10px rgba(28,43,51,.06);transition:transform .25s,box-shadow .25s}
+.tarjeta:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(28,43,51,.13)}
+.tarjeta > h2{font-family:var(--serif);font-size:19px;color:#fff;padding:11px 16px;font-weight:700;line-height:1.2}
+.tarjeta .contenido{padding:14px 16px;font-size:15.5px;line-height:1.45;display:flex;flex-direction:column;gap:8px}
+.tenue{color:var(--gris);font-size:14px}
+.etiqueta{color:var(--gris);font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.c-osc{background:var(--osc)} .c-gris{background:var(--gris)}
+.c-coral{background:var(--coral)} .c-teal{background:var(--teal)} .c-teal2{background:var(--teal2)} .c-cafe{background:var(--cafe)}
+
+/* ── pasos ── */
+.pasos{display:flex;flex-direction:column;gap:9px}
+.paso{display:grid;grid-template-columns:54px 1fr;align-items:stretch;border-radius:10px;overflow:hidden;
+  background:var(--claro);transition:transform .2s}
+.paso:hover{transform:translateX(3px)}
+.paso .n{background:var(--coral);color:#fff;font-family:var(--serif);font-size:23px;font-weight:700;
+  display:grid;place-items:center}
+.slide[data-bloque="3"] .paso .n{background:var(--cafe)}
+.paso .txt{padding:9px 16px}
+.paso .txt b{display:block;color:var(--osc);font-size:16px;margin-bottom:2px}
+.paso .txt span{font-size:15px;line-height:1.4}
+
+/* ── tabla ── */
+table{width:100%;border-collapse:collapse;font-size:15px;background:#fff;border-radius:10px;overflow:hidden;
+  box-shadow:0 2px 10px rgba(28,43,51,.06)}
+thead th{background:var(--osc);color:#fff;text-align:left;padding:9px 14px;font-size:13.5px;font-weight:700}
+tbody td{padding:9px 14px;border-bottom:1px solid var(--linea);vertical-align:top;line-height:1.38}
+tbody tr:nth-child(odd){background:var(--claro)}
+tbody tr:last-child td{border-bottom:none}
+tbody td:first-child{font-weight:700;color:var(--osc)}
+table.comparativa td:nth-child(2){color:#8A3A2A}
+table.comparativa td:nth-child(3){color:#1F5A3A}
+
+/* ── banda ── */
+.banda{background:var(--osc);color:#fff;border-radius:10px;padding:14px 20px;font-family:var(--serif);
+  font-size:18px;line-height:1.35}
+.banda.pausa{background:linear-gradient(100deg,var(--coral),#A64F22)}
+
+/* ── columnas ── */
+.columnas{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:22px}
+.columna .barra{height:5px;border-radius:3px;margin-bottom:12px}
+.columna .k{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.columna h2{font-family:var(--serif);font-size:27px;color:var(--osc);margin:4px 0 8px}
+.columna p{font-size:15.5px;line-height:1.4}
+
+/* ── cita y cajas ── */
+.cita-cajas{display:grid;grid-template-columns:5fr 7fr;gap:20px;align-items:start}
+.cita{background:var(--crema);border-radius:12px;padding:22px 24px;font-family:var(--serif);font-size:19px;
+  line-height:1.35;height:100%}
+.cita .autor{font-family:var(--sans);font-size:12.5px;color:var(--gris);font-weight:700;margin-top:14px}
+.cajas{display:flex;flex-direction:column;gap:12px}
+.caja{background:var(--claro);border-left:6px solid var(--teal2);border-radius:0 10px 10px 0;padding:12px 18px}
+.caja h2{font-family:var(--serif);font-size:19px;margin-bottom:5px}
+.caja ul{list-style:none;font-size:14.5px;line-height:1.45}
+.caja li::before{content:"· ";color:var(--gris)}
+.b-coral{border-left-color:var(--coral)} .b-teal{border-left-color:var(--teal)}
+.b-teal2{border-left-color:var(--teal2)} .b-cafe{border-left-color:var(--cafe)}
+.caja.b-coral h2{color:var(--coral)} .caja.b-teal2 h2{color:var(--teal2)}
+
+/* ── portada y referencias ── */
+.slide.portada{background:var(--osc);color:#fff;justify-content:center;padding:60px 70px}
+.slide.portada .kicker{color:var(--coral)}
+.slide.portada h1{color:#fff;font-size:58px;margin:10px 0 18px}
+.slide.portada .sub{font-family:var(--serif);font-size:26px;color:#CFDAE0}
+.slide.portada .lema{font-size:17px;color:#8FA5AF;margin-top:16px;max-width:60ch}
+.slide.portada .docente{margin-top:auto;font-size:15px;font-weight:700}
+.slide.portada .pie{border-top-color:rgba(255,255,255,.14);color:#8FA5AF;margin-top:10px}
+.barras{position:absolute;right:70px;top:190px;display:flex;flex-direction:column;gap:14px}
+.barras i{display:block;width:250px;height:22px;border-radius:3px;animation:crecer .7s cubic-bezier(.22,.61,.36,1) backwards}
+.barras i:nth-child(1){background:var(--coral);animation-delay:.15s}
+.barras i:nth-child(2){background:var(--teal);animation-delay:.28s}
+.barras i:nth-child(3){background:var(--cafe);animation-delay:.41s}
+.barras i:nth-child(4){background:var(--teal2);animation-delay:.54s}
+@keyframes crecer{from{transform:scaleX(0);opacity:0;transform-origin:left}to{transform:none;opacity:1}}
+.refs{font-size:14.5px;line-height:1.5;columns:2;column-gap:34px}
+.refs p{break-inside:avoid;margin-bottom:9px;padding-left:18px;text-indent:-18px}
+
+/* ── barra de estado ── */
+#estado{position:fixed;left:0;right:0;bottom:0;height:34px;display:flex;align-items:center;gap:16px;
+  padding:0 14px;background:rgba(14,24,29,.92);color:#C9D6EA;font-size:12.5px;backdrop-filter:blur(4px);
+  transition:transform .25s;z-index:5}
+#estado.oculta{transform:translateY(100%)}
+#estado button{background:transparent;border:1px solid rgba(201,214,234,.35);color:inherit;border-radius:6px;
+  padding:3px 9px;font-size:12px;cursor:pointer;font-family:inherit}
+#estado button:hover{background:rgba(201,214,234,.16)}
+#progreso{position:fixed;top:0;left:0;height:3px;background:var(--coral);z-index:6;transition:width .3s}
+.crece{margin-left:auto}
+
+/* ── índice ── */
+#indice{position:fixed;inset:0;background:rgba(14,24,29,.97);z-index:10;display:none;overflow:auto;padding:34px}
+#indice.abierto{display:block}
+#indice h2{color:#fff;font-family:var(--serif);font-size:24px;margin-bottom:18px}
+.rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:12px}
+.mini{background:#fff;border-radius:8px;padding:12px 14px;cursor:pointer;border:2px solid transparent;text-align:left}
+.mini:hover,.mini:focus-visible{border-color:var(--coral)}
+.mini .num{font-size:11px;font-weight:800;color:var(--gris)}
+.mini .t{font-family:var(--serif);font-size:15px;color:var(--osc);line-height:1.25;margin-top:3px}
+.mini[data-bloque="1"]{border-left:6px solid var(--coral)}
+.mini[data-bloque="2"]{border-left:6px solid var(--teal)}
+.mini[data-bloque="3"]{border-left:6px solid var(--cafe)}
+
+/* ── notas del docente ── */
+#notas{position:fixed;right:0;top:0;bottom:34px;width:390px;background:#13212A;color:#DCE6EA;padding:22px;
+  overflow:auto;transform:translateX(100%);transition:transform .3s;z-index:7;font-size:14.5px;line-height:1.5}
+#notas.abiertas{transform:none}
+#notas h3{font-family:var(--serif);font-size:17px;color:#fff;margin-bottom:10px}
+#notas p{margin-bottom:10px;white-space:pre-wrap}
+#notas .sig{margin-top:16px;padding-top:12px;border-top:1px solid rgba(220,230,234,.18);color:#93AAC9;font-size:13px}
+#notas .codigos{margin-top:16px;padding-top:12px;border-top:1px solid rgba(220,230,234,.18)}
+#notas .codigos h4{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:#93AAC9;margin-bottom:8px}
+#notas .codigos div{margin-bottom:7px;font-size:13.5px;line-height:1.4}
+#notas .codigos b{color:#F0B48A;font-family:var(--serif)}
+
+/* ── glosario completo ── */
+#glosario{position:fixed;inset:0;background:rgba(14,24,29,.97);z-index:10;display:none;overflow:auto;padding:34px}
+#glosario.abierto{display:block}
+#glosario h2{color:#fff;font-family:var(--serif);font-size:24px;margin-bottom:6px}
+#glosario .aclara{color:#93AAC9;font-size:14px;max-width:80ch;margin-bottom:18px}
+.gfamilias{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.gfam{background:#fff;border-radius:10px;padding:14px 16px}
+.gfam h3{font-family:var(--serif);font-size:17px;color:var(--osc);margin-bottom:4px}
+.gfam .de{font-size:12.5px;color:var(--gris);margin-bottom:10px}
+.gfam dl{font-size:14px;line-height:1.4}
+.gfam dt{font-weight:700;color:var(--coral);font-family:var(--serif);margin-top:8px}
+.gfam dd{color:var(--txt)}
+
+/* ── cronómetro del taller ── */
+#crono{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9);z-index:9;display:none;
+  background:rgba(14,24,29,.96);color:#fff;border-radius:18px;padding:30px 44px;text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,.4);animation:aparecer .25s forwards}
+#crono.visible{display:block}
+@keyframes aparecer{to{transform:translate(-50%,-50%) scale(1)}}
+#crono .tiempo{font-family:var(--serif);font-size:96px;font-variant-numeric:tabular-nums;line-height:1}
+#crono .tiempo.poco{color:#F0A28A}
+#crono .rot{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#8FA5AF;margin-bottom:8px}
+#crono .acc{margin-top:16px;display:flex;gap:10px;justify-content:center}
+#crono button{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:8px;
+  padding:6px 14px;cursor:pointer;font-family:inherit}
+
+#ayuda{position:fixed;inset:0;background:rgba(14,24,29,.96);z-index:11;display:none;place-items:center;color:#fff}
+#ayuda.abierta{display:grid}
+#ayuda table{background:transparent;box-shadow:none;color:#fff;max-width:560px;font-size:15px}
+#ayuda td{border-bottom:1px solid rgba(255,255,255,.12);color:#DCE6EA}
+#ayuda td:first-child{color:#fff;font-family:var(--serif);width:150px}
+#ayuda h2{font-family:var(--serif);font-size:26px;margin-bottom:16px;text-align:center}
+
+
+
+/* ── guion con acotaciones (panel N y modo presentador) ── */
+.seg-nota{margin-bottom:6px}
+.acot{font-style:italic;color:#8FA5AF}
+
+/* ── modo presentador: esta ventana lleva el guion, la vista previa y los controles;
+      la otra, la que se comparte, solo las diapositivas ── */
+#pview,#pinfo{display:none}
+body.presenter #estado,body.presenter #notas,body.presenter #progreso,body.presenter #crono{display:none !important}
+body.presenter{background:#0B1318}
+body.presenter #lienzo{border:1px solid #2E4550;border-radius:8px}
+body.presenter #pview{display:flex;flex-direction:column;position:fixed;top:16px;right:16px;bottom:16px;width:calc(44vw - 48px);
+  background:#13212A;border:1px solid #2E4550;border-radius:10px;color:#DCE6EA;z-index:8}
+#pview header{padding:14px 20px;border-bottom:1px solid #2E4550;font-size:13px;font-weight:800;letter-spacing:.1em;color:#F0B48A;
+  display:flex;justify-content:space-between;gap:10px}
+#pview header span{color:#93AAC9;font-weight:600;letter-spacing:0}
+#pnotas{flex:1;overflow:auto;padding:18px 22px;font:21px/1.5 var(--sans)}
+#pnotas p{margin:0 0 14px}
+#pcods{border-top:1px solid #2E4550;padding:12px 22px;font-size:14px;color:#C5D0E0;max-height:26%;overflow:auto}
+#pcods b{color:#F0B48A;font-family:var(--serif)}
+#pcods div{margin-bottom:6px}
+body.presenter #pinfo{display:grid;position:fixed;left:16px;top:calc(58vh + 16px);width:56vw;gap:12px;color:#C5D0E0;font-size:16px;z-index:8}
+#pinfo .fila{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#pinfo button{font:700 17px var(--sans);background:#1E2F38;color:#fff;border:1px solid #2E4550;border-radius:8px;padding:11px 20px;cursor:pointer}
+#pinfo button.grande{background:var(--coral);border-color:var(--coral)}
+#pinfo button.chico{font-size:13px;padding:6px 12px}
+#pinfo .reloj{font:700 34px var(--serif);color:#fff;font-variant-numeric:tabular-nums}
+#pinfo .pos{font:700 19px var(--sans);color:#fff}
+#pinfo .ritmo{font-size:14px;font-weight:700;padding:3px 10px;border-radius:12px;background:#1E2F38}
+#pinfo .ritmo.bien{color:#9FD5A8} #pinfo .ritmo.tarde{color:#F0A28A} #pinfo .ritmo.pronto{color:#F0D28A}
+#pinfo .sigue,#pinfo .sinc{color:#8FA5AF;font-size:14px}
+#phelp{position:fixed;right:16px;bottom:48px;width:min(480px,calc(100vw - 32px));background:#fff;color:var(--txt);border-radius:10px;
+  padding:16px 18px;z-index:12;box-shadow:0 8px 28px rgba(0,0,0,.35);font-size:15px;line-height:1.45}
+#phelp ol{margin:8px 0 0;padding-left:20px;display:grid;gap:6px}
+#phelp button{margin-top:12px;font:600 13px var(--sans);background:var(--osc);color:#fff;border:0;border-radius:6px;padding:6px 12px;cursor:pointer}
+@media (max-width: 760px){ body.presenter #pview,body.presenter #pinfo{position:static;width:auto} }
+
+/* ══════════════ plataforma: que en el teléfono no se note que es una web ══════════════ */
+html { -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; overscroll-behavior: none; }
+button, [role="button"], .mini { touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+#escenario { touch-action: pan-y; }              /* el cambio de diapositiva se lleva el eje horizontal */
+#estado button, .mini { transition: transform 120ms cubic-bezier(.22,.61,.36,1), background 120ms; }
+#estado button:active, .mini:active { transform: scale(.97); }
+/* el dedo no tiene hover: sin esto, el estado se queda pegado tras tocar */
+@media (hover: none), (pointer: coarse) {
+  .tarjeta:hover { transform: none; box-shadow: 0 2px 10px rgba(28,43,51,.06); }
+  .paso:hover { transform: none; }
+  .mini:hover { border-color: transparent; }
+  #estado button:hover { background: transparent; }
+}
+
+/* ══════════════ móvil: una diapositiva por pantalla, en vertical ══════════════ */
+#b-lectura { display: none; }
+@media (max-width: 760px) {
+  html, body { height: auto; overflow: auto; background: #0E181D; }
+  #escenario { position: static; overflow: visible; }
+  #lienzo { position: static; width: 100%; height: auto; min-height: 100dvh; transform: none !important;
+            border-radius: 0; box-shadow: none; background: transparent; }
+  .slide { position: relative; min-height: calc(100dvh - 62px); background: #fff;
+           padding: calc(22px + env(safe-area-inset-top, 0px)) 18px 26px; }
+  .cuerpo { justify-content: flex-start; gap: 12px; }
+  .slide.viva { animation: entrar-movil .28s cubic-bezier(.22,.61,.36,1); }
+  @keyframes entrar-movil { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  /* el texto, a su tamaño real */
+  .slide h1 { font-size: 26px; }
+  .slide.portada h1 { font-size: 34px; }
+  .slide.portada .sub { font-size: 19px; }
+  .barras { display: none; }
+  .kicker { font-size: 11.5px; }
+  .tarjeta > h2, .caja h2 { font-size: 17px; }
+  .tarjeta .contenido, .columna p, .paso .txt span { font-size: 15.5px; }
+  .banda { font-size: 16px; padding: 12px 16px; }
+  .cita { font-size: 17px; padding: 18px; }
+  .pie { font-size: 12px; }
+
+  /* de tres columnas a una */
+  .tarjetas, .columnas { grid-auto-flow: row; grid-auto-columns: auto; }
+  .cita-cajas { grid-template-columns: 1fr; }
+  .refs { columns: 1; }
+  .paso { grid-template-columns: 40px 1fr; }
+  .paso .n { font-size: 19px; }
+  .gfamilias { grid-template-columns: 1fr; }
+
+  /* las tablas se desplazan de lado en vez de encogerse hasta ser ilegibles */
+  .cuerpo > div { overflow-x: auto; overscroll-behavior-x: contain; }
+  table { font-size: 14px; min-width: 520px; }
+
+  /* la barra: a la medida del pulgar y por encima del indicador de inicio */
+  #estado { position: fixed; height: auto; flex-wrap: wrap; gap: 8px 12px;
+            padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); }
+  #estado button { padding: 8px 13px; min-height: 40px; }
+  #titulo-actual, #desfase { display: none; }
+  #cuenta { font-weight: 700; }
+  #b-lectura { display: inline-block; }
+  #notas, #indice, #glosario { width: 100%; top: 0; bottom: 0;
+            padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+  #crono { padding: 24px 28px; }
+  #crono .tiempo { font-size: 64px; }
+
+  /* ── modo lectura: las veinte, una debajo de otra ── */
+  body.lectura .slide { display: flex !important; min-height: 0;
+                        border-radius: 12px; margin: 0 10px 14px; }
+  body.lectura .slide.viva { animation: none; }
+  body.lectura [data-anim] { opacity: 1 !important; transform: none !important; animation: none !important; }
+  body.lectura #lienzo { padding: 8px 0 96px; }
+  body.lectura #b-ant, body.lectura #b-sig, body.lectura #cuenta, body.lectura #progreso { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  [data-anim]{opacity:1;transform:none}
+}
+@media print{
+  body{background:#fff;overflow:visible}
+  #estado,#indice,#notas,#crono,#progreso,#ayuda,#glosario{display:none !important}
+  #escenario{position:static;display:block}
+  #lienzo{transform:none !important;box-shadow:none;border-radius:0}
+  .slide{display:flex !important;position:relative;page-break-after:always;width:1280px;height:720px}
+  [data-anim]{opacity:1 !important;transform:none !important;animation:none !important}
+  @page{size:1280px 720px;margin:0}
+}
+</style>
+</head>
+<body>
+
+<div id="progreso"></div>
+<div id="escenario"><div id="lienzo" aria-live="polite"></div></div>
+
+<div id="estado">
+  <button id="b-ant" aria-label="Diapositiva anterior">←</button>
+  <span id="cuenta" aria-live="off">1 / 20</span>
+  <button id="b-sig" aria-label="Diapositiva siguiente">→</button>
+  <span id="titulo-actual"></span>
+  <span class="crece"></span>
+  <button id="b-crono">Cronómetro (T)</button>
+  <button id="b-presentador">Modo presentador (P)</button>
+  <button id="b-notas">Notas (N)</button>
+  <button id="b-lectura" aria-pressed="false">Lectura</button>
+  <button id="b-indice">Índice (I)</button>
+  <button id="b-glosario">Códigos (G)</button>
+  <button id="b-ayuda" aria-label="Atajos de teclado">?</button>
+</div>
+
+<aside id="notas" aria-label="Notas del docente">
+  <h3 id="notas-tit"></h3>
+  <p id="notas-txt"></p>
+  <div class="sig" id="notas-sig"></div>
+  <div class="codigos" id="notas-cod"></div>
+</aside>
+
+
+
+<div id="glosario" role="dialog" aria-label="Glosario de códigos">
+  <h2>De dónde sale cada código</h2>
+  <p class="aclara">Los formatos F-nn son del curso y su numeración sigue entre sesiones. Los códigos P, M y RA son
+     del ejemplo de Red Salud Andina: en el documento de cada grupo significarán otra cosa. R0, R1 y R2 no son
+     riesgos: son los tres momentos de la revisión de cumplimiento.</p>
+  <div class="gfamilias" id="gfamilias"></div>
+</div>
+
+<div id="indice" role="dialog" aria-label="Índice de diapositivas">
+  <h2>Índice de la sesión</h2>
+  <div class="rejilla" id="rejilla"></div>
+</div>
+
+<div id="crono" role="timer" aria-live="off">
+  <div class="rot">Taller en salas · ajústelo al tiempo que le quede</div>
+  <div class="tiempo" id="crono-t">27:00</div>
+  <div class="acc">
+    <button id="crono-menos" aria-label="Cinco minutos menos">−5</button>
+    <button id="crono-play">Iniciar</button>
+    <button id="crono-mas" aria-label="Cinco minutos más">+5</button>
+    <button id="crono-cerrar">Cerrar (T)</button>
+  </div>
+</div>
+
+<div id="ayuda" role="dialog" aria-label="Atajos de teclado">
+  <div>
+    <h2>Atajos</h2>
+    <table><tbody>
+      <tr><td>← → · espacio</td><td>Moverse entre diapositivas</td></tr>
+      <tr><td>Inicio · Fin</td><td>Primera y última</td></tr>
+      <tr><td>N</td><td>Notas del docente, en esta misma pantalla</td></tr>
+      <tr><td>P</td><td>Modo presentador: abra el archivo en otra ventana, pulse P allí y comparta solo la de las diapositivas</td></tr>
+      <tr><td>I</td><td>Índice</td></tr>
+      <tr><td>L</td><td>En el teléfono: leer las diapositivas de corrido</td></tr>
+      <tr><td>G</td><td>Glosario: de dónde sale cada código</td></tr>
+      <tr><td>T</td><td>Cronómetro del taller, ajustable</td></tr>
+      <tr><td>B</td><td>Barra inferior</td></tr>
+      <tr><td>F</td><td>Pantalla completa</td></tr>
+      <tr><td>?</td><td>Esta ayuda</td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<script>
+const SLIDES = [
+ {
+  "tipo": "portada",
+  "bloque": 0,
+  "kicker": "Maestría · Espacio académico",
+  "titulo": "Arquitectura Empresarial",
+  "subtitulo": "Sesión 2 — Unidad 2 · Presentación del Reto",
+  "lema": "Modelado formal y evaluación de alternativas: cómo se ve, y qué cuesta.",
+  "pie": "Encuentro sincrónico · 2 horas · TOGAF® Standard, 10.ª edición · ArchiMate® 3.2",
+  "codigos": [],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 0,
+  "kicker": "El reto de la Unidad 2 · Actividades en la plataforma",
+  "titulo": "Dos caminos defendibles, presupuesto para uno",
+  "bloques": [
+   {
+    "t": "cita_y_cajas",
+    "cita": [
+     "«Tienen razón, pero necesito ver cómo se ve, y necesito saber qué me cuesta.»",
+     "",
+     "Hay dos caminos sobre la mesa y cada área empuja el suyo. Uno es más rápido y compromete el futuro; el otro construye capacidad y no muestra resultados en el horizonte que la dirección espera."
+    ],
+    "autor": "Gerencia de tecnología (CIO) · Red Salud Andina",
+    "cajas": [
+     {
+      "titulo": "Actividad 2.1 · Presentación del reto",
+      "color": "teal2",
+      "lineas": [
+       "Individual · formativa, sin calificación.",
+       "Mapa mental o esquema visual de 1 página que relacione las capas de ArchiMate con los conceptos de la Unidad 1."
+      ]
+     },
+     {
+      "titulo": "Actividad 2.2 · Modelado y evaluación de trade-offs",
+      "color": "coral",
+      "lineas": [
+       "Grupal, de 3 a 4 integrantes · 30 % · 20 horas",
+       "Diagramas ArchiMate exportados como imágenes (PNG o PDF)",
+       "Informe de evaluación arquitectónica en PDF, de máximo 20 páginas, en APA 7",
+       "Convivir con el legado 18 meses es un supuesto del reto"
+      ]
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Rúbrica de la 2.2 (sobre 5,0): vistas ArchiMate 2,0 · evaluación ATAM / trade-offs 1,5 · estrategia de integración y deuda 1,0 · calidad documental 0,5."
+   }
+  ],
+  "pie": "Los **F-nn** son los formatos del curso —las plantillas que preparan cada sección—, con numeración continua entre sesiones: F-05 a F-12 fueron de la Unidad 1, F-13 a F-20 son los de esta y F-21 a F-28 serán los de la Unidad 3. No se suben a la plataforma. · Caso: Red Salud Andina, dossier §5 a §8, §12 y §15.",
+  "codigos": [
+   [
+    "F-13",
+    "Formato del curso · Catálogo de vistas y puntos de vista · En clase · parte 1"
+   ],
+   [
+    "F-20",
+    "Formato del curso · Lista de verificación previa a la Actividad 2.2 · Antes de entregar"
+   ],
+   [
+    "ATAM",
+    "Architecture Tradeoff Analysis Method: el método con el que se evalúan las alternativas (Kazman, Klein y Clements, 2000)"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 0,
+  "kicker": "Cómo vamos a usar las dos horas",
+  "titulo": "Primero qué significa, después ejemplos, después ustedes",
+  "bloques": [
+   {
+    "t": "columnas",
+    "items": [
+     {
+      "kicker": "Primero",
+      "titulo": "Significado",
+      "color": "coral",
+      "texto": "Dónde se decide en el método, qué hace que una vista exista y en qué estado está el lenguaje con el que se dibuja."
+     },
+     {
+      "kicker": "Después",
+      "titulo": "Ejemplos",
+      "color": "teal",
+      "texto": "Los mismos formatos que ustedes van a llenar, recorridos paso a paso con Red Salud Andina y con las herramientas."
+     },
+     {
+      "kicker": "Y el resto de la sesión",
+      "titulo": "El hacer",
+      "color": "cafe",
+      "texto": "El taller en salas sobre su propio caso: son las partes 1 y 2 de la Actividad 2.2, la puesta en común y el cierre."
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "El bloque que no se recorta es el tercero. Si los conceptos se alargan, se acortan los ejemplos: están todos en el repositorio para verlos después."
+   }
+  ],
+  "pie": "Una sola actividad en salas, de 30 minutos: el resto de la sesión es para llegar a ella sabiendo qué hacer.",
+  "codigos": [],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 1,
+  "kicker": "Bloque 1 · Dónde se decide",
+  "titulo": "El ADM: representar es una fase, decidir es otra",
+  "bloques": [
+   {
+    "t": "pasos",
+    "numerar": false,
+    "items": [
+     {
+      "titulo": "Fase B · Negocio",
+      "texto": "Cerramos: el modelo operativo y las capacidades de la Unidad 1 dejan de ser hallazgos y se vuelven arquitectura representada."
+     },
+     {
+      "titulo": "Fases C y D · Sistemas y tecnología",
+      "texto": "Desarrollamos: qué sistemas hay, qué información comparten, por dónde se hablan y sobre qué corren."
+     },
+     {
+      "titulo": "Fase E · Oportunidades y soluciones",
+      "texto": "Aquí se decide: se comparan las opciones de solución y se elige, después del análisis de brechas."
+     },
+     {
+      "titulo": "Requisitos · transversal al ADM",
+      "texto": "Los escenarios de calidad son requisitos: se gestionan y se trazan en las tres fases, no son un anexo técnico."
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "F, G y H no son de esta unidad: la F es el roadmap (Unidad 4), la G y la H son gobierno (Unidad 3)."
+   }
+  ],
+  "pie": "No es una cascada: se puede estar en la C y descubrir que algo de la B estaba incompleto. · La rueda del ADM, la misma de la Sesión 1: https://cesaravegaf312.github.io/AREM-S1_Marcos_y_Capacidades-repositorio/interactivos/togaf_adm_interactivo.html",
+  "codigos": [
+   [
+    "Fase B",
+    "Arquitectura de negocio: cierra lo que la Unidad 1 dejó como hallazgos"
+   ],
+   [
+    "Fase E",
+    "Oportunidades y soluciones: la fase donde se comparan las alternativas y se elige"
+   ],
+   [
+    "ADM",
+    "Architecture Development Method: el ciclo de TOGAF, con sus fases A a H"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 1,
+  "kicker": "Bloque 1 · El error que cuesta caro",
+  "titulo": "La decisión no es de la Fase C",
+  "bloques": [
+   {
+    "t": "tarjetas",
+    "items": [
+     {
+      "titulo": "Lo que hacen",
+      "color": "coral",
+      "lineas": [
+       "Ubican la decisión en la fase de aplicaciones y por eso la toman mientras dibujan.",
+       "",
+       "El modelo termina justificando la opción que ya habían elegido: detalle exquisito en un camino, vacío en el otro."
+      ]
+     },
+     {
+      "titulo": "Lo que exige el método",
+      "color": "teal",
+      "lineas": [
+       "Primero se dibuja lo que hay y lo que falta: fases B, C y D con su análisis de brechas.",
+       "",
+       "Después, en la Fase E, se comparan las opciones de solución y se elige."
+      ]
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Dibujar y decidir son dos actos separados. Ese orden es lo único que impide usar el modelo para justificar una decisión ya tomada."
+   }
+  ],
+  "pie": "Cómo se nota en la calificación: si las alternativas aparecen antes del análisis de brechas, decidieron primero y dibujaron después.",
+  "codigos": [
+   [
+    "Fase C",
+    "Sistemas de información —datos y aplicaciones—: aquí se representa, no se decide"
+   ],
+   [
+    "Fase E",
+    "Oportunidades y soluciones: la fase donde se comparan las alternativas y se elige"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 1,
+  "kicker": "Bloque 1 · Qué hace que una vista exista",
+  "titulo": "Interés, vista y punto de vista: la definición del estándar",
+  "bloques": [
+   {
+    "t": "tarjetas",
+    "items": [
+     {
+      "titulo": "Interés",
+      "color": "osc",
+      "lineas": [
+       {
+        "texto": "CONCERN",
+        "etiqueta": true
+       },
+       "Un interés de un actor relevante frente al sistema.",
+       "",
+       {
+        "texto": "«Que la atención no se interrumpa durante la migración.»",
+        "tenue": true
+       }
+      ]
+     },
+     {
+      "titulo": "Vista",
+      "color": "teal2",
+      "lineas": [
+       {
+        "texto": "ARCHITECTURE VIEW",
+        "etiqueta": true
+       },
+       "Una representación del sistema desde la perspectiva de un conjunto de esos intereses.",
+       "",
+       {
+        "texto": "«Qué aplicaciones quedan huérfanas si apagamos HIS-NORTE.»",
+        "tenue": true
+       }
+      ]
+     },
+     {
+      "titulo": "Punto de vista",
+      "color": "cafe",
+      "lineas": [
+       {
+        "texto": "ARCHITECTURE VIEWPOINT",
+        "etiqueta": true
+       },
+       "La especificación de las convenciones con las que se construye e interpreta esa vista.",
+       "",
+       {
+        "texto": "«Capacidades y servicios; nada de nodos ni artefactos.»",
+        "tenue": true
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Si una vista es una representación desde la perspectiva de un interés, una representación sin interés detrás no es una vista: es decoración."
+   }
+  ],
+  "pie": "ISO/IEC/IEEE 42010:2022, adoptada por TOGAF 10. · Antes de abrir la herramienta: ¿quién mira esto, qué le preocupa y qué va a decidir después de verlo?",
+  "codigos": [
+   [
+    "HIS-NORTE",
+    "Sistema asistencial de las 6 sedes adquiridas en 2024. Sin interfaz con el laboratorio."
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 1,
+  "kicker": "Bloque 1 · Criterio de admisión al informe",
+  "titulo": "Vista rechazada y vista admitida",
+  "bloques": [
+   {
+    "t": "tabla",
+    "comparativa": true,
+    "filas": [
+     [
+      "",
+      "Rechazada",
+      "Admitida"
+     ],
+     [
+      "Nombre",
+      "«Vista de aplicaciones»",
+      "«Qué aplicaciones quedan huérfanas si apagamos HIS-NORTE»"
+     ],
+     [
+      "Actor e interés",
+      "Actor: — · Interés: —",
+      "Actor: comité de inversión · Interés: que la atención no se interrumpa"
+     ],
+     [
+      "Decisión que habilita",
+      "Ninguna",
+      "Alcance y orden de la migración"
+     ]
+    ]
+   },
+   {
+    "t": "tabla",
+    "filas": [
+     [
+      "Las cuatro vistas del informe",
+      "Para qué existe cada una"
+     ],
+     [
+      "Motivación y estrategia",
+      "Quién empuja el cambio y qué resultado espera."
+     ],
+     [
+      "Negocio",
+      "Qué procesos toca la decisión y quién los opera."
+     ],
+     [
+      "Aplicación con tecnología",
+      "Dónde está la costura: aquí se comparan las dos alternativas."
+     ],
+     [
+      "Implementación y migración",
+      "Paquetes de trabajo, entregables y plateaus: el camino, no solo el destino."
+     ]
+    ]
+   }
+  ],
+  "pie": "**Una vista útil es una vista que, si la borran, deja una decisión sin sustento.** · Prohibido nombrar una vista «vista de negocio»: eso no es un nombre, es una categoría.",
+  "codigos": [
+   [
+    "HIS-NORTE",
+    "Sistema asistencial de las 6 sedes adquiridas en 2024. Sin interfaz con el laboratorio."
+   ],
+   [
+    "costura",
+    "El punto donde los dos caminos difieren: lo que se pone entre sistemas que tienen que ponerse de acuerdo"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 1,
+  "kicker": "Bloque 1 · Correspondencia, no equivalencia",
+  "titulo": "Las capas de ArchiMate no son las capas del curso",
+  "bloques": [
+   {
+    "t": "tarjetas",
+    "items": [
+     {
+      "titulo": "Las cuatro capas del curso",
+      "color": "teal2",
+      "lineas": [
+       "Negocio",
+       "Aplicaciones",
+       "Datos",
+       "Tecnología"
+      ]
+     },
+     {
+      "titulo": "Las capas de ArchiMate 3.2",
+      "color": "teal",
+      "lineas": [
+       "Motivación · Estrategia",
+       "Negocio",
+       "Aplicación",
+       "Tecnología",
+       "Implementación y migración"
+      ]
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Los datos no son una capa en ArchiMate: los objetos de datos viven en la capa de aplicación. Traducir mecánicamente deja la motivación y la estrategia sin representar, que son justo la primera vista que pide la rúbrica."
+   }
+  ],
+  "pie": "La capa de implementación y migración es la cuarta vista que exige el entregable: paquetes de trabajo, entregables y plateaus. Un comité no aprueba un destino, aprueba un camino.",
+  "codigos": [],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 1,
+  "kicker": "Bloque 1 · El estado del idioma",
+  "titulo": "El estándar se movió el 27 de abril de 2026, y la herramienta no",
+  "bloques": [
+   {
+    "t": "tabla",
+    "filas": [
+     [
+      "ArchiMate 3.2 · octubre de 2022 · lo que implementa Archi 5.10 · 3 sep 2026",
+      "ArchiMate 4 · 27 de abril de 2026"
+     ],
+     [
+      "Un poco más de 60 conceptos",
+      "40 conceptos: una poda cercana al 30 %"
+     ],
+     [
+      "Capas, en forma de pastel",
+      "Dominios y un dominio común, en hexágono"
+     ],
+     [
+      "Proceso de negocio, de aplicación y de tecnología, separados",
+      "Un único concepto de Process"
+     ],
+     [
+      "Relaciones sin multiplicidad",
+      "Multiplicidad: «todo servicio realizado por al menos un proceso»"
+     ]
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "La decisión del curso: se entrega en 3.2, porque es lo que soporta la herramienta, y se declara en una línea en la sección de método. La estructura profunda no cambió —activo, comportamiento, pasivo—, así que lo que aprenden hoy no se pierde."
+   },
+   {
+    "t": "banda",
+    "texto": "¿Modelar en 3.2 cuando el estándar publicado es 4 es deuda arquitectónica? Sí, y es legítima. Lo que la vuelve peligrosa no es existir: es no estar declarada."
+   }
+  ],
+  "pie": "Fuentes primarias verificadas en septiembre de 2026: The Open Group, ArchiMate 4 Specification (C260), y el historial de versiones de Archi.",
+  "codigos": [],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 1,
+  "kicker": "La Actividad 2.1, guiada",
+  "titulo": "Un mapa mental de una página, individual y sin nota",
+  "bloques": [
+   {
+    "t": "tarjetas",
+    "items": [
+     {
+      "titulo": "Qué tiene que mostrar",
+      "color": "teal",
+      "lineas": [
+       "La correspondencia entre las capas de ArchiMate y los conceptos de la Unidad 1: modelo operativo, capacidades y brechas.",
+       "",
+       {
+        "texto": "Así no: la lista de las capas de ArchiMate copiada del estándar. Eso es un resumen, no una correspondencia.",
+        "tenue": true
+       }
+      ]
+     },
+     {
+      "titulo": "Una relación resuelta",
+      "color": "coral",
+      "lineas": [
+       "**Capacidad de la Unidad 1** → en ArchiMate se representa como capacidad (estrategia) y se realiza con servicios de aplicación.",
+       "",
+       {
+        "texto": "Lo que se evalúa es que la flecha diga por qué, no que el diagrama sea bonito.",
+        "tenue": true
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "t": "tabla",
+    "filas": [
+     [
+      "Qué entregan",
+      "Con qué",
+      "Cuándo"
+     ],
+     [
+      "1 página, individual, sin nota",
+      "Las capas de la diapositiva anterior y el ArchiMate 3.2 Interactivo",
+      "Fuera de clase, antes de la Unidad 3"
+     ]
+    ]
+   },
+   {
+    "t": "banda",
+    "pausa": true,
+    "texto": "Pausa de cuatro minutos. Al regresar empiezan los ejemplos guiados de la 2.2."
+   }
+  ],
+  "pie": "El F-19 es la pauta con la que el docente retroalimenta esta actividad; no se entrega.",
+  "codigos": [
+   [
+    "F-19",
+    "Formato del curso · Rúbrica formativa de la Actividad 2.1 · La usa el docente"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 2,
+  "kicker": "Ejemplo guiado 1 · el lenguaje, en la herramienta",
+  "titulo": "Recorrido por ArchiMate 3.2: elegir el elemento correcto",
+  "bloques": [
+   {
+    "t": "pasos",
+    "numerar": false,
+    "items": [
+     {
+      "titulo": "Motivación · metas, impulsores, principios",
+      "texto": "70 % de clientes digitales activos · reducir el costo por transacción 30 % · una circular del regulador · el principio API-First. Un principio sirve cuando restringe: si toda alternativa lo cumple, está escrito muy general."
+     },
+     {
+      "titulo": "Negocio · actores, roles, objetos",
+      "texto": "Cliente Persona Natural es el actor; Titular de Cuenta, el rol que asume. El objeto de negocio significa algo aunque cambie la aplicación que lo guarda."
+     },
+     {
+      "titulo": "Tecnología · nodos, servicios, artefactos",
+      "texto": "Core T24 · clúster de Kubernetes · tópicos de Kafka. El límite es el servicio de tecnología, no la configuración: no van las réplicas de un pod."
+     },
+     {
+      "titulo": "Relaciones · lo que hace al lenguaje",
+      "texto": "Realización, asignación, composición. La asociación es la relación de último recurso: un modelo lleno de asociaciones no decidió nada."
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "¿Esto actúa, esto ocurre, o sobre esto se actúa? Activo, comportamiento y pasivo resuelven el 90 % de las dudas. Y sobreviven intactos en la versión 4."
+   }
+  ],
+  "pie": "La herramienta abre con Banco Colombia Digital —el caso de alcance de la Sesión 1— y arriba trae el selector para cambiar a Red Salud Andina: https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision/interactivos/archimate_interactivo.html",
+  "codigos": [],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 2,
+  "kicker": "Ejemplo guiado 2 · F-13, campo por campo",
+  "titulo": "Así espero cada vista del informe",
+  "bloques": [
+   {
+    "t": "tabla",
+    "filas": [
+     [
+      "Campo del F-13",
+      "La vista de aplicación de Red Salud Andina, resuelta"
+     ],
+     [
+      "Stakeholder",
+      "Comité de inversión"
+     ],
+     [
+      "Interés (concern)",
+      "Que la atención no se interrumpa durante la migración"
+     ],
+     [
+      "Punto de vista",
+      "Aplicaciones y sus dependencias de datos"
+     ],
+     [
+      "Nombre de la vista",
+      "Qué aplicaciones quedan huérfanas si apagamos HIS-NORTE"
+     ],
+     [
+      "Fase del ADM",
+      "C · datos y aplicaciones"
+     ],
+     [
+      "Capa o dominio",
+      "Aplicación, con los objetos de datos que consume"
+     ],
+     [
+      "ABB (al menos 5)",
+      "Historia clínica · agenda · facturación · laboratorio · índice de pacientes"
+     ],
+     [
+      "Decisión que habilita",
+      "Alcance y orden de la migración"
+     ],
+     [
+      "Supuestos declarados",
+      "El laboratorio B2B no consume la historia clínica (sin verificar · F-12)"
+     ]
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Los elementos se nombran como bloques de arquitectura (ABB) —«motor de reglas de identidad»—, no con el nombre comercial del producto, que es un SBB y se elige en la Fase E."
+   }
+  ],
+  "pie": "Los supuestos declarados salen de la rejilla de vacíos documentales (F-12) que llenaron en la Sesión 1. Un supuesto escrito es trabajo profesional; uno no escrito es un error que nadie ha visto.",
+  "codigos": [
+   [
+    "F-13",
+    "Formato del curso · Catálogo de vistas y puntos de vista · En clase · parte 1"
+   ],
+   [
+    "Fase E",
+    "Oportunidades y soluciones: la fase donde se comparan las alternativas y se elige"
+   ],
+   [
+    "HIS-NORTE",
+    "Sistema asistencial de las 6 sedes adquiridas en 2024. Sin interfaz con el laboratorio."
+   ],
+   [
+    "ADM",
+    "Architecture Development Method: el ciclo de TOGAF, con sus fases A a H"
+   ],
+   [
+    "ABB",
+    "Architecture Building Block: un bloque nombrado por lo que hace, no por el producto. El producto concreto es un SBB y se elige en la Fase E"
+   ],
+   [
+    "SBB",
+    "Solution Building Block: el producto o servicio concreto que realiza un ABB"
+   ],
+   [
+    "concern",
+    "Interés: lo que le preocupa a un actor frente al sistema (ISO/IEC/IEEE 42010)"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 2,
+  "kicker": "Ejemplo guiado 3 · dónde vive la decisión",
+  "titulo": "Por qué la vista de aplicación no alcanza: los cuatro niveles del C4",
+  "bloques": [
+   {
+    "t": "pasos",
+    "numerar": false,
+    "items": [
+     {
+      "titulo": "Nivel 1 · Contexto",
+      "texto": "Las 2 alternativas se ven iguales: el paciente ve lo mismo. Aprobar aquí es aprobar sin entender qué se aprobó."
+     },
+     {
+      "titulo": "Nivel 2 · Contenedor",
+      "texto": "Aquí vive la decisión: qué contenedor nuevo aparece y cómo habla con los que ya estaban. Aquí se dibujan las 2 alternativas, una al lado de la otra."
+     },
+     {
+      "titulo": "Nivel 3 · Componente",
+      "texto": "Aquí se paga: guarda de idempotencia, publicador de eventos de atención, adaptador de cada sistema asistencial, instrumentación."
+     },
+     {
+      "titulo": "Nivel 4 · Código",
+      "texto": "Fuera del alcance de la arquitectura empresarial. No va en el informe."
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Las decisiones se toman en el nivel 2 y se pagan en el nivel 3. Si deciden sin bajar al 3, no saben qué firmaron."
+   }
+  ],
+  "pie": "C4 es de Simon Brown y se usa como zoom, no como entregable: el entregable es ArchiMate, y los dos idiomas no se mezclan en un diagrama. La herramienta: https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision/interactivos/c4_model_interactivo.html",
+  "codigos": [
+   [
+    "Nivel 1",
+    "Nivel del modelo C4 · Contexto: Las 2 alternativas se ven iguales: el paciente ve lo mismo. Aprobar aquí es aprobar sin entender qué se aprobó."
+   ],
+   [
+    "Nivel 2",
+    "Nivel del modelo C4 · Contenedor: Aquí vive la decisión: qué contenedor nuevo aparece y cómo habla con los que ya estaban. Aquí se dibujan las 2 alternativas, una al lado de la otra."
+   ],
+   [
+    "Nivel 3",
+    "Nivel del modelo C4 · Componente: Aquí se paga: guarda de idempotencia, publicador de eventos de atención, adaptador de cada sistema asistencial, instrumentación."
+   ],
+   [
+    "Nivel 4",
+    "Nivel del modelo C4 · Código: Fuera del alcance de la arquitectura empresarial. No va en el informe."
+   ],
+   [
+    "C4",
+    "Modelo de cuatro niveles de zoom de Simon Brown: contexto, contenedor, componente y código"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 2,
+  "kicker": "Ejemplo guiado 4 · F-16, las dos alternativas",
+  "titulo": "Dibujadas al mismo nivel, y con el riesgo que cada una trae",
+  "bloques": [
+   {
+    "t": "tarjetas",
+    "items": [
+     {
+      "titulo": "A · Capa de integración con índice maestro de pacientes",
+      "color": "teal",
+      "lineas": [
+       "Aparece un contenedor nuevo. Los 2 sistemas de historia clínica siguen existiendo y le consultan quién es quién.",
+       "",
+       {
+        "texto": "RIESGO",
+        "etiqueta": true
+       },
+       "Si el umbral de emparejamiento del índice maestro queda mal calibrado, aparecen historias mezcladas o duplicadas: pone en riesgo el escenario de rendimiento y la promesa de historia única.",
+       "",
+       {
+        "texto": "Riesgo de arquitectura: una pieza de la que todo depende. Se atiende con un escenario de disponibilidad.",
+        "tenue": true
+       }
+      ]
+     },
+     {
+      "titulo": "B · Consolidación en un solo sistema asistencial",
+      "color": "cafe",
+      "lineas": [
+       "No aparece contenedor nuevo. Desaparecen las 6 instalaciones de HIS-NORTE.",
+       "",
+       {
+        "texto": "RIESGO",
+        "etiqueta": true
+       },
+       "6 sedes en operación migradas una por una, con 2 personas que conocen el sistema destino: pone en riesgo la continuidad de la atención.",
+       "",
+       {
+        "texto": "Riesgo de proyecto: 6 sedes en operación tocadas una por una. Se atiende de otra manera.",
+        "tenue": true
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Punto de sensibilidad: cuánto dura la convivencia de los 2 sistemas asistenciales. Presupuestada a 18 meses gana la A; si la convivencia se estira a 30, gana la B. Cuando un supuesto tiene ese poder, se declara."
+   }
+  ],
+  "pie": "Las dos alternativas son las del dossier, §15. · Prueba de viabilidad de la que se descarta: La consolidación sería la mejor si la autoridad sanitaria exigiera un registro único con trazabilidad que una capa de integración no garantiza.",
+  "codigos": [
+   [
+    "F-16",
+    "Formato del curso · Ficha comparativa de alternativas y declaración de renuncia · En clase · parte 2"
+   ],
+   [
+    "HIS-NORTE",
+    "Sistema asistencial de las 6 sedes adquiridas en 2024. Sin interfaz con el laboratorio."
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 2,
+  "kicker": "Ejemplo guiado 5 · F-14, los seis campos",
+  "titulo": "Un escenario de calidad, construido campo por campo",
+  "bloques": [
+   {
+    "t": "tabla",
+    "filas": [
+     [
+      "Campo (ATAM)",
+      "Qué se escribe ahí"
+     ],
+     [
+      "Fuente del estímulo",
+      "Quién o qué origina el evento."
+     ],
+     [
+      "Estímulo",
+      "Qué ocurre exactamente."
+     ],
+     [
+      "Artefacto",
+      "Sobre qué parte del sistema ocurre."
+     ],
+     [
+      "Entorno",
+      "En qué condiciones. La palabra clave es «pico»: los sistemas no fallan en promedio."
+     ],
+     [
+      "Respuesta",
+      "Qué debe hacer el sistema."
+     ],
+     [
+      "Medida de respuesta",
+      "Con qué número se verifica que lo hizo."
+     ]
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Y dos campos más que exige el curso: el umbral, aprobado por alguien de negocio —si nadie lo confirmó, se declara como supuesto—, y cómo se verifica automáticamente. «El sistema debe ser rápido» no se puede verificar, no se puede incumplir y por lo tanto no obliga a nada."
+   }
+  ],
+  "pie": "El método es ATAM, de Kazman, Klein y Clements (2000), del Software Engineering Institute.",
+  "codigos": [
+   [
+    "F-14",
+    "Formato del curso · Ficha de escenario de calidad · En clase · parte 2"
+   ],
+   [
+    "ATAM",
+    "Architecture Tradeoff Analysis Method: el método con el que se evalúan las alternativas (Kazman, Klein y Clements, 2000)"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 2,
+  "kicker": "Ejemplo guiado 6 · los tres obligatorios",
+  "titulo": "Tres escenarios de Red Salud Andina, con medida y con verificación",
+  "bloques": [
+   {
+    "t": "tarjetas",
+    "items": [
+     {
+      "titulo": "Disponibilidad",
+      "color": "teal2",
+      "lineas": [
+       {
+        "texto": "MARTES, 10 A.M., PICO",
+        "etiqueta": true
+       },
+       "HIS-NORTE deja de responder en plena consulta externa en una de las 6 sedes adquiridas.",
+       "",
+       "Cero atenciones perdidas: se acepta en modo degradado y se concilia en ≤ 15 min.",
+       "",
+       {
+        "texto": "Verificación: Prueba de caos programada sobre el adaptador.",
+        "tenue": true
+       }
+      ]
+     },
+     {
+      "titulo": "Rendimiento",
+      "color": "teal",
+      "lineas": [
+       {
+        "texto": "300 CONSULTAS CONCURRENTES",
+        "etiqueta": true
+       },
+       "Un médico tratante consulta la historia unificada de un paciente con atenciones en 6 sedes.",
+       "",
+       "p95 ≤ 1,5 s. Percentil, no promedio: el promedio esconde los casos que hacen abandonar el sistema.",
+       "",
+       {
+        "texto": "Verificación: Traza distribuida, percentil por endpoint.",
+        "tenue": true
+       }
+      ]
+     },
+     {
+      "titulo": "Evolubilidad",
+      "color": "cafe",
+      "lineas": [
+       {
+        "texto": "SEDE NUEVA",
+        "etiqueta": true
+       },
+       "Una sede cambia el esquema de su evento de atención.",
+       "",
+       "Ningún consumidor requiere despliegue: contrato versionado y compatible hacia atrás.",
+       "",
+       {
+        "texto": "Verificación: Validación del contrato en la tubería de integración.",
+        "tenue": true
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Y dos que hace diez años no se escribían, que se suman a los tres: **costo de operación** · **componente de inteligencia artificial**. Un componente no determinista sin conjunto de evaluación y sin ruta de degradación no es una decisión: es una apuesta."
+   }
+  ],
+  "pie": "Los tres atributos son obligatorios en la 2.2; tres escenarios de rendimiento son un solo escenario repetido. Colgados de su atributo y con la doble valoración forman el árbol de utilidad, que es el F-15 y se llena fuera de clase.",
+  "codigos": [
+   [
+    "F-15",
+    "Formato del curso · Árbol de utilidad · Fuera de clase"
+   ],
+   [
+    "HIS-NORTE",
+    "Sistema asistencial de las 6 sedes adquiridas en 2024. Sin interfaz con el laboratorio."
+   ],
+   [
+    "Disponibilidad",
+    "Atributo de calidad del ejemplo · escenario con medida «Cero atenciones perdidas: se acepta en modo degradado y se concilia en ≤ 15 min»"
+   ],
+   [
+    "Rendimiento",
+    "Atributo de calidad del ejemplo · escenario con medida «p95 ≤ 1,5 s»"
+   ],
+   [
+    "Evolubilidad",
+    "Atributo de calidad del ejemplo · escenario con medida «Ningún consumidor requiere despliegue: contrato versionado y compatible hacia atrás»"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 2,
+  "kicker": "Ejemplo guiado 7 · construir o consumir",
+  "titulo": "La posición evolutiva descarta alternativas sin discutir gustos",
+  "bloques": [
+   {
+    "t": "pasos",
+    "numerar": false,
+    "items": [
+     {
+      "titulo": "Génesis · IA agéntica",
+      "texto": "No existe producto: quien la necesita la construye. Y por eso su escenario de calidad tiene que ser más exigente que el de cualquier otro componente."
+     },
+     {
+      "titulo": "A medida · Experiencia de usuario",
+      "texto": "Aquí es donde la organización compite. Se construye, y se le dedica el mejor equipo."
+     },
+     {
+      "titulo": "Producto · Bus de integración",
+      "texto": "Hay alternativas maduras y comparables. Se compra o se consume."
+     },
+     {
+      "titulo": "Commodity · Autenticación / IAM",
+      "texto": "Nadie atiende mejor a un paciente por tener identidades propias. Construirlo es quemar presupuesto en algo que no diferencia."
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Si una alternativa propone construir un componente que ya es commodity, se descarta por posición: no por gusto, y no por jerarquía, que es como se estaba resolviendo la discusión del caso."
+   }
+  ],
+  "pie": "El mapa se mueve —lo que hoy es producto mañana es commodity—, así que una decisión lleva fecha de revisión; y la inercia (contratos, licencias, gente formada) también es parte de la decisión. La herramienta: https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision/interactivos/wardley_map_interactivo.html",
+  "codigos": [],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 2,
+  "kicker": "Ejemplo guiado 8 · F-17 y F-18",
+  "titulo": "La costura que se elige, y la deuda que deja",
+  "bloques": [
+   {
+    "t": "tabla",
+    "filas": [
+     [
+      "Patrón (F-17)",
+      "Contrato",
+      "Lo que cuesta"
+     ],
+     [
+      "API síncrona",
+      "Contrato OpenAPI",
+      "Acoplamiento temporal: si el otro no responde, usted tampoco. Idempotencia por clave."
+     ],
+     [
+      "Mensajería",
+      "Cola + outbox transaccional",
+      "Desacopla en el tiempo; se paga con entrega «al menos una vez», y por eso la idempotencia deja de ser opcional."
+     ],
+     [
+      "Eventos",
+      "Streaming + contrato AsyncAPI",
+      "Desacopla al emisor de sus consumidores; se paga con esquema versionado en un registro y con orden garantizado solo por partición."
+     ],
+     [
+      "Capa de agentes",
+      "Herramientas como contrato",
+      "Quien consume no es un sistema sino un agente: límite de autoridad explícito y auditoría de cada invocación."
+     ]
+    ]
+   },
+   {
+    "t": "tabla",
+    "filas": [
+     [
+      "Deuda (F-18)",
+      "La conciliación manual de identidades de paciente, en el caso"
+     ],
+     [
+      "Principal",
+      "La conciliación de identidades de paciente se hace manualmente. Es la brecha que se decidió no cerrar."
+     ],
+     [
+      "Interés",
+      "120 horas-persona al mes en admisiones, más el riesgo clínico de un duplicado. Sin cifra no hay argumento para pagarla."
+     ],
+     [
+      "Vencimiento",
+      "El mes en que el interés acumulado supera el principal. A partir de ahí, no pagarla es peor."
+     ]
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Tres estrategias, y solo tres: pagarla, refinanciarla, declararla."
+   }
+  ],
+  "pie": "**Pagarla**: se cierra la brecha en esta iteración · **Refinanciarla**: aislarla detrás de un adaptador para que no se propague · **Declararla**: y presupuestar el interés. La rúbrica pide al menos dos. · No se elige el patrón más moderno: se elige el que sostiene los escenarios declarados, y los dos formatos se llenan fuera de clase: valen 1,0 de los 5,0.",
+  "codigos": [
+   [
+    "F-17",
+    "Formato del curso · Ficha de la costura de integración · Fuera de clase"
+   ],
+   [
+    "F-18",
+    "Formato del curso · Registro de deuda arquitectónica · Fuera de clase"
+   ],
+   [
+    "costura",
+    "El punto donde los dos caminos difieren: lo que se pone entre sistemas que tienen que ponerse de acuerdo"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 3,
+  "cronometro": true,
+  "kicker": "El hacer · Taller en salas",
+  "titulo": "Las partes 1 y 2 de la Actividad 2.2, sobre su propio caso",
+  "bloques": [
+   {
+    "t": "pasos",
+    "numerar": false,
+    "items": [
+     {
+      "titulo": "Parte 1 · las cuatro vistas (F-13)",
+      "texto": "Una por familia, con la fila completa: stakeholder, interés, punto de vista, nombre, fase, capa, 5 ABB o más, decisión y supuestos. No dibujen: 15 minutos no alcanzan, y dibujar antes de decidir obliga a dibujar dos veces."
+     },
+     {
+      "titulo": "Parte 1 · la costura",
+      "texto": "Sobre la vista de aplicación, el punto exacto donde sus dos caminos difieren. Denle un nombre. No va encima del sistema heredado: va en lo que ustedes construyen alrededor."
+     },
+     {
+      "titulo": "Parte 2 · tres escenarios (F-14)",
+      "texto": "Uno de disponibilidad, uno de rendimiento y uno de evolubilidad, con los seis campos, la medida, el umbral y cómo se verifica."
+     },
+     {
+      "titulo": "Parte 2 · alternativas y renuncia (F-16)",
+      "texto": "Las dos alternativas en una frase cada una, con sus riesgos, su punto de sensibilidad y la prueba de viabilidad de la que descartan. Y la renuncia: qué pierden, cuánto vale y a quién le duele."
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "30 minutos: los primeros 15 para la parte 1 y los siguientes 15 para la parte 2. En el minuto 25 escojan quién expone."
+   }
+  ],
+  "pie": "Mis dos preguntas en las salas: ¿qué decisión ayuda a tomar esta vista? y ¿quién va a estar molesto con su decisión, y con razón? · La herramienta de escenarios no deja cerrar la decisión sin la renuncia: https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision/interactivos/atam_escenarios_interactivo.html",
+  "codigos": [
+   [
+    "F-13",
+    "Formato del curso · Catálogo de vistas y puntos de vista · En clase · parte 1"
+   ],
+   [
+    "F-14",
+    "Formato del curso · Ficha de escenario de calidad · En clase · parte 2"
+   ],
+   [
+    "F-16",
+    "Formato del curso · Ficha comparativa de alternativas y declaración de renuncia · En clase · parte 2"
+   ],
+   [
+    "ABB",
+    "Architecture Building Block: un bloque nombrado por lo que hace, no por el producto. El producto concreto es un SBB y se elige en la Fase E"
+   ],
+   [
+    "costura",
+    "El punto donde los dos caminos difieren: lo que se pone entre sistemas que tienen que ponerse de acuerdo"
+   ],
+   [
+    "punto de sensibilidad",
+    "El supuesto del que depende la decisión: si cambia, cambia la respuesta"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 3,
+  "kicker": "Para tener al lado durante el taller",
+  "titulo": "Cómo se llena mal y cómo bien",
+  "bloques": [
+   {
+    "t": "tabla",
+    "comparativa": true,
+    "filas": [
+     [
+      "Campo",
+      "Así no",
+      "Así sí",
+      "Por qué"
+     ],
+     [
+      "Nombre de la vista · F-13",
+      "«Vista de aplicaciones»",
+      "«Qué aplicaciones quedan huérfanas si apagamos HIS-NORTE»",
+      "El primero es una categoría; el segundo dice qué se está mirando."
+     ],
+     [
+      "Decisión que habilita · F-13",
+      "«Entender la arquitectura»",
+      "«Alcance y orden de la migración»",
+      "Si al borrar la vista no queda ninguna decisión sin sustento, la vista sobra."
+     ],
+     [
+      "La costura · F-13",
+      "Marcada encima de HIS-NORTE",
+      "En el índice de pacientes que se pone entre los dos sistemas",
+      "Sobre el heredado las dos alternativas se ven iguales: no hay nada que comparar."
+     ],
+     [
+      "Medida de respuesta · F-14",
+      "«El sistema debe ser rápido»",
+      "«p95 ≤ 1,5 s con 300 consultas concurrentes», en pico",
+      "Sin cifra, sin unidad y sin pico no se puede incumplir, así que no obliga a nada."
+     ],
+     [
+      "Renuncia · F-16",
+      "«Perdemos algo de rendimiento»",
+      "«Renunciamos a la historia única real; vale 120 h-persona al mes; le duele a admisiones»",
+      "Sin cuánto vale y a quién le duele, no evaluaron: describieron."
+     ],
+     [
+      "Patrón y deuda · F-17 y F-18",
+      "«Eventos, porque es lo moderno» · «se mejorará más adelante»",
+      "«Eventos, porque sostienen el escenario de evolubilidad» · «refinanciar: aislar HIS-NORTE detrás de un adaptador»",
+      "El patrón se justifica contra un escenario declarado, y solo hay tres estrategias de deuda."
+     ]
+    ]
+   }
+  ],
+  "pie": "Cada campo tiene una regla que lo invalida. Están todas en el documento de instrumentos, formato por formato.",
+  "codigos": [
+   [
+    "F-13",
+    "Formato del curso · Catálogo de vistas y puntos de vista · En clase · parte 1"
+   ],
+   [
+    "F-14",
+    "Formato del curso · Ficha de escenario de calidad · En clase · parte 2"
+   ],
+   [
+    "F-16",
+    "Formato del curso · Ficha comparativa de alternativas y declaración de renuncia · En clase · parte 2"
+   ],
+   [
+    "F-17",
+    "Formato del curso · Ficha de la costura de integración · Fuera de clase"
+   ],
+   [
+    "F-18",
+    "Formato del curso · Registro de deuda arquitectónica · Fuera de clase"
+   ],
+   [
+    "HIS-NORTE",
+    "Sistema asistencial de las 6 sedes adquiridas en 2024. Sin interfaz con el laboratorio."
+   ],
+   [
+    "costura",
+    "El punto donde los dos caminos difieren: lo que se pone entre sistemas que tienen que ponerse de acuerdo"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 3,
+  "kicker": "Puesta en común",
+  "titulo": "Dos grupos muestran; dos correcciones para todos",
+  "bloques": [
+   {
+    "t": "tarjetas",
+    "items": [
+     {
+      "titulo": "La vista que es un inventario",
+      "color": "coral",
+      "lineas": [
+       "Veinte o treinta elementos del mismo tipo, sin jerarquía y sin relaciones que digan algo.",
+       "",
+       "Síntoma para reconocerla solos: si al agregarle un elemento más no cambia de significado, es un inventario. Una vista pierde sentido cuando le quitan un elemento."
+      ]
+     },
+     {
+      "titulo": "La costura en el lugar equivocado",
+      "color": "teal",
+      "lineas": [
+       "Puesta encima del sistema heredado, como si la decisión fuera qué hacer con el viejo.",
+       "",
+       "Casi nunca lo es: está en la capa que ustedes construyen alrededor. El legado no se toca en esta fase, y hay que convivir con él 18 meses."
+      ]
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Un grupo muestra una vista —actor, interés y decisión, sin explicar el dibujo— y otro lee su renuncia completa, con las tres partes."
+   }
+  ],
+  "pie": "Si la respuesta a «¿a quién le duele?» es «a nadie», no hay trade-off y hay que volver a las alternativas.",
+  "codigos": [
+   [
+    "costura",
+    "El punto donde los dos caminos difieren: lo que se pone entre sistemas que tienen que ponerse de acuerdo"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 0,
+  "kicker": "Cómo se verifica seis meses después",
+  "titulo": "Del escenario de calidad a la función de aptitud",
+  "bloques": [
+   {
+    "t": "pasos",
+    "numerar": false,
+    "items": [
+     {
+      "titulo": "Escenario · F-14",
+      "texto": "Un número y un umbral aprobado por negocio. Sin eso, no hay nada que verificar."
+     },
+     {
+      "titulo": "Instrumentación · OpenTelemetry",
+      "texto": "Estándar de facto: graduó en la CNCF el 21 de mayo de 2026 y sus convenciones ya cubren componentes de IA generativa."
+     },
+     {
+      "titulo": "Función de aptitud · fitness function",
+      "texto": "Una prueba que corre sola y falla cuando la arquitectura se desvía de lo que se decidió. En la Unidad 3 es gobierno; en la Unidad 4, tablero."
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Un escenario que solo se verifica preguntándole a alguien si le parece que va rápido es una declaración de intenciones con formato de requisito."
+   }
+  ],
+  "pie": "Por eso el F-14 tiene una columna que el método original no pide: cómo se verifica. Hoy basta con que no quede vacía. · Ford, Parsons y Kua (2017).",
+  "codigos": [
+   [
+    "F-14",
+    "Formato del curso · Ficha de escenario de calidad · En clase · parte 2"
+   ],
+   [
+    "función de aptitud",
+    "fitness function: una prueba que corre sola y falla cuando la arquitectura se desvía de lo decidido (Ford, Parsons y Kua, 2017)"
+   ],
+   [
+    "OpenTelemetry",
+    "Estándar de instrumentación; graduó en la CNCF el 21 de mayo de 2026"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 0,
+  "kicker": "Mapa de la Actividad 2.2 · la entrega y su rúbrica",
+  "titulo": "Qué se entrega, y de dónde sale cada sección",
+  "bloques": [
+   {
+    "t": "tabla",
+    "filas": [
+     [
+      "Lo que pide la actividad",
+      "Criterio",
+      "Sección del informe",
+      "Formato",
+      "Cuándo"
+     ],
+     [
+      "4 vistas ArchiMate, con 5 elementos o más, relaciones y decisiones",
+      "Vistas · 2,0",
+      "2 · Vistas ArchiMate",
+      "F-13",
+      "En clase, parte 1"
+     ],
+     [
+      "2 alternativas con ATAM: 3 escenarios o más, árbol de utilidad, riesgos y sensibilidad",
+      "ATAM · 1,5",
+      "3.1 a 3.5 · Evaluación",
+      "F-14, F-15, F-16",
+      "Parte 2 · F-15 fuera de clase"
+     ],
+     [
+      "Trade-offs: qué se gana y qué se sacrifica",
+      "ATAM · 1,5",
+      "3.6 y 3.7 · Renuncia y decisión",
+      "F-16",
+      "En clase, parte 2"
+     ],
+     [
+      "Estrategia de integración representada y justificada",
+      "Integración y deuda · 1,0",
+      "4 · Estrategia de integración",
+      "F-17",
+      "Fuera de clase"
+     ],
+     [
+      "Deuda arquitectónica con 2 estrategias de gestión o más",
+      "Integración y deuda · 1,0",
+      "5 · Deuda arquitectónica",
+      "F-18",
+      "Fuera de clase"
+     ],
+     [
+      "Narrativa integrada y APA 7",
+      "Calidad documental · 0,5",
+      "1 y 6 · Contexto y conclusiones",
+      "F-20",
+      "Antes de subir"
+     ]
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Lo que se sube son los diagramas y el informe. Los formatos no se suben: son el borrador de las secciones. El F-20 se pasa antes de subir."
+   }
+  ],
+  "pie": "El mapa completo, con la rúbrica textual y el informe de ejemplo, está en el repositorio de la sesión.",
+  "codigos": [
+   [
+    "F-13",
+    "Formato del curso · Catálogo de vistas y puntos de vista · En clase · parte 1"
+   ],
+   [
+    "F-14",
+    "Formato del curso · Ficha de escenario de calidad · En clase · parte 2"
+   ],
+   [
+    "F-15",
+    "Formato del curso · Árbol de utilidad · Fuera de clase"
+   ],
+   [
+    "F-16",
+    "Formato del curso · Ficha comparativa de alternativas y declaración de renuncia · En clase · parte 2"
+   ],
+   [
+    "F-17",
+    "Formato del curso · Ficha de la costura de integración · Fuera de clase"
+   ],
+   [
+    "F-18",
+    "Formato del curso · Registro de deuda arquitectónica · Fuera de clase"
+   ],
+   [
+    "F-20",
+    "Formato del curso · Lista de verificación previa a la Actividad 2.2 · Antes de entregar"
+   ],
+   [
+    "ATAM",
+    "Architecture Tradeoff Analysis Method: el método con el que se evalúan las alternativas (Kazman, Klein y Clements, 2000)"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "bloque": 0,
+  "kicker": "Cierre · qué sigue",
+  "titulo": "Salen con la mitad difícil hecha",
+  "bloques": [
+   {
+    "t": "tarjetas",
+    "items": [
+     {
+      "titulo": "Lo que se llevan hoy",
+      "color": "teal",
+      "lineas": [
+       "Cuatro vistas con su actor y su interés declarados",
+       "Tres escenarios con número, umbral y forma de verificarlos",
+       "Dos alternativas viables con la renuncia escrita",
+       "",
+       {
+        "texto": "Es el borrador de las secciones 2 y 3: 3,5 de los 5,0. Y es la mitad que no se puede copiar de internet.",
+        "tenue": true
+       }
+      ]
+     },
+     {
+      "titulo": "Lo que falta, fuera de clase",
+      "color": "coral",
+      "lineas": [
+       "El F-15, el árbol de utilidad, y el F-17 y el F-18",
+       "Las cuatro vistas dibujadas en Archi, desde las filas del F-13",
+       "El mapa mental individual de la Actividad 2.1",
+       "",
+       {
+        "texto": "Antes de subir, el F-20 condición por condición.",
+        "tenue": true
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "t": "banda",
+    "texto": "Si esta semana descubren que sus dos alternativas no eran comparables, escríbanme: eso se corrige en veinte minutos ahora, y no se corrige en el informe."
+   }
+  ],
+  "pie": "Todo está en https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision · Nos vemos en la Unidad 3, donde la pregunta es quién decide y cómo se verifica que lo decidido se respeta.",
+  "codigos": [
+   [
+    "F-13",
+    "Formato del curso · Catálogo de vistas y puntos de vista · En clase · parte 1"
+   ],
+   [
+    "F-15",
+    "Formato del curso · Árbol de utilidad · Fuera de clase"
+   ],
+   [
+    "F-17",
+    "Formato del curso · Ficha de la costura de integración · Fuera de clase"
+   ],
+   [
+    "F-18",
+    "Formato del curso · Registro de deuda arquitectónica · Fuera de clase"
+   ],
+   [
+    "F-20",
+    "Formato del curso · Lista de verificación previa a la Actividad 2.2 · Antes de entregar"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ },
+ {
+  "tipo": "referencias",
+  "bloque": 0,
+  "kicker": "Referencias",
+  "titulo": "Fuentes de la sesión",
+  "items": [
+   "Bass, L., Clements, P., & Kazman, R. (2021). *Software architecture in practice* (4.ª ed.). Addison-Wesley.",
+   "Brown, S. (2026). *The C4 model for visualising software architecture*. https://c4model.com",
+   "Cloud Native Computing Foundation. (2026, 21 de mayo). *OpenTelemetry graduates*. https://www.cncf.io",
+   "Ford, N., Parsons, R., & Kua, P. (2017). *Building evolutionary architectures*. O'Reilly.",
+   "Fowler, M. (2004). *StranglerFigApplication*. https://martinfowler.com/bliki/StranglerFigApplication.html",
+   "Hohpe, G., & Woolf, B. (2003). *Enterprise integration patterns*. Addison-Wesley.",
+   "International Organization for Standardization. (2022). *ISO/IEC/IEEE 42010:2022. Software, systems and enterprise — Architecture description*.",
+   "Kazman, R., Klein, M., & Clements, P. (2000). *ATAM: Method for architecture evaluation* (CMU/SEI-2000-TR-004). Software Engineering Institute.",
+   "Lankhorst, M. (2017). *Enterprise architecture at work* (4.ª ed.). Springer. https://doi.org/10.1007/978-3-662-53933-0",
+   "The Open Group. (2022). *ArchiMate® 3.2 Specification* (C227).",
+   "The Open Group. (2022). *TOGAF® Standard, 10th Edition* (C220).",
+   "The Open Group. (2026, 27 de abril). *ArchiMate® 4 Specification* (C260). https://publications.opengroup.org/c260",
+   "Vega Fernández, C. A. (2026). *Caso de respaldo: Red Salud Andina* (organización simulada). Universidad de La Sabana."
+  ],
+  "codigos": [
+   [
+    "ATAM",
+    "Architecture Tradeoff Analysis Method: el método con el que se evalúan las alternativas (Kazman, Klein y Clements, 2000)"
+   ],
+   [
+    "C4",
+    "Modelo de cuatro niveles de zoom de Simon Brown: contexto, contenedor, componente y código"
+   ],
+   [
+    "OpenTelemetry",
+    "Estándar de instrumentación; graduó en la CNCF el 21 de mayo de 2026"
+   ]
+  ],
+  "notas": "",
+  "guion": []
+ }
+];
+const GLOSARIO = [
+ [
+  "F-13",
+  "Formato del curso · Catálogo de vistas y puntos de vista · En clase · parte 1",
+  "formato"
+ ],
+ [
+  "F-14",
+  "Formato del curso · Ficha de escenario de calidad · En clase · parte 2",
+  "formato"
+ ],
+ [
+  "F-15",
+  "Formato del curso · Árbol de utilidad · Fuera de clase",
+  "formato"
+ ],
+ [
+  "F-16",
+  "Formato del curso · Ficha comparativa de alternativas y declaración de renuncia · En clase · parte 2",
+  "formato"
+ ],
+ [
+  "F-17",
+  "Formato del curso · Ficha de la costura de integración · Fuera de clase",
+  "formato"
+ ],
+ [
+  "F-18",
+  "Formato del curso · Registro de deuda arquitectónica · Fuera de clase",
+  "formato"
+ ],
+ [
+  "F-19",
+  "Formato del curso · Rúbrica formativa de la Actividad 2.1 · La usa el docente",
+  "formato"
+ ],
+ [
+  "F-20",
+  "Formato del curso · Lista de verificación previa a la Actividad 2.2 · Antes de entregar",
+  "formato"
+ ],
+ [
+  "Alternativa A",
+  "Alternativa del ejemplo · Capa de integración con índice maestro de pacientes: Un servicio de identificación única del paciente, y HIS-CORE y HIS-NORTE expuestos con APIs sobre el bus ya adquirido. Los 2 sistemas asistenciales siguen vivos.",
+  "alternativa"
+ ],
+ [
+  "Alternativa B",
+  "Alternativa del ejemplo · Consolidación en un solo sistema asistencial: Migrar las 6 sedes adquiridas a HIS-CORE y apagar HIS-NORTE antes de que venza su contrato.",
+  "alternativa"
+ ],
+ [
+  "Nivel 1",
+  "Nivel del modelo C4 · Contexto: Las 2 alternativas se ven iguales: el paciente ve lo mismo. Aprobar aquí es aprobar sin entender qué se aprobó.",
+  "nivel"
+ ],
+ [
+  "Nivel 2",
+  "Nivel del modelo C4 · Contenedor: Aquí vive la decisión: qué contenedor nuevo aparece y cómo habla con los que ya estaban. Aquí se dibujan las 2 alternativas, una al lado de la otra.",
+  "nivel"
+ ],
+ [
+  "Nivel 3",
+  "Nivel del modelo C4 · Componente: Aquí se paga: guarda de idempotencia, publicador de eventos de atención, adaptador de cada sistema asistencial, instrumentación.",
+  "nivel"
+ ],
+ [
+  "Nivel 4",
+  "Nivel del modelo C4 · Código: Fuera del alcance de la arquitectura empresarial. No va en el informe.",
+  "nivel"
+ ],
+ [
+  "Fase B",
+  "Arquitectura de negocio: cierra lo que la Unidad 1 dejó como hallazgos",
+  "fase"
+ ],
+ [
+  "Fase C",
+  "Sistemas de información —datos y aplicaciones—: aquí se representa, no se decide",
+  "fase"
+ ],
+ [
+  "Fase D",
+  "Arquitectura de tecnología: sobre qué corre todo",
+  "fase"
+ ],
+ [
+  "Fase E",
+  "Oportunidades y soluciones: la fase donde se comparan las alternativas y se elige",
+  "fase"
+ ],
+ [
+  "Fase F",
+  "Planeación de la migración: el roadmap, que es de la Unidad 4",
+  "fase"
+ ],
+ [
+  "HIS-CORE",
+  "Sistema asistencial de las 18 sedes propias y de la clínica.",
+  "sistema"
+ ],
+ [
+  "HIS-NORTE",
+  "Sistema asistencial de las 6 sedes adquiridas en 2024. Sin interfaz con el laboratorio.",
+  "sistema"
+ ],
+ [
+  "LIS-LAB",
+  "Sistema del laboratorio. Tiene interfaz con HIS-CORE; con HIS-NORTE, ninguna.",
+  "sistema"
+ ],
+ [
+  "AGENDA-WEB",
+  "Agendamiento de los pacientes por el portal.",
+  "sistema"
+ ],
+ [
+  "FACT-SALUD",
+  "Facturación. Lee directamente las tablas de HIS-CORE, sin contrato de datos.",
+  "sistema"
+ ],
+ [
+  "Disponibilidad",
+  "Atributo de calidad del ejemplo · escenario con medida «Cero atenciones perdidas: se acepta en modo degradado y se concilia en ≤ 15 min»",
+  "escenario"
+ ],
+ [
+  "Rendimiento",
+  "Atributo de calidad del ejemplo · escenario con medida «p95 ≤ 1,5 s»",
+  "escenario"
+ ],
+ [
+  "Evolubilidad",
+  "Atributo de calidad del ejemplo · escenario con medida «Ningún consumidor requiere despliegue: contrato versionado y compatible hacia atrás»",
+  "escenario"
+ ],
+ [
+  "ADM",
+  "Architecture Development Method: el ciclo de TOGAF, con sus fases A a H",
+  "otro"
+ ],
+ [
+  "ABB",
+  "Architecture Building Block: un bloque nombrado por lo que hace, no por el producto. El producto concreto es un SBB y se elige en la Fase E",
+  "otro"
+ ],
+ [
+  "SBB",
+  "Solution Building Block: el producto o servicio concreto que realiza un ABB",
+  "otro"
+ ],
+ [
+  "ATAM",
+  "Architecture Tradeoff Analysis Method: el método con el que se evalúan las alternativas (Kazman, Klein y Clements, 2000)",
+  "otro"
+ ],
+ [
+  "C4",
+  "Modelo de cuatro niveles de zoom de Simon Brown: contexto, contenedor, componente y código",
+  "otro"
+ ],
+ [
+  "MPI",
+  "Índice maestro de pacientes: el servicio que da una identidad única al paciente",
+  "otro"
+ ],
+ [
+  "concern",
+  "Interés: lo que le preocupa a un actor frente al sistema (ISO/IEC/IEEE 42010)",
+  "otro"
+ ],
+ [
+  "costura",
+  "El punto donde los dos caminos difieren: lo que se pone entre sistemas que tienen que ponerse de acuerdo",
+  "otro"
+ ],
+ [
+  "punto de sensibilidad",
+  "El supuesto del que depende la decisión: si cambia, cambia la respuesta",
+  "otro"
+ ],
+ [
+  "función de aptitud",
+  "fitness function: una prueba que corre sola y falla cuando la arquitectura se desvía de lo decidido (Ford, Parsons y Kua, 2017)",
+  "otro"
+ ],
+ [
+  "OpenTelemetry",
+  "Estándar de instrumentación; graduó en la CNCF el 21 de mayo de 2026",
+  "otro"
+ ]
+];
+const DOCENTE = "César Augusto Vega Fernández";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fuerte = s => esc(s).split("**").map((p, i) => i % 2 ? `<b>${p}</b>` : p).join("");
+const linea = l => typeof l === "string" ? (l ? `<div>${fuerte(l)}</div>` : "")
+  : l.etiqueta ? `<div class="etiqueta">${esc(l.texto)}</div>`
+               : `<div class="tenue">${fuerte(l.texto)}</div>`;
+
+// ---------------------------------------------------------------- render
+const BLOQUES = {
+  tarjetas: b => `<div class="tarjetas">${b.items.map(it => `
+      <article class="tarjeta"><h2 class="c-${it.color}">${esc(it.titulo)}</h2>
+      <div class="contenido">${it.lineas.map(linea).join("")}</div></article>`).join("")}</div>`,
+
+  pasos: b => `<div class="pasos">${b.items.map((it, i) => `
+      <div class="paso"><div class="n">${i + 1}</div>
+      <div class="txt"><b>${b.numerar === false ? esc(it.titulo) : (i + 1) + " · " + esc(it.titulo)}</b>
+      <span>${fuerte(it.texto)}</span></div></div>`).join("")}</div>`,
+
+  tabla: b => `<table class="${b.comparativa ? "comparativa" : ""}">
+      <thead><tr>${b.filas[0].map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead>
+      <tbody>${b.filas.slice(1).map(f => `<tr>${f.map(c => `<td>${fuerte(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`,
+
+  banda: b => `<div class="banda${b.pausa ? " pausa" : ""}">${fuerte(b.texto)}</div>`,
+
+  columnas: b => `<div class="columnas">${b.items.map(it => `
+      <div class="columna"><div class="barra c-${it.color}"></div>
+      <div class="k" style="color:var(--${it.color})">${esc(it.kicker)}</div>
+      <h2>${esc(it.titulo)}</h2><p>${fuerte(it.texto)}</p></div>`).join("")}</div>`,
+
+  cita_y_cajas: b => `<div class="cita-cajas">
+      <div class="cita">${b.cita.map(l => l ? `<p>${fuerte(l)}</p>` : "<br>").join("")}
+        <div class="autor">${esc(b.autor)}</div></div>
+      <div class="cajas">${b.cajas.map(c => `<div class="caja b-${c.color}"><h2>${esc(c.titulo)}</h2>
+        <ul>${c.lineas.map(l => `<li>${fuerte(l)}</li>`).join("")}</ul></div>`).join("")}</div></div>`
+};
+
+function render(d, i) {
+  if (d.tipo === "portada") {
+    return `<section class="slide portada" data-bloque="0">
+      <div class="barras" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="kicker" data-anim style="--i:0">${esc(d.kicker)}</div>
+      <h1 data-anim style="--i:1">${esc(d.titulo)}</h1>
+      <div class="sub" data-anim style="--i:2">${esc(d.subtitulo)}</div>
+      <div class="lema" data-anim style="--i:3">${esc(d.lema)}</div>
+      <div class="docente" data-anim style="--i:4">${esc(DOCENTE)}</div>
+      <div class="pie" data-anim style="--i:5">${esc(d.pie)}</div></section>`;
+  }
+  if (d.tipo === "referencias") {
+    return `<section class="slide" data-bloque="0">
+      <div class="kicker">${esc(d.kicker)}</div><h1>${esc(d.titulo)}</h1><div class="regla"></div>
+      <div class="cuerpo"><div class="refs" data-anim style="--i:0">
+        ${d.items.map(r => `<p>${esc(r)}</p>`).join("")}</div></div></section>`;
+  }
+  const cuerpo = d.bloques.map((b, k) =>
+    `<div data-anim style="--i:${k + 1}">${BLOQUES[b.t](b)}</div>`).join("");
+  return `<section class="slide" data-bloque="${d.bloque}">
+    <div class="kicker" data-anim style="--i:0">${esc(d.kicker)}</div>
+    <h1 data-anim style="--i:0">${esc(d.titulo)}</h1>
+    <div class="regla" data-anim style="--i:0"></div>
+    <div class="cuerpo">${cuerpo}</div>
+    ${d.pie ? `<div class="pie" data-anim style="--i:${d.bloques.length + 1}">${esc(d.pie)}</div>` : ""}
+  </section>`;
+}
+
+$("lienzo").innerHTML = SLIDES.map(render).join("");
+const slides = [...document.querySelectorAll(".slide")];
+
+// ---------------------------------------------------------------- escala
+function escalar() {
+  const pres = document.body.classList.contains("presenter");
+  const barra = pres ? 0 : ($("estado").classList.contains("oculta") ? 12 : 46);
+  const ancho = pres ? innerWidth * 0.56 : innerWidth - 24;
+  const alto = pres ? innerHeight * 0.58 : innerHeight - barra;
+  const k = Math.min(ancho / 1280, alto / 720);
+  const l = $("lienzo");
+  l.style.transform = `translate(-50%, -50%) scale(${k})`;
+  l.style.left = pres ? "calc(16px + 28vw)" : "50%";
+  l.style.top = pres ? "calc(16px + 29vh)" : "";
+}
+addEventListener("resize", escalar);
+
+// ---------------------------------------------------------------- navegación
+let actual = 0;
+const HAY_NOTAS = SLIDES.some(d => (d.notas || "").trim());
+if (!HAY_NOTAS) { $("b-notas").hidden = true; $("notas").hidden = true; $("b-presentador").hidden = true; }
+
+function ir(n, atras) {
+  n = Math.max(0, Math.min(slides.length - 1, n));
+  slides[actual].classList.remove("viva", "entra", "entra-atras");
+  actual = n;
+  const s = slides[actual];
+  s.classList.add("viva");
+  void s.offsetWidth;                       // reinicia las animaciones de entrada
+  s.classList.add(atras ? "entra-atras" : "entra");
+  $("cuenta").textContent = `${n + 1} / ${slides.length}`;
+  $("progreso").style.width = ((n + 1) / slides.length * 100) + "%";
+  $("titulo-actual").textContent = SLIDES[n].titulo;
+  $("notas-tit").textContent = `${n + 1} · ${SLIDES[n].titulo}`;
+  $("notas-txt").innerHTML = htmlGuion(n);
+  $("notas-sig").textContent = n + 1 < SLIDES.length ? "Sigue: " + SLIDES[n + 1].titulo : "Última diapositiva.";
+  const cod = SLIDES[n].codigos || [];
+  $("notas-cod").innerHTML = cod.length
+    ? `<h4>Qué significa cada código de esta diapositiva</h4>` +
+      cod.map(([c, t]) => `<div><b>${esc(c)}</b> · ${esc(t)}</div>`).join("")
+    : "";
+  location.hash = n + 1;
+  if (SLIDES[n].cronometro) abrirCrono(); else cerrarCrono();
+  pintarPresentador();
+  if (!remoto) emitir();
+  escalar();
+}
+const sig = () => ir(actual + 1);
+const ant = () => ir(actual - 1, true);
+
+addEventListener("keydown", e => {
+  if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); sig(); }
+  else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); ant(); }
+  else if (e.key === "Home") ir(0);
+  else if (e.key === "End") ir(slides.length - 1);
+  else if (e.key === "Escape") { $("indice").classList.remove("abierto"); $("ayuda").classList.remove("abierta"); $("glosario").classList.remove("abierto"); }
+  else if (/^[0-9]$/.test(e.key)) { /* reservado */ }
+  else {
+    const k = e.key.toLowerCase();
+    if (k === "n") alternarNotas();
+    else if (k === "i") $("indice").classList.toggle("abierto");
+    else if (k === "g") $("glosario").classList.toggle("abierto");
+    else if (k === "l") alternarLectura();
+    else if (k === "p") alternarPresentador();
+    else if (k === "t") { $("crono").classList.contains("visible") ? cerrarCrono() : abrirCrono(); }
+    else if (k === "b") { $("estado").classList.toggle("oculta"); document.body.classList.toggle("sin-barra"); escalar(); }
+    else if (k === "f") { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+    else if (k === "?" || e.key === "?") $("ayuda").classList.toggle("abierta");
+  }
+});
+$("escenario").addEventListener("click", e => {
+  if (tactil()) return;                       // en el teléfono se pasa deslizando o con los botones
+  (e.clientX > innerWidth * 0.35) ? sig() : ant();
+});
+let x0 = null;
+addEventListener("touchstart", e => x0 = e.touches[0].clientX, { passive: true });
+addEventListener("touchend", e => {
+  if (x0 === null || document.body.classList.contains("lectura")) return;
+  const dx = e.changedTouches[0].clientX - x0;
+  if (Math.abs(dx) > 50) dx < 0 ? sig() : ant();
+  x0 = null;
+});
+$("b-sig").onclick = e => { e.stopPropagation(); sig(); };
+$("b-ant").onclick = e => { e.stopPropagation(); ant(); };
+$("b-ayuda").onclick = () => $("ayuda").classList.toggle("abierta");
+$("ayuda").onclick = () => $("ayuda").classList.remove("abierta");
+
+// ---------------------------------------------------------------- índice
+$("rejilla").innerHTML = SLIDES.map((d, i) => `<button class="mini" data-ir="${i}" data-bloque="${d.bloque}">
+   <div class="num">${i + 1}</div>
+   <div class="t">${esc(d.titulo)}</div></button>`).join("");
+$("rejilla").addEventListener("click", e => {
+  const b = e.target.closest("[data-ir]");
+  if (b) { ir(+b.dataset.ir); $("indice").classList.remove("abierto"); }
+});
+$("b-indice").onclick = () => $("indice").classList.toggle("abierto");
+$("b-crono").onclick = () => $("crono").classList.contains("visible") ? cerrarCrono() : abrirCrono();
+
+// ---------------------------------------------------------------- modo lectura (teléfono)
+const tactil = () => matchMedia("(pointer: coarse)").matches;
+function alternarLectura() {
+  const lee = document.body.classList.toggle("lectura");
+  $("b-lectura").setAttribute("aria-pressed", lee);
+  $("b-lectura").textContent = lee ? "Diapositivas" : "Lectura";
+  try { localStorage.setItem("arem-s2-lectura", lee ? "1" : ""); } catch (e) {}
+  if (lee) slides[actual].scrollIntoView({ block: "start" });
+  else { ir(actual); scrollTo(0, 0); }
+}
+$("b-lectura").onclick = alternarLectura;
+try { if (localStorage.getItem("arem-s2-lectura")) alternarLectura(); } catch (e) {}
+
+// ---------------------------------------------------------------- glosario
+const FAMILIAS = [
+  ["formato", "Formatos del curso · F-nn", "Numeración continua entre sesiones: F-05 a F-12 son de la Unidad 1, F-13 a F-20 de esta y F-21 a F-28 de la Unidad 3."],
+  ["fase", "Fases del ADM · TOGAF 10", "La decisión es de la Fase E, no de la C."],
+  ["alternativa", "Alternativas · A y B", "Las dos rutas del ejemplo, tomadas del dossier del caso. Cada grupo define las suyas."],
+  ["escenario", "Atributos de calidad", "Los tres que exige la Actividad 2.2, con su escenario resuelto."],
+  ["nivel", "Niveles del modelo C4", "Zoom, no fases: las decisiones se toman en el nivel 2 y se pagan en el nivel 3."],
+  ["sistema", "Sistemas del caso", "Red Salud Andina es una organización simulada."],
+  ["otro", "Siglas y términos del método", ""]
+];
+const minutoPlan = SLIDES.map(d => d.minuto ?? null);
+$("gfamilias").innerHTML = FAMILIAS.map(([f, tit, de]) => {
+  const items = GLOSARIO.filter(g => g[2] === f);
+  if (!items.length) return "";
+  return `<section class="gfam"><h3>${esc(tit)}</h3>${de ? `<div class="de">${esc(de)}</div>` : ""}
+    <dl>${items.map(g => `<dt>${esc(g[0])}</dt><dd>${esc(g[1])}</dd>`).join("")}</dl></section>`;
+}).join("");
+$("b-glosario").onclick = () => $("glosario").classList.toggle("abierto");
+
+// ---------------------------------------------------------------- notas
+function alternarNotas() {
+  const abierto = $("notas").classList.toggle("abiertas");
+  $("b-notas").setAttribute("aria-pressed", abierto);
+}
+$("b-notas").onclick = alternarNotas;
+
+// ---------------------------------------------------------------- guion del orador
+// El guion viene partido en párrafos; las acotaciones entre paréntesis van en cursiva y no se leen.
+const acot = t => esc(t).replace(/\(([^)]*)\)/g, '<span class="acot">($1)</span>');
+function htmlGuion(n) {
+  const segs = SLIDES[n].guion || [];
+  if (!segs.length) return esc(SLIDES[n].notas || "");
+  return segs.map(ps => `<div class="seg-nota">${ps.map(t => `<p>${acot(t)}</p>`).join("")}</div>`).join("");
+}
+
+// ---------------------------------------------------------------- modo presentador y sincronización
+// Se abre el mismo archivo en dos ventanas; en una se pulsa P. Cada avance se transmite a la otra por
+// BroadcastChannel y, de respaldo, por localStorage.
+const VENTANA = Math.random().toString(36).slice(2);
+const canal = ("BroadcastChannel" in window) ? new BroadcastChannel("arem-s2-deck") : null;
+let remoto = false, ultimoPar = 0, t0 = Date.now();
+function emitir() {
+  const m = { n: actual, src: VENTANA, en: Date.now() };
+  try { canal && canal.postMessage(m); } catch (e) {}
+  try { localStorage.setItem("arem-s2-deck", JSON.stringify(m)); } catch (e) {}
+}
+function recibir(m) {
+  if (!m || m.src === VENTANA) return;
+  ultimoPar = Date.now(); pintarSinc();
+  if (m.ping) { emitir(); return; }
+  if (m.n === actual) return;
+  remoto = true;
+  try { ir(m.n, m.n < actual); } finally { remoto = false; }
+}
+if (canal) canal.onmessage = e => recibir(e.data);
+addEventListener("storage", e => {
+  if (e.key === "arem-s2-deck" && e.newValue) { try { recibir(JSON.parse(e.newValue)); } catch (err) {} }
+});
+function pintarSinc() {
+  if (!$("p-sinc")) return;                  // la versión publicada no trae el panel
+  $("p-sinc").textContent = Date.now() - ultimoPar < 15000 ? "Sincronizado con la ventana de las diapositivas."
+    : "Esperando la ventana de las diapositivas… Ábranla con el mismo archivo.";
+}
+const mmss = s => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+function pintarPresentador() {
+  if (!document.body.classList.contains("presenter") || !$("pnotas")) return;
+  $("pnotas").innerHTML = htmlGuion(actual);
+  $("pnotas").scrollTop = 0;
+  const cod = SLIDES[actual].codigos || [];
+  $("pcods").innerHTML = cod.length ? cod.map(([c, t]) => `<div><b>${esc(c)}</b> · ${esc(t)}</div>`).join("") : "";
+  $("p-pos").textContent = `Diapositiva ${actual + 1} / ${slides.length}`;
+  const plan = minutoPlan[actual];
+  $("p-min").textContent = plan === null || plan === undefined ? "" : `planeada en el minuto ${plan}`;
+  $("p-sigue").textContent = actual < slides.length - 1 ? "Sigue: " + SLIDES[actual + 1].titulo : "Fin de la presentación";
+  pintarRitmo();
+}
+function pintarRitmo() {           // el reloj contra el minuto planeado de la diapositiva
+  const plan = minutoPlan[actual], r = $("p-ritmo");
+  if (plan === null || plan === undefined) { r.textContent = ""; r.className = "ritmo"; return; }
+  const d = Math.round((Date.now() - t0) / 60000 - plan);
+  r.className = "ritmo " + (Math.abs(d) <= 2 ? "bien" : d > 0 ? "tarde" : "pronto");
+  r.textContent = Math.abs(d) <= 2 ? "a tiempo" : d > 0 ? `${d} min atrasado` : `${-d} min adelantado`;
+}
+function alternarPresentador(on) {
+  if (!HAY_NOTAS) return;                    // la versión publicada no lo tiene
+  on = on ?? !document.body.classList.contains("presenter");
+  document.body.classList.toggle("presenter", on);
+  $("notas").classList.remove("abiertas"); if ($("phelp")) $("phelp").hidden = true;
+  if (on) cerrarCrono();
+  escalar(); pintarPresentador(); emitir();
+}
+setInterval(() => {
+  if ($("p-reloj")) $("p-reloj").textContent = mmss(Math.floor((Date.now() - t0) / 1000));
+  pintarSinc(); if (document.body.classList.contains("presenter")) pintarRitmo();
+}, 1000);
+if ($("phelp")) {                           // solo en la versión del docente
+  $("b-presentador").onclick = () => { $("phelp").hidden = !$("phelp").hidden; };
+  $("phelp-ok").onclick = () => { $("phelp").hidden = true; };
+  $("phelp-ya").onclick = () => alternarPresentador(true);
+  $("p-sig").onclick = () => sig();
+  $("p-ant").onclick = () => ant();
+  $("p-salir").onclick = () => alternarPresentador(false);
+  $("p-reiniciar").onclick = () => { t0 = Date.now(); pintarRitmo(); };
+}
+
+// ---------------------------------------------------------------- cronómetro del taller
+// Sin cronograma de sesión: el docente decide cuánto dura el taller con el tiempo que le quede.
+let minutosTaller = 30;                    // el taller de esta sesión dura 30 minutos
+try { minutosTaller = +localStorage.getItem("arem-s2-taller") || 30; } catch (e) {}
+let restan = minutosTaller * 60, cTic = null;
+function pintarCrono() {
+  $("crono-t").textContent = String(Math.floor(restan / 60)).padStart(2, "0") + ":" + String(restan % 60).padStart(2, "0");
+  $("crono-t").classList.toggle("poco", restan <= 120);
+}
+function abrirCrono() {
+  if (!$("crono").classList.contains("visible") && !cTic) { restan = minutosTaller * 60; pintarCrono(); }
+  $("crono").classList.add("visible");
+}
+function ajustarCrono(delta) {
+  if (cTic) { restan = Math.max(60, restan + delta * 60); }
+  else { minutosTaller = Math.min(90, Math.max(5, minutosTaller + delta)); restan = minutosTaller * 60;
+         try { localStorage.setItem("arem-s2-taller", minutosTaller); } catch (e) {} }
+  pintarCrono();
+}
+$("crono-menos").onclick = () => ajustarCrono(-5);
+$("crono-mas").onclick = () => ajustarCrono(5);
+function cerrarCrono() { $("crono").classList.remove("visible"); clearInterval(cTic); cTic = null; $("crono-play").textContent = "Iniciar"; }
+$("crono-play").onclick = () => {
+  if (cTic) { clearInterval(cTic); cTic = null; $("crono-play").textContent = "Reanudar"; return; }
+  cTic = setInterval(() => { if (restan > 0) { restan--; pintarCrono(); } }, 1000);
+  $("crono-play").textContent = "Pausar";
+};
+$("crono-cerrar").onclick = cerrarCrono;
+
+// ---------------------------------------------------------------- arranque
+const inicial = parseInt(location.hash.replace("#", ""), 10);
+remoto = true;            // al abrir, esta ventana no arrastra a la que ya esté proyectando
+if (location.hash.slice(1) === "presentador" && HAY_NOTAS) document.body.classList.add("presenter");
+ir(Number.isFinite(inicial) && inicial > 0 ? inicial - 1 : 0);
+remoto = false;
+try { canal && canal.postMessage({ ping: true, src: VENTANA }); } catch (e) {}
+escalar();
+</script>
+</body>
+</html>
