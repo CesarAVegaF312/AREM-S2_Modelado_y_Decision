@@ -164,13 +164,15 @@ organización es otra.
 ```text
 AREM-S2_Modelado_y_Decision/
 ├── index.html      ← portada: desde aquí se abre todo lo demás
+├── presentacion.html           ← la presentación de la sesión, para verla en el navegador
 ├── README.md
 ├── LICENSE
 ├── documentos/                 ← PDF, en el orden en que se usan
 │   ├── 1_actividad_2_2/        ← qué se entrega y cómo se ve: mapa, informe de ejemplo, enunciado
 │   ├── 2_caso/                 ← dossier de Red Salud Andina
 │   ├── 3_como_se_hace/         ← instrumentos F-13 a F-20 y guías
-│   └── 4_clase/                ← deck de la sesión
+│   └── 4_clase/                ← el deck de la sesión, en PDF
+├── fuentes/                    ← el deck en PowerPoint, editable
 ├── interactivos/               ← las siete herramientas HTML
 └── modelo/                     ← el caso Red Salud Andina en Archi (.archimate y Open Exchange .xml)
 ```
@@ -206,7 +208,19 @@ Las carpetas están numeradas en el orden en que conviene abrirlas.
 
 | Archivo | Descripción |
 |---|---|
-| [`AREM_S2_Deck_Reto_U2.pdf`](documentos/4_clase/AREM_S2_Deck_Reto_U2.pdf) | Las 20 diapositivas del encuentro sincrónico: tres conceptos, cada uno con su ejemplo en Red Salud Andina, el formato diligenciado y la comparación «cómo y por qué». |
+| [`AREM_S2_Deck_Reto_U2.pdf`](documentos/4_clase/AREM_S2_Deck_Reto_U2.pdf) | Las 25 diapositivas del encuentro sincrónico, en PDF. |
+
+**La presentación, en el navegador.** [`presentacion.html`](presentacion.html) es el mismo
+contenido del deck, animado y navegable con las flechas del teclado. Se abre con doble clic, sin
+instalar nada y sin conexión. Teclas útiles: **I** abre el índice, **G** el glosario de códigos
+—qué es un F-nn, qué es una fase del ADM, qué significa cada sigla del caso—, **L** la lee de
+corrido en el teléfono, **T** abre un cronómetro y **F** la pone en pantalla completa.
+
+**`fuentes/` — el deck editable.**
+
+| Archivo | Descripción |
+|---|---|
+| [`AREM_S2_Deck_Reto_U2_sin_notas.pptx`](fuentes/AREM_S2_Deck_Reto_U2_sin_notas.pptx) | El mismo deck en PowerPoint, por si quieren reutilizar una diapositiva. |
 
 ### `interactivos/` — herramientas HTML
 
