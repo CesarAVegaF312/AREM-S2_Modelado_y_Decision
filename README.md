@@ -32,6 +32,12 @@ Las actividades de la unidad, tal como están en la plataforma:
 
 ## Empiecen aquí
 
+**Todo el material se abre desde aquí, sin descargar nada:**
+<https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision/>
+
+Desde esa portada salen los documentos, el modelo, las siete herramientas y la
+[presentación de la sesión](https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision/presentacion.html).
+
 1. **Lean el [mapa de la Actividad 2.2](documentos/1_actividad_2_2/AREM_S2_Mapa_Actividad_2_2.pdf).** Tres páginas: qué pide la actividad, con
    qué criterio se califica, en qué sección del informe va cada cosa y qué formato la prepara.
 2. **Miren el [informe de ejemplo](documentos/1_actividad_2_2/AREM_S2_Informe_Ejemplo_Actividad_2_2.pdf).** Así se ve la 2.2 terminada, con Red Salud
@@ -278,7 +284,7 @@ Exchange. Cancelen y abran el `.archimate` con `File → Open`.
 
 **Al hacer clic en un `.html` dentro de GitHub se ve código, no la herramienta.**
 GitHub muestra el código fuente, no lo ejecuta. Descarguen el repositorio y ábranlo desde su
-computador, o usen el enlace publicado que comparte el docente.
+computador, o usen la [portada publicada](https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision/).
 
 **El doble clic sobre un `.html` abre un editor de texto.**
 Clic derecho → **Abrir con** → Chrome, Edge o Firefox.
@@ -294,29 +300,6 @@ En GitHub, abran el archivo `.html`, entren a la vista **Raw** y guarden la pág
 - Cualquier navegador moderno: Chrome, Edge, Firefox o Safari, en versiones recientes. No se
   requiere internet una vez descargados los archivos.
 - Para el modelo, **Archi 5.x**, gratuito.
-
----
-
-## Para el docente: publicar con GitHub Pages
-
-Con GitHub Pages las herramientas se abren con un enlace, sin descargar nada. Se activa una
-sola vez:
-
-1. En el repositorio, pestaña **`Settings`** → menú lateral **`Pages`** (sección
-   *Code and automation*).
-2. En **Build and deployment → Source**, elegir **`Deploy from a branch`**.
-3. En **Branch**, seleccionar **`main`** y carpeta **`/ (root)`**. Pulsar **`Save`**.
-4. Esperar 1–2 minutos. La misma página muestra el aviso *"Your site is live at …"*.
-
-Basta un solo enlace para los estudiantes, porque el repositorio trae portada:
-
-- **Portada:** `https://cesaravegaf312.github.io/AREM-S2_Modelado_y_Decision/`
-- **Una herramienta suelta:** `…/interactivos/<nombre_del_archivo>.html`
-
-> - El repositorio debe ser **público** para usar Pages con una cuenta gratuita.
-> - Si aparece **404**, revisar que el despliegue haya terminado y que el nombre del archivo
->   esté escrito exactamente igual, con la carpeta `interactivos/` y respetando mayúsculas.
-> - Cada `git push` a `main` vuelve a desplegar el sitio.
 
 ---
 
@@ -339,12 +322,15 @@ Basta un solo enlace para los estudiantes, porque el repositorio trae portada:
 
 ## Licencia
 
-Publicado bajo la **Licencia MIT** — ver [`LICENSE`](LICENSE).
+Este material se distribuye bajo la licencia [Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es) — ver [`LICENSE`](LICENSE).
 
-Pueden usar, adaptar y redistribuir este material, incluido el código de los interactivos,
-conservando el aviso de copyright y la atribución.
+Pueden **usar, adaptar o compartir** este contenido, incluido el código de los interactivos, con fines educativos, siempre que:
+
+1. Se reconozca la autoría del profesor **César Augusto Vega Fernández**.
+2. No se utilice con fines comerciales.
+3. Las obras derivadas se distribuyan bajo la misma licencia.
 
 *Nota: TOGAF® y ArchiMate® son marcas registradas de The Open Group. Este repositorio contiene
-material docente que los explica; la licencia MIT aplica a estos materiales, no a los marcos
+material docente que los explica; la licencia aplica a estos materiales, no a los marcos
 originales. Los casos —Banco Colombia Digital y Red Salud Andina— son organizaciones simuladas
 con fines pedagógicos.*
