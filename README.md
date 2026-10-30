@@ -165,6 +165,77 @@ organización es otra.
 
 ---
 
+## Saberes del syllabus y radar de la industria
+
+Esta sesión trabaja dos saberes del syllabus del curso: **«Modelado Empresarial y Evaluación
+Arquitectónica»** y **«Arquitectura de Información e Integración Empresarial»**. La tabla dice
+dónde se trabaja cada parte.
+
+| Parte del saber | Dónde se trabaja |
+|---|---|
+| ArchiMate 3.2: capas, elementos y relaciones | `interactivos/archimate_interactivo.html`, la guía de Archi y la carpeta `modelo/` |
+| Vistas para distintos públicos | `interactivos/vistas_archimate_red_salud.html`: cada vista con su *stakeholder* y su *concern* |
+| Evaluación con escenarios y ATAM | Paso 3, `interactivos/atam_escenarios_interactivo.html` y formatos F-14 a F-16 |
+| CBAM | Paso 3, cuando las alternativas difieren sobre todo en costo |
+| Trade-offs y deuda arquitectónica | Paso 5 y `interactivos/deuda_arquitectonica_interactivo.html` |
+| Integración: APIs, orquestación, mensajería y EDA | Paso 4 y `interactivos/costura_integracion_interactivo.html` |
+| Microservicios desde la perspectiva arquitectónica | `interactivos/c4_model_interactivo.html` |
+| Modernización de legacy; construir o consumir | `interactivos/wardley_map_interactivo.html` y las dos alternativas del dossier |
+| Dominios de información y gobierno de datos | Radar de esta sesión |
+| Nube híbrida y criterios para elegir plataformas de integración | Radar de esta sesión |
+| Racionalización del portafolio aplicativo | Sesión 4, dentro del AS-IS |
+
+### Radar de la industria
+
+Temas actuales conectados con la unidad. Se comentan al inicio del encuentro sincrónico y **no son
+requisitos adicionales de la actividad**: sirven como lente para el informe. Si usan uno, citen la
+fuente.
+
+**Agentes de IA como consumidores de APIs.** Un agente de IA que agenda citas desde el call center
+no entra a HIS-CORE por una puerta nueva: usa las mismas APIs que AGENDA-WEB, con dos diferencias
+que cambian el análisis. Decide por sí mismo cuándo llamar, y reintenta cuando algo falla. El
+*Model Context Protocol* (MCP), que Anthropic publicó en 2024 como estándar abierto, es hoy la forma
+más extendida de darle herramientas y datos a un agente; en términos del curso, es una capa de
+integración más, con su propio contrato. ArchiMate no tiene un elemento «agente»: modelarlo como
+componente de aplicación, como actor o como ambos es una decisión que conviene declarar.
+*En la Actividad 2.2:* si su organización tiene o planea un agente, trátenlo como un consumidor más
+en la estrategia de integración, y pregúntense qué pasa con la idempotencia de la costura cuando el
+cliente reintenta por su cuenta.
+*Para leer:* Anthropic. (2024). *Building effective agents*.
+<https://www.anthropic.com/research/building-effective-agents>. La especificación de MCP está en
+<https://modelcontextprotocol.io>.
+
+**Data mesh y contratos de datos.** Dehghani (2022) propone que los datos se gobiernen por dominio
+de negocio y se publiquen como productos: con un responsable, una calidad declarada y un contrato
+que los consumidores pueden leer. Es la versión actual de lo que el syllabus llama «dominios de
+información y gobierno de datos». En Red Salud Andina el problema está a la vista: cada sistema
+mantiene su propio maestro de pacientes, y la carga manual de HIS-NORTE a FACT-SALUD es la principal
+fuente de glosa por inconsistencia.
+*En la Actividad 2.2:* al identificar la deuda arquitectónica, distingan la deuda de integración
+(cómo se conectan los sistemas) de la deuda de datos (quién es dueño de cada dato y con qué calidad).
+*Para leer:* Dehghani, Z. (2022). *Data mesh: Delivering data-driven value at scale*. O'Reilly
+Media.
+
+**Interoperabilidad en salud: HL7 FHIR.** FHIR es el estándar de HL7 para intercambiar información
+clínica mediante APIs, y el más usado hoy en el mundo para ese fin. En Colombia, la Ley 2015 de 2020
+creó la historia clínica electrónica interoperable. Para la brecha de historia clínica única del
+caso, la alternativa A (capa de integración) cambia de naturaleza si las APIs que expone siguen un
+estándar como FHIR en lugar de un formato propio: el contrato deja de pertenecerle al proveedor.
+*En la Actividad 2.2:* si su organización es del sector salud, comparen sus alternativas también
+por el estándar del contrato.
+*Para leer:* HL7 International. *FHIR*. <https://hl7.org/fhir/>
+
+**Nube híbrida y criterios de plataforma.** Pocas organizaciones están solo en su centro de datos o
+solo en la nube; la mayoría combina las dos cosas sin haberlo decidido. Red Salud Andina es el caso
+típico: tres servicios en la nube con dos proveedores distintos y sin lineamiento previo, y un bus de
+integración comprado en 2016 que solo se usa en 6 de las 41 interfaces. Las dos situaciones son la
+misma pregunta: con qué criterio se elige una plataforma, y quién hace que se use.
+*En la Actividad 2.2:* si su alternativa de integración depende de una plataforma (un bus, un gestor
+de APIs, un servicio en la nube), justifiquen la elección con criterios explícitos y digan qué pasa
+con lo que ya existe.
+
+---
+
 ## Qué hay en el repositorio
 
 ```text
