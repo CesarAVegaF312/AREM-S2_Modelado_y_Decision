@@ -110,6 +110,10 @@ en la [guía de formatos](documentos/3_como_se_hace/AREM_S2_Guia_Visuales_e_Inst
   árbol del F-15 en 3.3 y la comparación, los riesgos, los trade-offs y la decisión del F-16 en
   3.4 a 3.7.
 - **Se califica en:** *Evaluación ATAM y trade-offs* (1,5).
+- **Para medir en lugar de estimar,** el [laboratorio de la costura](laboratorio/) corre las
+  alternativas síncrona y asíncrona de AGENDA-WEB → HIS-CORE con Docker y les aplica los mismos
+  estímulos (HIS-CORE lento, caído, entregas duplicadas). Sus cifras sirven como medida de
+  respuesta de los escenarios del F-14. Es opcional.
 - **Si las alternativas difieren sobre todo en costo,** pueden complementar ATAM con **CBAM**
   (Cost-Benefit Analysis Method; Bass, Clements y Kazman, 2003), que pone valor esperado y
   costo a cada alternativa.
@@ -180,7 +184,8 @@ AREM-S2_Modelado_y_Decision/
 │   └── 4_clase/                ← el deck de la sesión, en PDF
 ├── fuentes/                    ← el deck en PowerPoint, editable
 ├── interactivos/               ← las siete herramientas HTML
-└── modelo/                     ← el caso Red Salud Andina en Archi (.archimate y Open Exchange .xml)
+├── modelo/                     ← el caso Red Salud Andina en Archi (.archimate y Open Exchange .xml)
+└── laboratorio/                ← la costura AGENDA-WEB → HIS-CORE, medida con Docker
 ```
 
 ### `documentos/` — PDF
@@ -267,6 +272,14 @@ vista, su fase del ADM y la decisión que habilita.
 > El modelo está en **ArchiMate 3.2**, que es la versión que implementa Archi y en la que se
 > entrega la Actividad 2.2. El estándar publicado es ArchiMate 4; esa diferencia se discute en
 > la sesión y es, ella misma, un ejemplo de deuda arquitectónica declarada.
+
+### `laboratorio/` — la costura, medida
+
+Las dos alternativas de integración de AGENDA-WEB con HIS-CORE (síncrona y con cola) corren en
+el computador con Docker Compose y se comparan bajo los mismos estímulos: HIS-CORE lento, HIS-CORE
+caído, entregas duplicadas y escalado del adaptador. Incluye el modelo C4 de la costura en
+Structurizr. Requiere Docker Desktop o GitHub Codespaces; las instrucciones y los cinco
+experimentos están en [`laboratorio/README.md`](laboratorio/README.md).
 
 > La Sesión 1 —marcos de referencia y capacidades— está en su propio repositorio:
 > [AREM-S1_Marcos_y_Capacidades](https://github.com/CesarAVegaF312/AREM-S1_Marcos_y_Capacidades-repositorio).

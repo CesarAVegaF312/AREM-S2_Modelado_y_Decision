@@ -1,0 +1,84 @@
+# Laboratorio de la costura de integracion: AGENDA-WEB -> HIS-CORE
+#
+#   docker compose up -d --build                     levanta el laboratorio
+#   docker compose run --rm carga estado             tablero de estado
+#   docker compose run --rm carga configurar --latencia-ms 4000
+#   docker compose run --rm carga agendar --destino sincrono
+#   docker compose run --rm carga reiniciar          vuelve a la configuracion inicial
+#   docker compose --profile modelo up -d structurizr   modelo C4 en http://localhost:8200
+#   docker compose down                              apaga todo
+
+name: arem-costura
+
+x-servicio: &servicio
+  build: ./servicios
+  image: arem-costura-servicios
+  restart: unless-stopped
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "15672:15672"   # consola web: guest / guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+
+  his-core:
+    <<: *servicio
+    command: python his_core.py
+    environment:
+      LATENCIA_MS: "50"
+    ports:
+      - "8081:8081"
+
+  agenda-sincrona:
+    <<: *servicio
+    command: python agenda_web.py
+    environment:
+      MODO: sincrono
+      TIMEOUT_S: "15"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - his-core
+
+  agenda-asincrona:
+    <<: *servicio
+    command: python agenda_web.py
+    environment:
+      MODO: asincrono
+    ports:
+      - "8090:8080"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  adaptador-his:
+    <<: *servicio
+    command: python adaptador_his.py
+    # Sin puerto publicado, para poder escalarlo: --scale adaptador-his=4
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      his-core:
+        condition: service_started
+
+  carga:
+    <<: *servicio
+    restart: "no"
+    entrypoint: ["python", "carga.py"]
+    volumes:
+      - ./resultados:/resultados
+    profiles: ["herramientas"]
+
+  structurizr:
+    image: structurizr/structurizr:2026.09.19
+    command: local
+    ports:
+      - "8200:8080"
+    volumes:
+      - ./modelo:/usr/local/structurizr
+    profiles: ["modelo"]
