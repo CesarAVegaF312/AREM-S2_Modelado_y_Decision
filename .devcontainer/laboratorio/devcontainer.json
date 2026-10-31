@@ -1,0 +1,36 @@
+{
+  "name": "AREM S2 · Laboratorio de la costura",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb"
+  },
+  "forwardPorts": [
+    8080,
+    8090,
+    8081,
+    15672,
+    8200
+  ],
+  "portsAttributes": {
+    "8080": {
+      "label": "AGENDA-WEB sincrona"
+    },
+    "8090": {
+      "label": "AGENDA-WEB asincrona"
+    },
+    "8081": {
+      "label": "HIS-CORE"
+    },
+    "15672": {
+      "label": "RabbitMQ"
+    },
+    "8200": {
+      "label": "Modelo C4 (Structurizr)"
+    }
+  },
+  "postCreateCommand": "chmod a+w laboratorio/modelo && cd laboratorio && docker compose pull --ignore-buildable --quiet"
+}

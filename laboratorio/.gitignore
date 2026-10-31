@@ -1,0 +1,17 @@
+# Resultados de cada corrida: son de quien corre el laboratorio
+resultados/*
+!resultados/.gitkeep
+
+# Archivos que genera Structurizr al abrir el modelo
+modelo/.structurizr/
+modelo/workspace.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Editores y sistema operativo
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
